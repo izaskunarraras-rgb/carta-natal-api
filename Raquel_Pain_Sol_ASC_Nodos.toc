@@ -1,0 +1,9 @@
+\babel@toc {spanish}{}\relax 
+\contentsline {section}{\numberline {1}Datos de referencia}{2}{section.1}%
+\contentsline {section}{\numberline {2}Interpretación — Arquitectura Interna}{3}{section.2}%
+\contentsline {subsection}{\numberline {2.1}1. Dirección general}{4}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}2. El Sol — Dirección principal}{4}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}3. El Ascendente — Forma de relacionarte con la vida}{6}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}4. Nodo Norte y Nodo Sur — Dirección de crecimiento}{7}{subsection.2.4}%
+\contentsline {subsection}{\numberline {2.5}5. Integración — Cómo se relacionan las distintas partes}{9}{subsection.2.5}%
+\contentsline {subsection}{\numberline {2.6}6. Orientación práctica}{9}{subsection.2.6}%

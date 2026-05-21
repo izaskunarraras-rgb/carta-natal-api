@@ -1,0 +1,8 @@
+\babel@toc {spanish}{}\relax 
+\contentsline {section}{\numberline {1}Datos de referencia}{2}{section.1}%
+\contentsline {section}{\numberline {2}Interpretación — Arquitectura Interna}{4}{section.2}%
+\contentsline {subsection}{\numberline {2.1}1. Estructura general}{4}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}2. Júpiter — Expansión y crecimiento}{5}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}3. Saturno — Estructura y sostén}{6}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}4. Integración — Crecimiento y estructura}{7}{subsection.2.4}%
+\contentsline {subsection}{\numberline {2.5}5. Orientación práctica}{8}{subsection.2.5}%

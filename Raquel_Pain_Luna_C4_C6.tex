@@ -1,0 +1,388 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{tgpagella}
+\usepackage[spanish]{babel}
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage[parfill]{parskip}
+\usepackage[expansion=false]{microtype}
+\usepackage{hyperref}
+\usepackage{setspace}
+\usepackage{needspace}
+\usepackage{etoolbox}
+\usepackage{graphicx}
+
+\widowpenalty=10000
+\clubpenalty=10000
+\displaywidowpenalty=10000
+\raggedbottom
+\sloppy
+\hbadness=10000
+\hfuzz=2pt
+
+\geometry{top=3.0cm,bottom=3.0cm,left=3.5cm,right=3.5cm}
+\setlength{\parskip}{0.65em}
+\setlength{\parindent}{0em}
+\setlength{\headheight}{14pt}
+
+\definecolor{azulai}{RGB}{30,80,140}
+\definecolor{doradoai}{RGB}{140,90,0}
+\definecolor{grisai}{RGB}{70,70,70}
+
+\titleformat{\section}{\Large\bfseries\color{azulai}}{}{0em}{}[{\color{azulai}\titlerule[0.5pt]}]
+\titlespacing*{\section}{0pt}{1.8em}{0.8em}
+
+\titleformat{\subsection}{\large\bfseries\color{doradoai}}{}{0em}{}
+\titlespacing*{\subsection}{0pt}{1.4em}{0.5em}
+
+\titleformat{\subsubsection}{\normalsize\bfseries\color{grisai}}{}{0em}{}
+\titlespacing*{\subsubsection}{0pt}{1.0em}{0.3em}
+
+% Evita títulos huérfanos al final de página
+\pretocmd{\section}{\Needspace{12\baselineskip}}{}{}
+\pretocmd{\subsection}{\Needspace{9\baselineskip}}{}{}
+\pretocmd{\subsubsection}{\Needspace{6\baselineskip}}{}{}
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\textcolor{grisai}{\small Raquel Pain — Arquitectura Interna}}
+\lhead{\textcolor{grisai}{\small Luna · Casa 4 · Casa 6}}
+\cfoot{\textcolor{grisai}{\small\thepage}}
+\renewcommand{\headrulewidth}{0.3pt}
+
+\hypersetup{colorlinks=true,linkcolor=azulai,urlcolor=azulai}
+\setstretch{1.45}
+\tolerance=2500
+\emergencystretch=8em
+
+\begin{document}
+
+% ── Portada ──────────────────────────────────────────────────────────────────
+\begin{titlepage}
+  \centering
+  \vspace*{1.5cm}
+  {\Huge\bfseries\color{azulai} Luna · Casa 4 · Casa 6}\\[0.5cm]
+  {\large\color{grisai} Arquitectura Interna}\\[0.3cm]
+  {\small\itshape\color{grisai} Un método para sostener cuerpo, energía y vida con coherencia}\\[2cm]
+  {\huge\color{doradoai} Raquel Pain}\\[1.5cm]
+  {\Large 07/05/1985 \quad 18:20}\\[0.3cm]
+  {\Large Pamplona, España}\\[0.3cm]
+  {\normalsize Lat: 42.8157° \quad Lon: -1.6522° \quad UTC+02:00}\\[0.3cm]
+  {\normalsize Ascendente: Libra 14°36' \quad
+    MC: Cáncer 17°21'}\\[2cm]
+
+  \begin{tabular}{lll}
+    \textbf{Luna:} & Sagitario & Casa 3 \\
+    \textbf{Casa 4:} & Capricornio en cúspide & Regente: Saturno \\
+    \textbf{Casa 6:} & Piscis en cúspide & Regente: Neptuno \\
+  \end{tabular}\\[2cm]
+
+  \vfill
+  {\small Generado el 20/05/2026}
+\end{titlepage}
+
+\tableofcontents
+\clearpage
+
+% ── Datos de referencia ───────────────────────────────────────────────────────
+\section{Datos de referencia}
+
+\begin{center}
+\begin{tabular}{llll}
+  \toprule
+  \textbf{Eje} & \textbf{Signo} & \textbf{Posición} & \textbf{Datos} \\
+  \midrule
+  Luna & Sagitario & Casa 3 & 26°31' \\
+  Casa 4 (cúspide) & Capricornio & --- & Regente: Saturno \\
+  Casa 6 (cúspide) & Piscis & --- & Regente: Neptuno \\
+  Ascendente & Libra & --- & 14°36' \\
+  Medio Cielo & Cáncer & --- & 17°21' \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+\vspace{0.4cm}
+\textbf{Planetas en Casa 4:} Júpiter\\
+\textbf{Planetas en Casa 6:} Venus
+
+\vspace{0.5cm}
+\textbf{Aspectos de la Luna:}
+
+\begin{center}
+\begin{tabular}{lllll}
+  \toprule
+  & \textbf{Asp.} & \textbf{Planeta} & \textbf{Tipo} & \textbf{Orbe} \\
+  \midrule
+  Luna & △ & Lilith & Trígono & 0.7° \\
+  Luna & △ & Mercurio & Trígono & 5.3° \\
+  Luna & = & Neptuno & Conjunción & 6.8° \\
+  Luna & = & Urano & Conjunción & 9.4° \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+\vspace{0.8cm}
+\begin{center}
+\includegraphics[width=0.80\textwidth]{C:/Users/Izas/claude/astrología/pruebas/Raquel_Pain_Luna_C4_C6_rueda.png}
+\end{center}
+
+
+\vspace{0.5cm}
+\Needspace{5\baselineskip}
+
+% ── Interpretación ────────────────────────────────────────────────────────────
+\section{Interpretación — Arquitectura Interna}
+
+\Needspace{8\baselineskip}
+\begin{center}
+{\small\itshape
+No se trata de explicarte. Se trata de mostrar cómo funciona tu regulación interna,\\
+dónde puede haber desregulación y qué necesitas para sostenerte.
+}
+\end{center}
+
+\vspace{0.8cm}
+\Needspace{5\baselineskip}
+
+% ── 1. Luna ───────────────────────────────────────────────────────────────────
+\subsection{1. Tu Luna — Función emocional}
+
+\subsubsection*{Luna en Sagitario — Casa 3}
+
+Necesitas sentir que lo que estás viviendo tiene dirección.
+
+Cuando una emoción encuentra sentido o movimiento, puedes atravesarla mucho mejor. El problema aparece cuando sientes algo que no sabes hacia dónde va o que parece no conducir a ningún lugar.
+
+Entonces suele aparecer inquietud, necesidad de escapar, cambiar de aire o salir de la situación de alguna manera. Tu cuerpo necesita espacio, movimiento y sensación de horizonte.
+
+Cuando pasas demasiado tiempo sintiendo que no existe libertad o amplitud suficiente, la activación empieza a acumularse.
+
+La regulación mejora cuando existe dirección, expansión y posibilidad de avanzar. En cambio, la sensación de límite, encierro o falta de sentido tiende a aumentar rápidamente la inquietud interna.
+
+Necesitas poner palabras a lo que sientes para poder aclararlo dentro de ti. Cuando algo no puede hablarse, escribirse o expresarse, suele quedarse dando vueltas en la cabeza durante mucho tiempo. Muchas veces la emoción acaba transformándose en pensamiento repetitivo, ruido mental o necesidad constante de entender qué está pasando. El entorno cotidiano tiene además un impacto muy fuerte sobre cómo te sientes: las conversaciones, los mensajes, los intercambios y los vínculos cercanos te afectan más de lo que suele parecer. Cuando acumulas demasiadas cosas sin expresarlas, la mente rara vez consigue descansar del todo. Te ayuda hablar, escribir o sentir que alguien realmente te escucha. En cambio, guardar demasiado tiempo lo que te pasa o no encontrar espacio para expresarlo suele aumentar mucho la saturación interna.
+
+Tu mundo emocional tiene acceso a una fuerza instintiva importante. Cuando escuchas esa parte sin miedo ni rechazo, puede ayudarte muchísimo a proteger tus límites y reconocer con claridad lo que no es verdadero para ti. Existe una sabiduría corporal muy profunda que no pasa por adaptarte constantemente a lo que otras personas esperan. Tu regulación mejora cuando esa fuerza tiene un lugar consciente y puede expresarse sin necesidad de explotar.
+
+Tienes facilidad para poner palabras a lo que sientes. Cuando algo se mueve dentro, normalmente encuentras una forma de expresarlo, pensarlo o compartirlo. Ese puente entre emoción y lenguaje puede convertirse en un recurso muy importante para regularte. Cuanto más espacio tiene la expresión, menos necesita la emoción quedarse circulando en silencio.
+
+Absorbes muchísimo emocionalmente del entorno. Muchas veces te afecta el estado emocional de otras personas sin que seas plenamente consciente de ello. Cuando no existen límites emocionales claros, puedes terminar sosteniendo dentro cargas, tensiones o confusiones que en realidad no eran tuyas. Necesitas silencio, descanso y momentos reales de vaciado emocional para volver a sentir claridad interna. Tu equilibrio depende mucho de revisar continuamente qué pertenece realmente a tu mundo emocional y qué viene del entorno.
+
+Tu mundo emocional cambia rápido y necesita mucha libertad para poder respirar. Cuando una situación empieza a sentirse demasiado cerrada, absorbente o asfixiante, puede aparecer desconexión de forma bastante repentina. Muchas veces el cuerpo se retira antes incluso de que hayas decidido conscientemente tomar distancia. Necesitas espacio para procesar lo que sientes sin presión constante ni sensación de invasión emocional. Tu equilibrio mejora cuando existe libertad suficiente para moverte emocionalmente sin sentirte atrapado.
+
+\vspace{0.8cm}
+\Needspace{5\baselineskip}
+
+% ── 2. Casa 4 ─────────────────────────────────────────────────────────────────
+\subsection{2. Tu Casa 4 — Raíz interna}
+
+\subsubsection*{Capricornio en la cúspide — Regente: Saturno}
+
+Muy pronto apareció la necesidad de sostenerte emocionalmente con muy poco apoyo. Muchas veces resulta más fácil resistir que pedir ayuda, porque la sensación de seguridad suele estar muy ligada a sentir que puedes hacerte cargo de lo que venga. La dificultad aparece cuando sostienes demasiado peso durante demasiado tiempo antes de reconocer que también necesitas apoyo y descanso. El cuerpo suele acumular muchísimo cansancio antes de detenerse realmente. Te ayuda sentir estructura, estabilidad y cierta sensación de capacidad interna. En cambio, la sobrecarga prolongada, el exceso de responsabilidad o sentir que todo depende de ti suele desgastar profundamente la energía.
+
+El regente de la Casa 4 es Saturno, en Escorpio y en Casa 2. La base interna tiende a organizarse desde los recursos y el valor propio, con la cualidad receptiva y emocional de Escorpio.
+
+Tu mundo interior vive las experiencias a gran escala. Cuando algo toca tu base emocional, todo puede expandirse muchísimo por dentro. Existe una necesidad muy profunda de encontrar un lugar que realmente se sienta hogar, y muchas veces ningún espacio externo parece cubrir completamente esa necesidad. Cuando aparece inseguridad emocional, la tendencia suele ser expandirte: buscar más sentido, más espacio o nuevas posibilidades donde sentir amplitud otra vez. Necesitas amplitud también dentro de tu vida íntima y emocional.
+
+\vspace{0.8cm}
+\Needspace{5\baselineskip}
+
+% ── 3. Casa 6 ─────────────────────────────────────────────────────────────────
+\subsection{3. Tu Casa 6 — Regulación cotidiana}
+
+\subsubsection*{Piscis en la cúspide — Regente: Neptuno}
+
+Tu cuerpo absorbe muchísimo del entorno. Muchas veces aparece cansancio extremo sin que exista una causa física completamente clara. La saturación emocional, el exceso de estímulos o los ambientes cargados se quedan dentro aunque no siempre seas consciente de ello. Necesitas momentos reales de silencio, retirada y vaciado emocional para volver a sentirte bien. Cuando no existen espacios para soltar lo acumulado, la fatiga empieza a crecer lentamente. Tu cuerpo suele necesitar descanso profundo con más frecuencia de la que imaginas. Te ayudan el silencio, el descanso, la suavidad y los espacios de retiro. En cambio, la saturación ambiental, el exceso de exposición o no disponer de momentos de descarga suele generar muchísima sobrecarga.
+
+El regente de la Casa 6 es Neptuno, en Capricornio y en Casa 3. La regulación cotidiana tiende a organizarse desde la comunicación y el entorno cercano, con la cualidad concreta y sostenida de Capricornio.
+
+Necesitas cierto bienestar real dentro de la vida cotidiana para sentirte bien físicamente. No suele ayudarte vivir únicamente desde la obligación. La belleza, el disfrute sencillo, la armonía o sentir comodidad en el entorno tienen muchísimo impacto sobre tu energía. Cuando el día a día se vuelve demasiado frío, mecánico o puramente productivo, el cuerpo empieza a vaciarse lentamente. Necesitas que exista algo agradable, humano y habitable dentro de la rutina para poder sostenerla de verdad.
+
+\vspace{0.8cm}
+\Needspace{5\baselineskip}
+
+% ── 4. Integración ────────────────────────────────────────────────────────────
+\subsection{4. Integración — Cómo funcionan las tres capas juntas}
+
+Tu Luna en Sagitario muestra cómo reaccionas emocionalmente cuando algo te afecta.
+
+Es el primer movimiento: lo que aparece antes de que puedas ordenarlo, explicarlo o decidir qué hacer con ello.
+
+Después, esa emoción busca un lugar donde apoyarse. Ahí entra tu Casa 4, con Capricornio en la cúspide: la parte de ti que necesita sentir base, refugio y seguridad interna.
+
+Si esa base está disponible, lo que sientes puede moverse con más facilidad.
+Si no lo está, la emoción se queda más tiempo en estado de alerta.
+
+Y lo que no encuentra apoyo interno termina llegando al cuerpo. Ahí entra tu Casa 6, con Piscis en la cúspide: tus hábitos, tu energía diaria, tu descanso y la forma en que el cuerpo sostiene lo que vives.
+
+Por eso, cuando algo se desordena emocionalmente, no se queda solo en lo emocional. Puede acabar apareciendo como cansancio, pérdida de ritmo, dificultad para descansar o sensación de no poder sostener el día con la misma energía.
+
+En tu caso, las tres capas tienen elementos distintos: Fuego en la Luna, Tierra en la Casa 4 y Agua en la Casa 6.
+
+Esto significa que tu emoción, tu base interna y tu cuerpo no siempre piden lo mismo.
+
+Lo que te ayuda emocionalmente puede no ser lo que tu cuerpo necesita ese día. Lo que te da seguridad interna puede no coincidir con el ritmo que sostiene tu rutina.
+
+Por eso es importante no buscar una única respuesta para todo. A veces una parte de ti necesita expresión, otra necesita refugio y otra necesita descanso, orden o movimiento.
+
+Además, Júpiter en la Casa 4 influye directamente en tu sensación de base interna.
+
+Cuando buscas seguridad, refugio o estabilidad emocional profunda, esa energía ya está presente ahí.
+
+Por eso tu forma de sentir hogar, intimidad y raíz no depende solo del signo de la Casa 4. También está marcada por lo que esos planetas activan dentro de ti.
+
+Además, Venus en la Casa 6 influye en cómo tu cuerpo sostiene la vida cotidiana.
+
+No se trata solo de hábitos o rutina. Se trata de cómo organizas tu energía, cómo respondes al cansancio y qué ocurre cuando el cuerpo empieza a pedir ajuste.
+
+Esos planetas muestran qué tipo de fuerza, sensibilidad o tensión entra en tu regulación diaria.
+
+Los aspectos de apoyo con Lilith, Mercurio y Neptuno facilitan la regulación emocional.
+
+Cuando algo te afecta, existe más posibilidad de encontrar un recurso interno, una vía de expresión o un punto de estabilidad desde el que recomponerte.
+
+Eso no significa que no haya intensidad emocional. Significa que tienes más caminos disponibles para volver a sostenerte.
+
+Lo más difícil no suele ser que una sola parte se altere.
+
+Lo más difícil aparece cuando las tres capas se mueven al mismo tiempo:
+la Luna en Sagitario, con su forma concreta de sentir;
+la Casa 4 en Capricornio, con su necesidad de base y seguridad interna;
+y la Casa 6 en Piscis, con el cuerpo intentando sostenerlo todo en la vida diaria.
+
+Cuando esto ocurre, puedes notar que no sabes por dónde empezar: emocionalmente hay activación, internamente falta suelo y el cuerpo empieza a mostrar cansancio, tensión o pérdida de ritmo.
+
+El trabajo no consiste en resolverlo todo a la vez.
+
+Consiste en encontrar la primera capa disponible: una emoción que pueda expresarse, un entorno que pueda darte más seguridad, o una acción corporal sencilla que te ayude a volver poco a poco a la estabilidad.
+
+\vspace{0.8cm}
+\Needspace{5\baselineskip}
+
+% ── 5. Sostén y desregulación ─────────────────────────────────────────────────
+\subsection{5. Sostén y desregulación}
+
+Tu Luna en Sagitario se desregula cuando lo que sientes no encuentra salida.
+
+Puede ser porque no puedes expresarlo, porque no hay espacio para moverte, porque el entorno no lo recibe o porque intentas sostenerlo demasiado tiempo dentro.
+
+No siempre hace falta que ocurra algo muy intenso.
+
+A veces basta con acumular durante demasiado tiempo una emoción que no ha tenido lugar, palabra, movimiento o descanso.
+
+Tu Casa 4 con Capricornio pierde estabilidad cuando dejas de sentir base interna.
+
+No siempre tiene que haber un conflicto claro.
+
+A veces basta con que cambie el clima emocional del entorno, con que una relación cercana se tense, con que no puedas descansar de verdad o con que el espacio íntimo deje de sentirse seguro.
+
+Cuando eso ocurre, no solo cambia el ánimo. Cambia la sensación de tener suelo por dentro.
+
+Tu Casa 6 con Piscis muestra la desregulación en el cuerpo y en la vida cotidiana.
+
+Puede aparecer como cansancio, pérdida de ritmo, tensión física, sueño menos reparador o dificultad para sostener hábitos que normalmente sí puedes sostener.
+
+Muchas veces el cuerpo avisa antes de que puedas explicar qué está pasando.
+
+Cuando el cuerpo empieza a perder continuidad, conviene mirar también qué emoción no ha encontrado salida y qué parte de tu base interna ha dejado de sentirse segura.
+
+Los momentos más difíciles aparecen cuando las tres capas se mueven a la vez.
+
+La Luna en Sagitario se activa.
+La Casa 4 en Capricornio deja de sentirse como base.
+Y la Casa 6 en Piscis empieza a mostrarlo en el cuerpo, el descanso o la rutina.
+
+Ahí puedes sentir que no sabes por dónde empezar.
+
+No se trata de resolverlo todo a la vez.
+Se trata de encontrar la primera capa disponible: expresar algo, descansar, ordenar una pequeña rutina, moverte, pedir espacio o recuperar una mínima sensación de seguridad.
+
+Los aspectos de apoyo con Lilith y Mercurio funcionan como recursos cuando consigues recuperar un primer punto de estabilidad.
+
+No eliminan la desregulación, pero pueden ayudarte a reorganizarte antes.
+
+Cuando aparece una mínima base, esos aspectos facilitan que no te quedes dentro de lo que se activó.
+
+\vspace{0.8cm}
+\Needspace{5\baselineskip}
+
+% ── 6. Orientación final ──────────────────────────────────────────────────────
+\subsection{6. Orientación final}
+
+\subsubsection*{Qué observar}
+
+Empieza observando qué situaciones activan tu Luna en Sagitario.
+
+No para corregirte.
+No para controlar lo que sientes.
+
+Solo para reconocer antes cómo empieza la activación.
+
+¿Qué ocurre justo antes de sentirte que la situación te sobrepasa?
+¿Qué cambia en el entorno, en los vínculos o en el ritmo diario?
+
+Muchas veces la desregulación no empieza en el momento del desborde. Empieza bastante antes: cuando tu Casa 4 en Capricornio deja de sentirse segura o cuando tu Casa 6 en Piscis pierde continuidad y el cuerpo empieza a acumular tensión.
+
+\subsubsection*{Qué puede desregularte}
+
+En tu caso, la desregulación suele seguir una secuencia.
+
+Primero, tu Luna en Sagitario busca algo que necesita para estabilizarse y no lo encuentra.
+
+Después, tu Casa 4 deja de funcionar como base interna. Puede ser por tensión emocional, por cambios en el entorno, por exceso de carga o simplemente porque llevas demasiado tiempo sosteniendo más de lo que puedes absorber.
+
+Y finalmente, la Casa 6 en Piscis empieza a mostrarlo en el cuerpo:
+menos energía,
+menos descanso,
+menos capacidad de sostener hábitos o continuidad.
+
+Cuando las tres capas coinciden, puedes sentir que todo cuesta más de lo habitual aunque desde fuera no parezca estar ocurriendo nada tan grave.
+
+\subsubsection*{Qué te estructura y sostiene}
+
+Lo que te ayuda a regularte no tiene que ser enorme.
+
+De hecho, muchas veces lo más importante son cosas pequeñas que se sostienen en el tiempo.
+
+Una mínima rutina corporal.
+Un espacio de descanso real.
+Un entorno que se sienta más seguro.
+Una forma de expresar lo que ocurre antes de acumularlo demasiado.
+
+Cuando tu Casa 4 siente suelo, tu Luna necesita menos esfuerzo para estabilizarse.
+
+Y cuando tu Casa 6 mantiene cierta continuidad —aunque sea pequeña— el cuerpo puede absorber mejor lo que emocionalmente estás atravesando.
+
+No se trata de no sentir.
+Se trata de que lo que sientes no tenga que terminar descargándose siempre en agotamiento, tensión o pérdida de equilibrio.
+
+\subsubsection*{Práctica}
+
+Tu regulación necesita vaciado emocional.
+
+Dedica un momento del día a cerrar lo absorbido:
+silencio,
+respiración,
+una ducha consciente,
+música tranquila,
+o simplemente estar sin estímulos.
+
+No es una pausa superficial.
+Es una forma de ayudarte a soltar lo que has ido acumulando.
+
+Cuando no existe ese cierre, el cuerpo sigue cargando emociones incluso mientras intenta descansar.
+
+\Needspace{8\baselineskip}
+\vspace{0.6cm}
+
+\begin{center}
+{\small\itshape\color{grisai}
+La astrología se usa aquí como lenguaje simbólico de observación, no como definición de la persona.\\
+Lo que tienes delante es un mapa de posibilidades, no un destino fijo.
+}
+\end{center}
+
+\end{document}

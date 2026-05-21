@@ -1,0 +1,340 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{tgpagella}
+\usepackage[spanish]{babel}
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage[parfill]{parskip}
+\usepackage[expansion=false]{microtype}
+\usepackage{hyperref}
+\usepackage{setspace}
+\usepackage{needspace}
+\usepackage{graphicx}
+\usepackage[table]{xcolor}
+\usepackage{booktabs}
+\usepackage{array}
+\widowpenalty=10000
+\clubpenalty=10000
+\displaywidowpenalty=10000
+
+\geometry{top=3.0cm,bottom=3.0cm,left=3.5cm,right=3.5cm}
+\setlength{\parskip}{0.65em}
+\setlength{\parindent}{0em}
+
+\definecolor{azulai}{RGB}{30,80,140}
+\definecolor{doradoai}{RGB}{140,90,0}
+\definecolor{grisai}{RGB}{70,70,70}
+
+\titleformat{\section}{\Large\bfseries\color{azulai}}{}{0em}{}[{\color{azulai}\titlerule[0.5pt]\nopagebreak[4]}]
+\titlespacing*{\section}{0pt}{1.8em}{0.8em}
+\titleformat{\subsection}{\large\bfseries\color{doradoai}}{}{0em}{}[{\nopagebreak[4]}]
+\titlespacing*{\subsection}{0pt}{1.4em}{0.5em}
+\titleformat{\subsubsection}{\normalsize\bfseries\color{grisai}}{}{0em}{}[{\nopagebreak[4]}]
+\titlespacing*{\subsubsection}{0pt}{1.0em}{0.3em}
+
+\pagestyle{fancy}\fancyhf{}
+\rhead{\textcolor{grisai}{\small Izas — Arquitectura Interna}}
+\lhead{\textcolor{grisai}{\small Casas por signo}}
+\cfoot{\textcolor{grisai}{\small\thepage}}
+\renewcommand{\headrulewidth}{0.3pt}
+
+\hypersetup{colorlinks=true,linkcolor=azulai,urlcolor=azulai}
+\setstretch{1.45}
+\tolerance=1500
+\emergencystretch=4em
+
+\begin{document}
+
+% ── Portada ──────────────────────────────────────────────────────────────────
+\begin{titlepage}
+  \centering
+  \vspace*{1.5cm}
+  {\Huge\bfseries\color{azulai} Casas por signo}\\[0.5cm]
+  {\large\color{grisai} Arquitectura Interna}\\[0.3cm]
+  {\small\itshape\color{grisai} Organización de la vida: ejes, distribución e interceptaciones}\\[2cm]
+  {\huge\color{doradoai} Izas}\\[1.5cm]
+  {\Large 16/04/1979 \quad 04:20}\\[0.3cm]
+  {\Large Pamplona, España}\\[0.3cm]
+  {\normalsize Lat: 42.8157° \quad Lon: -1.6522° \quad UTC+02:00}\\[0.3cm]
+  {\normalsize Ascendente: Acuario 6°20' \quad
+    MC: Escorpio 29°12'}\\[2cm]
+  \begin{tabular}{ll}
+    \textbf{ASC (Casa 1):}  & Acuario 6°20' \\
+    \textbf{DSC (Casa 7):}  & Leo 6°20' \\
+    \textbf{MC (Casa 10):}  & Escorpio 29°12' \\
+    \textbf{IC (Casa 4):}   & Tauro 29°12' \\
+  \end{tabular}\\[2cm]
+  \vfill
+  {\small Generado el 19/05/2026}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+\begin{center}
+\includegraphics[width=0.88\textwidth]{rueda_casas.png}
+\end{center}
+
+\newpage
+
+% ── Datos de referencia ───────────────────────────────────────────────────────
+\section{Datos de referencia}
+
+\begin{center}
+\begin{tabular}{rllll}
+  \toprule
+  \textbf{Casa} & \textbf{Área} & \textbf{Signo} & \textbf{Cúspide} & \textbf{Planetas} \\
+  \midrule
+  1 & Identidad y presencia & Acuario & 6°20' & Venus \\
+  2 & Recursos y seguridad & Piscis & 25°31' & Sol, Mercurio, Marte \\
+  3 & Comunicación y entorno cercano & Tauro & 3°11' & — \\
+  4 & Base y hogar & Tauro & 29°12' & — \\
+  5 & Expresión y creatividad & Géminis & 20°07' & — \\
+  6 & Vida cotidiana y salud & Cáncer & 10°36' & Júpiter \\
+  7 & Vínculos y relaciones & Leo & 6°20' & Saturno \\
+  8 & Transformación y profundidad & Virgo & 25°31' & Plutón \\
+  9 & Horizonte y expansión & Escorpio & 3°11' & Urano \\
+  10 & Dirección y proyección & Escorpio & 29°12' & Luna \\
+  11 & Redes y colectivo & Sagitario & 20°07' & Neptuno \\
+  12 & Mundo interior & Capricornio & 10°36' & — \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+\vspace{0.3cm}\textbf{Signos interceptados:} Aries (Casa 2); Libra (Casa 8)
+
+\newpage
+
+% ── Interpretación ────────────────────────────────────────────────────────────
+\section{Interpretación — Arquitectura Interna}
+
+\begin{center}
+{\small\itshape
+No se trata de describir la personalidad.////
+Se trata de mostrar cómo está organizada la vida y qué implica esa organización.
+}
+\end{center}
+
+\vspace{0.5cm}
+\Needspace{5\baselineskip}
+
+% ── 1. Estructura general ──────────────────────────────────────────────────────
+\needspace{3\baselineskip}
+\subsection{1. Estructura general de casas}
+
+Los planetas se distribuyen de forma bastante equilibrada entre las casas 1–6 (5) y las casas 7–12 (5). Esto sugiere que tu vida necesita atender tanto lo íntimo y cotidiano como lo vincular, social o visible.
+
+Casas con mayor concentración de planetas:
+Casa 2 (Recursos y seguridad): Sol, Mercurio, Marte — área especialmente importante
+
+Las casas con más planetas señalan áreas de vida donde se concentra mucha atención, movimiento interno y aprendizaje. No significa que sean las únicas importantes, pero sí que suelen tener más peso en tu manera de vivir, decidir y organizarte.
+
+\vspace{0.5cm}
+\Needspace{5\baselineskip}
+
+% ── 2. Ejes principales ───────────────────────────────────────────────────────
+\needspace{3\baselineskip}
+\subsection{2. Ejes principales}
+
+\subsubsection*{Ascendente — Acuario (6°20')}
+Con Ascendente en Acuario, tiendes a entrar en la vida desde una mirada propia y poco convencional. Necesitas libertad para ser quien eres y espacio para hacer las cosas a tu manera.
+
+Las demás personas suelen percibirte como una persona independiente, original o difícil de encajar en categorías simples. A veces puede costarte conectar con lo emocional más inmediato o sentirte cómoda en dinámicas demasiado rígidas.
+
+\subsubsection*{Descendente — Leo}
+Con Descendente en Leo, tiendes a buscar relaciones vivas, expresivas y con presencia emocional. Necesitas sentir que hay calidez, atención y reconocimiento mutuo dentro del vínculo.
+
+Suele haber atracción hacia personas creativas, generosas o con una presencia fuerte, aunque a veces puede aparecer demasiada dependencia de la validación afectiva del otro lado.
+
+\subsubsection*{Medio Cielo — Escorpio (29°12')}
+Con Medio Cielo en Escorpio, sueles orientarte hacia procesos profundos, intensos o transformadores. Muchas veces existe necesidad de trabajar con temas que tengan peso emocional o capacidad de cambio real.
+
+Aquí suele haber tendencia a implicarte profundamente en lo que haces, aunque a veces también puede aparecer dificultad para tomar distancia o relajarte dentro del ámbito profesional.
+
+\subsubsection*{Fondo del Cielo — Tauro}
+Con Fondo del Cielo en Tauro, tu base interior suele necesitar estabilidad, calma y sensación de continuidad. Muchas veces lo que más te sostiene es aquello que permanece y puede mantenerse en el tiempo.
+
+Aquí suele haber necesidad de seguridad concreta y de espacios tranquilos y previsibles. Muchas veces recuperas energía en contacto con lo simple, lo estable y aquello que transmite sensación de solidez.
+
+\subsubsection*{La relación entre los ejes}
+Ascendente (Acuario, Aire) y Medio Cielo (Escorpio, Agua) están en elementos que pueden crear tensión. Puede haber diferencia entre cómo entras en las situaciones y lo que necesitas construir o mostrar hacia fuera. A veces esto hace que las demás personas perciban una parte de ti mientras tu dirección profunda va por otro lugar.
+
+\vspace{0.5cm}
+\Needspace{5\baselineskip}
+
+% ── 3. Signos por casas ───────────────────────────────────────────────────────
+\needspace{3\baselineskip}
+\subsection{3. Distribución de signos por casas}
+
+\subsubsection*{Casa 1 — Identidad y presencia · Acuario}
+La Casa 1 habla de cómo entras en la vida y de la impresión que sueles generar de forma espontánea. Tiene relación con la presencia, el cuerpo y la manera en que tiendes a posicionarte cuando algo comienza.
+
+Con Acuario en la cúspide, esta área suele vivirse de una manera distinta a la habitual. Necesitas libertad, espacio propio o una forma personal de hacer las cosas.
+
+Aquí suele haber necesidad de independencia y mirada amplia, aunque a veces puede costar conectar con lo emocional o con lo más inmediato de este ámbito.
+
+Planetas en esta casa: Venus. Este planeta añade una capa importante a la manera en que vives esta área.
+
+\subsubsection*{Casa 2 — Recursos y seguridad · Piscis}
+La Casa 2 muestra tu relación con la seguridad, los recursos y aquello que necesitas para sentir estabilidad. Aquí aparecen tanto lo material como la sensación interna de sostén.
+
+Con Piscis en la cúspide, esta área suele vivirse de forma sensible, abierta y cambiante. Tiendes a percibir muchas capas a la vez y a dejarte afectar fácilmente por el ambiente o por lo que ocurre alrededor.
+
+Aquí suele haber empatía, imaginación y capacidad de adaptación, aunque a veces puede costar poner límites claros o dar forma concreta a lo que sientes.
+
+Planetas en esta casa: Sol, Mercurio, Marte. La presencia de varios planetas hace que esta área tenga mucho peso en tu carta. Suele ser un lugar donde se concentran aprendizajes, decisiones y movimiento interno.
+
+\subsubsection*{Casa 3 — Comunicación y entorno cercano · Tauro}
+La Casa 3 se relaciona con la comunicación cotidiana, el pensamiento habitual y el entorno cercano. Habla de cómo procesas lo inmediato y de la manera en que intercambias información con lo que te rodea.
+
+Con Tauro en la cúspide, esta parte de la vida necesita tiempo para asentarse. No sueles moverte deprisa aquí, pero cuando algo echa raíces puede mantenerse durante mucho tiempo.
+
+La estabilidad tiene mucha importancia en este ámbito, aunque a veces puede costar hacer cambios incluso cuando ya serían necesarios.
+
+\subsubsection*{Casa 4 — Base y hogar · Tauro}
+La Casa 4 habla de la base emocional y del lugar interno desde el que necesitas sostenerte. Tiene relación con el hogar, las raíces, la intimidad y aquello que te ayuda a sentir refugio.
+
+Con Tauro en la cúspide, esta parte de la vida necesita tiempo para asentarse. No sueles moverte deprisa aquí, pero cuando algo echa raíces puede mantenerse durante mucho tiempo.
+
+La estabilidad tiene mucha importancia en este ámbito, aunque a veces puede costar hacer cambios incluso cuando ya serían necesarios.
+
+\subsubsection*{Casa 5 — Expresión y creatividad · Géminis}
+La Casa 5 muestra cómo tiendes a expresarte cuando hay espacio para hacerlo libremente. Aquí aparece la creatividad, el disfrute, el impulso de crear y aquello que nace desde ti sin obligación.
+
+Con Géminis en la cúspide, esta área suele vivirse desde la curiosidad, el movimiento y la necesidad de variedad. Tiendes a aprender rápido y a conectar fácilmente con distintas ideas o personas.
+
+Aquí suele haber agilidad mental y facilidad para adaptarte, aunque mantener una única dirección durante mucho tiempo puede hacerse más difícil.
+
+\subsubsection*{Casa 6 — Vida cotidiana y salud · Cáncer}
+La Casa 6 se relaciona con la vida cotidiana, los hábitos y la manera en que cuidas tu energía en el día a día. También habla de la relación con el trabajo cotidiano y con aquello que ayuda a sostener equilibrio y continuidad.
+
+Con Cáncer en la cúspide, esta parte de la vida suele vivirse de forma muy sensible y personal. Necesitas sentir seguridad emocional antes de abrirte o avanzar realmente en este ámbito.
+
+Aquí tiene mucha importancia la protección, el cuidado y la sensación de pertenencia, aunque a veces puedes cerrarte si no sientes suficiente confianza.
+
+Planetas en esta casa: Júpiter. Este planeta añade una capa importante a la manera en que vives esta área.
+
+\subsubsection*{Casa 7 — Vínculos y relaciones · Leo}
+La Casa 7 habla de los vínculos cercanos y de lo que aparece cuando entras en relación directa con otras personas. Aquí se desarrollan los acuerdos, las asociaciones y las dinámicas de espejo.
+
+Con Leo en la cúspide, esta área suele cobrar fuerza cuando puedes expresarte con creatividad y sentir que lo que haces tiene valor o impacto. Suele haber bastante energía en este ámbito cuando puedes mostrarte con autenticidad.
+
+Aquí puede aparecer necesidad de reconocimiento o de sentirte visto, aunque a veces el miedo a no recibir respuesta puede hacer que te retraigas más de lo que parece.
+
+Planetas en esta casa: Saturno. Este planeta añade una capa importante a la manera en que vives esta área.
+
+\subsubsection*{Casa 8 — Transformación y profundidad · Virgo}
+La Casa 8 se relaciona con los procesos profundos de cambio y transformación. Habla de lo compartido, de lo intenso y de aquello que suele remover capas internas importantes.
+
+Con Virgo en la cúspide, esta área suele vivirse desde la observación, el detalle y la necesidad de mejorar las cosas poco a poco. Tiendes a fijarte fácilmente en lo que podría ajustarse o hacerse de una manera más precisa.
+
+Aquí suele haber responsabilidad y atención práctica, aunque a veces puedes exigirte más de lo que realmente puedes sostener.
+
+Planetas en esta casa: Plutón. Este planeta añade una capa importante a la manera en que vives esta área.
+
+\subsubsection*{Casa 9 — Horizonte y expansión · Escorpio}
+La Casa 9 muestra la necesidad de ampliar mirada y abrir horizonte. Tiene relación con el aprendizaje profundo, la búsqueda de sentido, los viajes y aquello que expande tu manera de comprender la vida.
+
+Con Escorpio en la cúspide, esta área suele vivirse con intensidad y profundidad. Suele haber dificultad para vivir superficialmente lo que ocurre aquí: cuando algo importa, suele implicar una implicación real.
+
+Aquí suelen aparecer procesos de transformación importantes, aunque a veces también puede haber necesidad de control o dificultad para soltar.
+
+Planetas en esta casa: Urano. Este planeta añade una capa importante a la manera en que vives esta área.
+
+\subsubsection*{Casa 10 — Dirección y proyección · Escorpio}
+La Casa 10 habla de dirección, proyección y construcción visible. Aquí aparece la manera en que buscas desarrollar tu camino y el lugar que deseas ocupar hacia afuera.
+
+Con Escorpio en la cúspide, esta área suele vivirse con intensidad y profundidad. Suele haber dificultad para vivir superficialmente lo que ocurre aquí: cuando algo importa, suele implicar una implicación real.
+
+Aquí suelen aparecer procesos de transformación importantes, aunque a veces también puede haber necesidad de control o dificultad para soltar.
+
+Planetas en esta casa: Luna. Este planeta añade una capa importante a la manera en que vives esta área.
+
+\subsubsection*{Casa 11 — Redes y colectivo · Sagitario}
+La Casa 11 se relaciona con los grupos, las redes y los proyectos compartidos. Habla de cómo te vinculas con lo colectivo y de aquello que deseas construir junto a otras personas.
+
+Con Sagitario en la cúspide, esta área necesita amplitud, sentido y sensación de crecimiento. Tiendes a moverte mejor cuando sientes que algo te abre horizonte o te permite avanzar más allá de lo conocido.
+
+Aquí suele haber entusiasmo y necesidad de expansión, aunque a veces puede costar concretar o sostener todo lo que se inicia.
+
+Planetas en esta casa: Neptuno. Este planeta añade una capa importante a la manera en que vives esta área.
+
+\subsubsection*{Casa 12 — Mundo interior · Capricornio}
+La Casa 12 habla del mundo interior y de los procesos que necesitan silencio, retiro o más tiempo para poder comprenderse. Aquí aparecen muchas veces lo inconsciente, el descanso y las partes más difíciles de ver con claridad inmediata.
+
+Con Capricornio en la cúspide, esta área suele vivirse con responsabilidad y visión a largo plazo. Tiendes a construir despacio, paso a paso, buscando resultados sólidos y duraderos.
+
+Aquí suele haber constancia y capacidad de esfuerzo, aunque a veces puedes cargar con demasiado peso o sentir que nunca es suficiente.
+
+
+
+\vspace{0.5cm}
+\Needspace{5\baselineskip}
+
+% ── 4. Signos interceptados ───────────────────────────────────────────────────
+\needspace{3\baselineskip}
+\subsection{4. Signos interceptados}
+
+\subsubsection*{Aries interceptado — Casa 2}
+Aries está interceptado: la iniciativa directa, la acción rápida y la capacidad de empezar sin tenerlo todo claro pueden no salir de forma inmediata en ti. Es posible que esa fuerza exista, pero que necesite más consciencia para poder expresarse.
+
+En el área donde se encuentra Aries, puede costarte tomar impulso al principio o actuar desde tu propio deseo sin esperar una señal externa. Cuando esta energía se integra, suele aparecer más capacidad para decidir, iniciar y ocupar tu lugar con más claridad.
+
+\subsubsection*{Libra interceptado — Casa 8}
+Libra está interceptado: el equilibrio, la reciprocidad y la capacidad de crear acuerdos pueden no aparecer de forma espontánea en ti. Es posible que te cueste reconocer qué lugar ocupa la otra persona sin perder tu propio centro.
+
+En el área donde se encuentra Libra, puede costarte negociar, pedir equilibrio o sostener vínculos desde una medida justa. Cuando esta energía se integra, suele aparecer más capacidad de diálogo, cooperación y relación consciente.
+
+\subsubsection*{Signos duplicados}
+Como consecuencia de las interceptaciones, los signos Escorpio y Tauro aparecen en dos cúspides consecutivas. Esto puede hacer que dos áreas de tu vida se expresen desde una energía parecida, como si compartieran una misma manera de empezar, reaccionar o tomar forma.
+
+
+
+\vspace{0.5cm}
+\Needspace{5\baselineskip}
+
+% ── 5. Integración ────────────────────────────────────────────────────────────
+\needspace{3\baselineskip}
+\subsection{5. Integración}
+
+Ascendente (Acuario, Aire) y Medio Cielo (Escorpio, Agua) están en elementos que pueden crear tensión. Puede haber diferencia entre cómo entras en las situaciones y lo que necesitas construir o mostrar hacia fuera. A veces esto hace que las demás personas perciban una parte de ti mientras tu dirección profunda va por otro lugar.
+
+La base interna (Tauro, IC) y la forma en que entras en la vida (Acuario, ASC) están en elementos que pueden crear tensión. Puede que lo que te sostiene por dentro no coincida del todo con la manera en que te muestras. Por eso puede ser importante darte tiempo para traducir lo interno hacia fuera sin forzarte a parecer de una forma que no respeta tu raíz.
+
+La Casa 2 (Recursos y seguridad, Piscis) concentra 3 planetas (Sol, Mercurio, Marte). Esta área tiene mucho peso en tu carta y suele pedir atención especial. Cuando esta parte de la vida está cuidada, puede darte mucha fuerza. Cuando se carga demasiado, también puede absorber más energía de la que parece.
+
+Los signos interceptados (Aries, Libra) señalan cualidades que están en ti, pero que quizá no salen de forma inmediata. No están ausentes: necesitan más consciencia, tiempo y práctica para poder expresarse con naturalidad en las áreas donde aparecen.
+
+\vspace{0.5cm}
+\Needspace{5\baselineskip}
+
+% ── 6. Orientación práctica ───────────────────────────────────────────────────
+\needspace{3\baselineskip}
+\subsection{6. Orientación práctica}
+
+\subsubsection*{Desde dónde empezar}
+El área con mayor concentración es la Casa 2 (Recursos y seguridad, Piscis). Puede ayudarte empezar por escuchar lo que sientes antes de exigirte una respuesta externa inmediata.
+
+\subsubsection*{Qué estructurar primero}
+La Casa 10 (Dirección y proyección, Escorpio) muestra una parte importante de tu orientación hacia fuera. Lo primero que puede necesitar estructura aquí es cuidar el sostén emocional que necesitas para avanzar sin agotarte por dentro. Sin esa claridad, puede haber mucha energía disponible pero poca dirección de salida.
+
+\subsubsection*{Qué evitar}
+Conviene evitar exigirte que tu forma de presentarte (Acuario) y tu manera de construir dirección (Escorpio) sean iguales. Son energías diferentes y pueden necesitar ritmos, decisiones y cuidados distintos. Los signos interceptados (Aries, Libra) no conviene ignorarlos. Son cualidades disponibles en ti, pero pueden necesitar práctica consciente para no quedar ocultas o poco utilizadas.
+
+\vspace{0.6cm}
+Si no atiendes la distribución de las casas, las áreas más cargadas pueden absorber demasiada energía, mientras otras partes de la vida quedan poco cuidadas. La clave no es hacerlo todo con la misma intensidad, sino reconocer dónde hay más peso y qué zonas necesitan una atención más sencilla, clara y constante.
+
+\vspace{0.5cm}
+\Needspace{5\baselineskip}
+\begin{center}
+{\small\itshape\color{grisai}
+La astrología se usa aquí como lenguaje simbólico de observación, no como definición de la persona.\\
+El sistema es una aproximación funcional, no un diagnóstico.
+}
+\end{center}
+
+\end{document}
