@@ -1,0 +1,23 @@
+# PDFs
+*.pdf
+
+# LaTeX
+*.aux
+*.log
+*.out
+*.toc
+*.tex
+
+# Imágenes generadas
+*_rueda.png
+
+# Python cache
+__pycache__/
+*.pyc
+
+# VSCode
+.vscode/
+
+# Entornos
+venv/
+.env
