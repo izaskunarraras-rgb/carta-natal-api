@@ -1961,35 +1961,17 @@ def generar_carta_api(nombre, fecha, hora, lugar):
 
         dibujar_rueda(carta, nombre, ruta_png)
 
-        # ── LATEX ────────────────────────────────────────────
 
-        latex = generar_latex_ai(
-            carta,
-            nombre,
+        # ── PDF REPORTLAB ─────────────────────────────────────
+
+        generar_pdf_reportlab_base(
+            ruta_pdf, carta, nombre,
             año, mes, dia,
             hora_num, minuto_num,
-            lugar,
-            lat, lon,
-            tz_name,
+            lugar, lat, lon, tz_name,
             ruta_png
         )
 
-        with open(ruta_tex, "w", encoding="utf-8") as f:
-            f.write(latex)
-
-        # ── PDF ──────────────────────────────────────────────
-
-        tex_nombre = os.path.basename(ruta_tex)
-
-        for _ in range(2):
-
-            subprocess.run(
-                ["pdflatex", "-interaction=nonstopmode", tex_nombre],
-                capture_output=True,
-                text=True,
-                timeout=90,
-                cwd=dir_sal
-            )
 
         # ── RESPUESTA ────────────────────────────────────────
 
