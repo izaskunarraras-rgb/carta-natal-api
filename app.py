@@ -4,14 +4,15 @@ import os
 
 app = Flask(__name__)
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 @app.route("/")
 def home():
     return "API carta natal funcionando"
 
 @app.route("/descargas/<path:nombre_archivo>")
 def descargar_pdf(nombre_archivo):
-    carpeta = os.path.dirname(os.path.abspath(__file__))
-    return send_from_directory(carpeta, nombre_archivo, as_attachment=True)
+    return send_from_directory(BASE_DIR, nombre_archivo, as_attachment=True)
 
 @app.route("/generar-carta", methods=["POST"])
 def generar_carta():
