@@ -6,4 +6,4 @@ timezonefinder
 geopy
 matplotlib
 numpy
-weasyprint
+reportlab
