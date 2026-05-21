@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python3
 """
 Carta Natal Base — Arquitectura Interna
@@ -1746,6 +1747,168 @@ Arquitectura Interna
 
 # ─── PROGRAMA PRINCIPAL ───────────────────────────────────────────────────────
 
+def generar_pdf_reportlab_base(
+    ruta_pdf, carta, nombre, año, mes, dia, hora, minuto,
+    ciudad, lat, lon, tz_name, ruta_rueda
+):
+    from reportlab.lib.pagesizes import A4
+    from reportlab.platypus import (
+        SimpleDocTemplate, Paragraph, Spacer, Image, PageBreak
+    )
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib.enums import TA_CENTER
+    from reportlab.lib.units import cm
+    from reportlab.lib import colors
+
+    planetas = carta["planetas"]
+    asc = carta["asc"]
+    mc = carta["mc"]
+
+    conteo_elem = analizar_elementos(planetas, asc["signo"], hora_conocida=True)
+    conteo_modal = analizar_modalidades(planetas)
+
+    vision = texto_vision_general(carta, conteo_elem, conteo_modal)
+    ejes = texto_ejes_principales(carta)
+
+    sol = planetas.get("Sol", {})
+    luna = planetas.get("Luna", {})
+
+    fecha_str = f"{dia:02d}/{mes:02d}/{año}"
+    hora_str = f"{hora:02d}:{minuto:02d}"
+
+    doc = SimpleDocTemplate(
+        ruta_pdf,
+        pagesize=A4,
+        rightMargin=2.5*cm,
+        leftMargin=2.5*cm,
+        topMargin=2.5*cm,
+        bottomMargin=2.5*cm
+    )
+
+    estilos = getSampleStyleSheet()
+
+    titulo = ParagraphStyle(
+        "TituloAI",
+        parent=estilos["Title"],
+        fontName="Times-Bold",
+        fontSize=28,
+        leading=34,
+        alignment=TA_CENTER,
+        textColor=colors.HexColor("#1E508C"),
+        spaceAfter=20
+    )
+
+    subtitulo = ParagraphStyle(
+        "SubtituloAI",
+        parent=estilos["Heading2"],
+        fontName="Times-Bold",
+        fontSize=17,
+        leading=22,
+        textColor=colors.HexColor("#8C5A00"),
+        spaceBefore=18,
+        spaceAfter=8
+    )
+
+    cuerpo = ParagraphStyle(
+        "CuerpoAI",
+        parent=estilos["BodyText"],
+        fontName="Times-Roman",
+        fontSize=11,
+        leading=16,
+        spaceAfter=10
+    )
+
+    centro = ParagraphStyle(
+        "CentroAI",
+        parent=cuerpo,
+        alignment=TA_CENTER
+    )
+
+    contenido = []
+
+    # Portada
+    contenido.append(Spacer(1, 2*cm))
+    contenido.append(Paragraph("Carta Natal Base", titulo))
+    contenido.append(Paragraph("Arquitectura Interna", centro))
+    contenido.append(Spacer(1, 1*cm))
+    contenido.append(Paragraph(f"<b>{nombre}</b>", centro))
+    contenido.append(Paragraph(f"{fecha_str} · {hora_str}", centro))
+    contenido.append(Paragraph(ciudad, centro))
+    contenido.append(Spacer(1, 0.5*cm))
+    contenido.append(Paragraph(
+        f"Ascendente: {asc['signo']} {grado_a_dms(asc['grado'])}",
+        centro
+    ))
+    contenido.append(PageBreak())
+
+    # Introducción
+    contenido.append(Paragraph("Introducción", subtitulo))
+    contenido.append(Paragraph(
+        "Esta carta natal base no busca definir quién eres. "
+        "La astrología se utiliza aquí como lenguaje de observación: "
+        "una forma de mirar cómo se organiza tu energía, qué registros aparecen "
+        "con más facilidad y qué dinámicas pueden influir en tu manera de vivir, "
+        "sostenerte y relacionarte con el entorno.",
+        cuerpo
+    ))
+    contenido.append(Paragraph(
+        "No se trata de una lectura predictiva ni de una identidad fija. "
+        "Es un mapa inicial de orientación.",
+        cuerpo
+    ))
+
+    contenido.append(PageBreak())
+
+    # Rueda
+    contenido.append(Paragraph("Carta Natal", subtitulo))
+    contenido.append(Image(ruta_rueda, width=13*cm, height=13*cm))
+    contenido.append(Spacer(1, 0.5*cm))
+
+    contenido.append(Paragraph("Posiciones principales", subtitulo))
+    contenido.append(Paragraph(
+        f"Sol en {sol.get('signo','')} — Casa {sol.get('casa','')}<br/>"
+        f"Luna en {luna.get('signo','')} — Casa {luna.get('casa','')}<br/>"
+        f"Ascendente {asc.get('signo','')}<br/>"
+        f"Medio Cielo en {mc.get('signo','')}",
+        centro
+    ))
+
+    contenido.append(PageBreak())
+
+    # Visión general
+    contenido.append(Paragraph("Visión general", subtitulo))
+    contenido.append(Paragraph(vision, cuerpo))
+
+    # Tres pilares
+    contenido.append(Paragraph("Los tres pilares", subtitulo))
+
+    contenido.append(Paragraph(f"Sol en {sol.get('signo','')}", subtitulo))
+    contenido.append(Paragraph(ejes["sol"], cuerpo))
+
+    contenido.append(Paragraph(f"Luna en {luna.get('signo','')}", subtitulo))
+    contenido.append(Paragraph(ejes["luna"], cuerpo))
+
+    contenido.append(Paragraph(f"Ascendente {asc.get('signo','')}", subtitulo))
+    contenido.append(Paragraph(ejes["asc"], cuerpo))
+
+    # Cierre
+    contenido.append(PageBreak())
+    contenido.append(Paragraph("Cierre", subtitulo))
+    contenido.append(Paragraph(
+        "Esta carta no busca definirte ni darte una identidad fija. "
+        "La astrología se utiliza aquí como lenguaje de observación: "
+        "una forma de mirar tendencias, ritmos y maneras de relacionarte con la vida.",
+        cuerpo
+    ))
+    contenido.append(Paragraph(
+        "La lectura completa no busca darte más información. "
+        "Busca ayudarte a entender cómo sostener tu vida sin romperte por dentro.",
+        cuerpo
+    ))
+
+    doc.build(contenido)
+
+
 def generar_carta_api(nombre, fecha, hora, lugar):
 
     print("Generando carta para:", nombre)
@@ -1978,16 +2141,13 @@ def main():
     print("  Compilando PDF...")
 
     try:
-        tex_nombre = os.path.basename(ruta_tex)
-
-        for _ in range(2):
-            resultado = subprocess.run(
-                ["pdflatex", "-interaction=nonstopmode", tex_nombre],
-                capture_output=True,
-                text=True,
-                timeout=90,
-                cwd=dir_sal
-            )
+        generar_pdf_reportlab_base(
+            ruta_pdf, carta, nombre,
+            año, mes, dia,
+            hora_num, minuto_num,
+            lugar, lat, lon, tz_name,
+            ruta_png
+        )
 
         if os.path.exists(ruta_pdf):
             print(f"  PDF generado: {ruta_pdf}")
