@@ -1979,7 +1979,7 @@ def generar_carta_api(nombre, fecha, hora, lugar):
 
             return {
                 "ok": True,
-                "pdf": ruta_pdf
+                "pdf": f"/descargas/{os.path.basename(ruta_pdf)}"
             }
 
         else:
