@@ -486,15 +486,48 @@ DINAMICA_GENERAL = {
 
 # ─── FUNCIONES DE CÁLCULO ────────────────────────────────────────────────────
 
+import time
+from geopy.geocoders import Nominatim
+from geopy.exc import GeocoderTimedOut
+
+
 def geocodificar(ciudad):
-    geolocator = Nominatim(user_agent="carta_natal_base_ai")
-    location = geolocator.geocode(ciudad, language="es")
 
-    if not location:
-        raise ValueError(f"No se pudo encontrar: {ciudad}")
+    geolocator = Nominatim(
+        user_agent="arquitectura_interna_astrologia_2026",
+        timeout=20
+    )
 
-    return location.latitude, location.longitude
+    for intento in range(5):
 
+        try:
+
+            print(f"Intento geocodificación {intento + 1}...")
+
+            location = geolocator.geocode(
+                ciudad,
+                language="es",
+                exactly_one=True
+            )
+
+            if location:
+
+                print("Lugar encontrado:")
+                print(location.address)
+
+                return location.latitude, location.longitude
+
+        except GeocoderTimedOut:
+
+            print("Timeout. Reintentando...")
+            time.sleep(3)
+
+        except Exception as e:
+
+            print("Error geocodificación:", e)
+            time.sleep(3)
+
+    raise ValueError(f"No se pudo encontrar: {ciudad}")
 
 def obtener_timezone(lat, lon):
     tf = TimezoneFinder()
@@ -576,12 +609,15 @@ def _chiron_kepler(jd):
 def calcular_carta(año, mes, dia, hora, minuto, lat, lon, tz_name):
 
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
     EPHE_PATH = os.path.join(BASE_DIR, "ephe")
+
+    print("EPHE_PATH:", EPHE_PATH)
+    print("EXISTE EPHE:", os.path.exists(EPHE_PATH))
+    print("ARCHIVOS EPHE:", os.listdir(EPHE_PATH))
 
     swe.set_ephe_path(EPHE_PATH)
 
-    FLAGS = swe.FLG_SPEED
+    FLAGS = swe.FLG_SWIEPH | swe.FLG_SPEED
 
     jd = fecha_a_jd(
         año, mes, dia,
@@ -1922,8 +1958,8 @@ def generar_carta_api(nombre, fecha, hora, lugar):
         # ── HORA ──────────────────────────────────────────────
 
         hora_txt, minuto_txt = hora.split(":")
-        hora_num = int(hora_txt)
-        minuto_num = int(minuto_txt)
+        hora = int(hora_txt)
+        minuto = int(minuto_txt)
 
         # ── GEOLOCALIZACIÓN ──────────────────────────────────
 
@@ -1935,10 +1971,20 @@ def generar_carta_api(nombre, fecha, hora, lugar):
 
         carta = calcular_carta(
             año, mes, dia,
-            hora_num, minuto_num,
+            hora, minuto,
             lat, lon,
             tz_name
         )
+
+        print("DEBUG API")
+        print("Fecha:", dia, mes, año)
+        print("Hora:", hora, minuto)
+        print("Lugar:", lugar)
+        print("Lat/Lon:", lat, lon)
+        print("TZ:", tz_name)
+        print("Sol:", carta["planetas"]["Sol"]["signo"], grado_a_dms(carta["planetas"]["Sol"]["grado"]))
+        print("Luna:", carta["planetas"]["Luna"]["signo"], grado_a_dms(carta["planetas"]["Luna"]["grado"]))
+        print("ASC:", carta["asc"]["signo"], grado_a_dms(carta["asc"]["grado"]))
 
         # ── RUTAS ────────────────────────────────────────────
 
@@ -1967,7 +2013,7 @@ def generar_carta_api(nombre, fecha, hora, lugar):
         generar_pdf_reportlab_base(
             ruta_pdf, carta, nombre,
             año, mes, dia,
-            hora_num, minuto_num,
+            hora, minuto,
             lugar, lat, lon, tz_name,
             ruta_png
         )
@@ -2126,8 +2172,8 @@ def main():
         generar_pdf_reportlab_base(
             ruta_pdf, carta, nombre,
             año, mes, dia,
-            hora_num, minuto_num,
-            lugar, lat, lon, tz_name,
+            hora, minuto,
+            ciudad, lat, lon, tz_name,
             ruta_png
         )
 
