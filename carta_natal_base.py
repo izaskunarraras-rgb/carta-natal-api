@@ -1905,6 +1905,35 @@ def generar_pdf_reportlab_base(
         centro
     ))
 
+
+    # Elementos y modalidades
+
+    contenido.append(Spacer(1, 0.6*cm))
+
+    contenido.append(Paragraph("Distribución elemental", subtitulo))
+
+    texto_elementos = (
+        f"Fuego: {conteo_elem.get('Fuego', 0)}<br/>"
+        f"Tierra: {conteo_elem.get('Tierra', 0)}<br/>"
+        f"Aire: {conteo_elem.get('Aire', 0)}<br/>"
+        f"Agua: {conteo_elem.get('Agua', 0)}"
+    )
+
+    contenido.append(Paragraph(texto_elementos, centro))
+
+    contenido.append(Spacer(1, 0.5*cm))
+
+    contenido.append(Paragraph("Modalidades", subtitulo))
+
+    texto_modalidades = (
+        f"Cardinal: {conteo_modal.get('Cardinal', 0)}<br/>"
+        f"Fija: {conteo_modal.get('Fija', 0)}<br/>"
+        f"Mutable: {conteo_modal.get('Mutable', 0)}"
+    )
+
+    contenido.append(Paragraph(texto_modalidades, centro))
+
+
     contenido.append(PageBreak())
 
     # Visión general
@@ -1944,6 +1973,10 @@ def generar_pdf_reportlab_base(
 def generar_carta_api(nombre, fecha, hora, lugar, lat=None, lon=None, tz_name=None):
 
     print("Generando carta para:", nombre)
+
+    print("LAT RECIBIDA:", lat)
+    print("LON RECIBIDA:", lon)
+    print("TZ RECIBIDA:", tz_name)
 
     try:
 
