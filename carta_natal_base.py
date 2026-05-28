@@ -1224,6 +1224,32 @@ def nivel_elemento(valor):
     return "bajo"
 
 
+def textos_elementos_reportlab(conteo_elem):
+    orden = ["Aire", "Tierra", "Agua", "Fuego"]
+
+    bloques = []
+
+    for elem in orden:
+        valor = conteo_elem.get(elem, 0)
+        nivel = nivel_elemento(valor)
+        texto = TEXTOS_ELEMENTOS_PDF[elem][nivel]
+
+        texto = (
+            texto
+            .replace("\\textbf{Observa:}", "<b>Observa:</b>")
+            .replace("\\begin{itemize}", "")
+            .replace("\\end{itemize}", "")
+            .replace("\\item ", "• ")
+            .replace("\n\n", "<br/><br/>")
+            .replace("\n", "<br/>")
+        )
+
+        bloques.append((f"{elem} {nivel}", texto))
+
+    return bloques
+
+
+
 TEXTOS_ELEMENTOS_PDF = {
     "Aire": {
         "alto": (
@@ -1785,7 +1811,8 @@ def generar_pdf_reportlab_base(
 ):
     from reportlab.lib.pagesizes import A4
     from reportlab.platypus import (
-        SimpleDocTemplate, Paragraph, Spacer, Image, PageBreak
+        SimpleDocTemplate, Paragraph, Spacer, Image, PageBreak,
+        Table, TableStyle, KeepTogether
     )
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
     from reportlab.lib.enums import TA_CENTER
@@ -1834,12 +1861,25 @@ def generar_pdf_reportlab_base(
         "SubtituloAI",
         parent=estilos["Heading2"],
         fontName="Times-Bold",
-        fontSize=17,
-        leading=22,
+        fontSize=18,
+        leading=23,
         textColor=colors.HexColor("#8C5A00"),
         spaceBefore=18,
-        spaceAfter=8
+        spaceAfter=10
     )
+
+
+    subtitulo2 = ParagraphStyle(
+        "Subtitulo2AI",
+        parent=estilos["Heading3"],
+        fontName="Times-Bold",
+        fontSize=14,
+        leading=18,
+        textColor=colors.HexColor("#1E508C"),
+        spaceBefore=12,
+        spaceAfter=6
+    )
+
 
     cuerpo = ParagraphStyle(
         "CuerpoAI",
@@ -1889,12 +1929,14 @@ def generar_pdf_reportlab_base(
         cuerpo
     ))
 
-    contenido.append(PageBreak())
-
     # Rueda
     contenido.append(Paragraph("Carta Natal", subtitulo))
     contenido.append(Image(ruta_rueda, width=13*cm, height=13*cm))
     contenido.append(Spacer(1, 0.5*cm))
+
+
+    contenido.append(PageBreak())
+
 
     contenido.append(Paragraph("Posiciones principales", subtitulo))
     contenido.append(Paragraph(
@@ -1908,22 +1950,42 @@ def generar_pdf_reportlab_base(
 
     # Elementos y modalidades
 
+
+    print("ENTRANDO EN BLOQUE ELEMENTOS")
+    print("conteo_elem:", conteo_elem)
+    print("conteo_modal:", conteo_modal)
+
+
     contenido.append(Spacer(1, 0.6*cm))
 
-    contenido.append(Paragraph("Distribución elemental", subtitulo))
+    contenido.append(Spacer(1, 0.6*cm))
+    contenido.append(Paragraph("Distribución energética", subtitulo))
 
-    texto_elementos = (
-        f"Fuego: {conteo_elem.get('Fuego', 0)}<br/>"
-        f"Tierra: {conteo_elem.get('Tierra', 0)}<br/>"
-        f"Aire: {conteo_elem.get('Aire', 0)}<br/>"
-        f"Agua: {conteo_elem.get('Agua', 0)}"
-    )
+    tabla_datos = [
+        ["Elemento", "Valor", "Modalidad", "Valor"],
+        ["Fuego", conteo_elem.get("Fuego", 0), "Cardinal", conteo_modal.get("Cardinal", 0)],
+        ["Tierra", conteo_elem.get("Tierra", 0), "Fija", conteo_modal.get("Fija", 0)],
+        ["Aire", conteo_elem.get("Aire", 0), "Mutable", conteo_modal.get("Mutable", 0)],
+        ["Agua", conteo_elem.get("Agua", 0), "", ""],
+    ]
 
-    contenido.append(Paragraph(texto_elementos, centro))
+    tabla = Table(tabla_datos, colWidths=[3.2*cm, 2*cm, 3.2*cm, 2*cm])
 
-    contenido.append(Spacer(1, 0.5*cm))
+    tabla.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#EDE3D3")),
+        ("TEXTCOLOR", (0, 0), (-1, 0), colors.HexColor("#1E508C")),
+        ("FONTNAME", (0, 0), (-1, 0), "Times-Bold"),
+        ("FONTNAME", (0, 1), (-1, -1), "Times-Roman"),
+        ("FONTSIZE", (0, 0), (-1, -1), 10),
+        ("ALIGN", (1, 1), (1, -1), "CENTER"),
+        ("ALIGN", (3, 1), (3, -1), "CENTER"),
+        ("GRID", (0, 0), (-1, -1), 0.25, colors.HexColor("#C8B89E")),
+        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
+        ("TOPPADDING", (0, 0), (-1, -1), 6),
+    ]))
 
-    contenido.append(Paragraph("Modalidades", subtitulo))
+    contenido.append(tabla)
 
     texto_modalidades = (
         f"Cardinal: {conteo_modal.get('Cardinal', 0)}<br/>"
@@ -1931,10 +1993,28 @@ def generar_pdf_reportlab_base(
         f"Mutable: {conteo_modal.get('Mutable', 0)}"
     )
 
-    contenido.append(Paragraph(texto_modalidades, centro))
 
 
     contenido.append(PageBreak())
+    contenido.append(Paragraph("Lectura por elementos", subtitulo))
+
+    for titulo_elem, texto_elem in textos_elementos_reportlab(conteo_elem):
+        contenido.append(Paragraph(titulo_elem, subtitulo2))
+        contenido.append(Paragraph(texto_elem, cuerpo))
+        contenido.append(Spacer(1, 0.3*cm))
+
+    contenido.append(Paragraph("Integración", subtitulo))
+    contenido.append(Paragraph(
+        "Esto no define quién eres. Solo muestra cómo tiendes a funcionar.<br/><br/>"
+        "No hay nada que cambiar. Se trata de verlo y aprender a manejarlo mejor.<br/><br/>"
+        "<i>Ten en cuenta que tienes que hacer la amalgama de todos los elementos. "
+        "Por ejemplo, si tienes Fuego muy alto pero también mucha Tierra, "
+        "puede que no dejes proyectos a medias.</i>",
+        cuerpo
+    ))
+
+
+
 
     # Visión general
     contenido.append(Paragraph("Visión general", subtitulo))
@@ -1943,17 +2023,22 @@ def generar_pdf_reportlab_base(
     # Tres pilares
     contenido.append(Paragraph("Los tres pilares", subtitulo))
 
-    contenido.append(Paragraph(f"Sol en {sol.get('signo','')}", subtitulo))
-    contenido.append(Paragraph(ejes["sol"], cuerpo))
+    contenido.append(KeepTogether([
+        Paragraph(f"Sol en {sol.get('signo','')}", subtitulo2),
+        Paragraph(ejes["sol"], cuerpo)
+    ]))
 
-    contenido.append(Paragraph(f"Luna en {luna.get('signo','')}", subtitulo))
-    contenido.append(Paragraph(ejes["luna"], cuerpo))
+    contenido.append(KeepTogether([
+        Paragraph(f"Luna en {luna.get('signo','')}", subtitulo2),
+        Paragraph(ejes["luna"], cuerpo)
+    ]))
 
-    contenido.append(Paragraph(f"Ascendente {asc.get('signo','')}", subtitulo))
-    contenido.append(Paragraph(ejes["asc"], cuerpo))
+    contenido.append(KeepTogether([
+        Paragraph(f"Ascendente {asc.get('signo','')}", subtitulo2),
+        Paragraph(ejes["asc"], cuerpo)
+    ]))
 
     # Cierre
-    contenido.append(PageBreak())
     contenido.append(Paragraph("Cierre", subtitulo))
     contenido.append(Paragraph(
         "Esta carta no busca definirte ni darte una identidad fija. "
