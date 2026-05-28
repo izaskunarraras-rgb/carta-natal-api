@@ -611,10 +611,6 @@ def calcular_carta(año, mes, dia, hora, minuto, lat, lon, tz_name):
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
     EPHE_PATH = os.path.join(BASE_DIR, "ephe")
 
-    print("EPHE_PATH:", EPHE_PATH)
-    print("EXISTE EPHE:", os.path.exists(EPHE_PATH))
-    print("ARCHIVOS EPHE:", os.listdir(EPHE_PATH))
-
     swe.set_ephe_path(EPHE_PATH)
 
     FLAGS = swe.FLG_SWIEPH | swe.FLG_SPEED
@@ -1945,7 +1941,7 @@ def generar_pdf_reportlab_base(
     doc.build(contenido)
 
 
-def generar_carta_api(nombre, fecha, hora, lugar):
+def generar_carta_api(nombre, fecha, hora, lugar, lat=None, lon=None, tz_name=None):
 
     print("Generando carta para:", nombre)
 
@@ -1963,9 +1959,16 @@ def generar_carta_api(nombre, fecha, hora, lugar):
 
         # ── GEOLOCALIZACIÓN ──────────────────────────────────
 
-        lat, lon = geocodificar(lugar)
+        if lat is not None and lon is not None and tz_name:
 
-        tz_name = obtener_timezone(lat, lon)
+            lat = float(lat)
+            lon = float(lon)
+
+        else:
+
+            lat, lon = geocodificar(lugar)
+
+            tz_name = obtener_timezone(lat, lon)  
 
         # ── CÁLCULO CARTA ────────────────────────────────────
 
