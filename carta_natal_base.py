@@ -7,7 +7,19 @@ tu forma de funcionar y los procesos de crecimiento
 más importantes de tu carta natal.
 """
 
-import sys, os, math, subprocess
+from reportlab.lib.pagesizes import A4
+from reportlab.platypus import (
+    SimpleDocTemplate, Paragraph, Spacer, Image, PageBreak,
+    Table, TableStyle, KeepTogether
+)
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.enums import TA_CENTER
+from reportlab.lib.units import cm
+from reportlab.lib import colors
+
+
+
+import sys, os, math
 from datetime import datetime
 import swisseph as swe
 from geopy.geocoders import Nominatim
@@ -484,6 +496,113 @@ DINAMICA_GENERAL = {
 ),
 }
 
+TEXTOS_ELEMENTOS_PDF = {
+    "Aire": {
+        "alto": (
+            "La mente está muy activa. Piensas rápido y conectas ideas con facilidad. "
+            "Puedes darle muchas vueltas a las cosas o adelantarte demasiado.<br/><br/>"
+            "<b>Observa:</b><br/>"
+            "• cuándo no paras de pensar<br/>"
+            "• si piensas en lugar de hacer o sentir<br/>"
+            "• si te cuesta desconectar la cabeza"
+        ),
+        "equilibrado": (
+            "Puedes pensar cuando lo necesitas y parar cuando no hace falta. "
+            "La mente está disponible, pero no te arrastra.<br/><br/>"
+            "<b>Observa:</b><br/>"
+            "• cuándo usas la cabeza para resolver algo<br/>"
+            "• cuándo sigues pensando sin necesidad<br/>"
+            "• si puedes parar y descansar la mente"
+        ),
+        "bajo": (
+            "No pasas tanto por la cabeza. Tiendes a ir directa a lo que haces o sientes sin pensarlo mucho. "
+            "Puede costar ordenar ideas o explicar lo que te pasa.<br/><br/>"
+            "<b>Observa:</b><br/>"
+            "• si te cuesta explicar lo que sientes o piensas<br/>"
+            "• si necesitas más tiempo para entender lo que te ocurre<br/>"
+            "• en qué momentos te vendría bien parar y pensar un poco"
+        ),
+     },
+
+    "Tierra": {
+        "alto": (
+            "Necesitas tener control y estabilidad. Te apoyas en lo que es seguro y conocido. "
+            "Puedes volverte rígida o exigirte demasiado.<br/><br/>"
+            "<b>Observa:</b><br/>"
+            "• cuánto necesitas tener todo bajo control<br/>"
+            "• si te cuesta cambiar planes o improvisar<br/>"
+            "• si te exiges más de lo necesario"
+        ),
+        "equilibrado": (
+            "Puedes organizarte y también adaptarte. Sabes cuándo mantener algo y cuándo cambiarlo.<br/><br/>"
+            "<b>Observa:</b><br/>"
+            "• cómo te organizas en tu día a día<br/>"
+            "• cuándo mantienes algo aunque ya no sirve<br/>"
+            "• cuándo cambias sin problema"
+        ),
+        "bajo": (
+            "Te cuesta mantener rutinas o seguir algo en el tiempo. "
+            "Puedes empezar cosas pero no siempre sostenerlas.<br/><br/>"
+            "<b>Observa:</b><br/>"
+            "• si te cuesta mantener horarios o hábitos<br/>"
+            "• si dejas cosas a medias<br/>"
+            "• qué te ayudaría a tener más orden en tu día"
+        ),
+    },
+
+    "Agua": {
+        "alto": (
+            "Sientes mucho. Lo que pasa por dentro tiene mucho peso. "
+            "Puedes saturarte o quedarte enganchada en lo emocional.<br/><br/>"
+            "<b>Observa:</b><br/>"
+            "• cuándo te afecta demasiado lo que pasa<br/>"
+            "• si te cuesta separar lo tuyo de lo de los demás<br/>"
+            "• cómo te calmas cuando algo te desborda"
+        ),
+        "equilibrado": (
+            "Puedes sentir sin perderte en lo que sientes. Hay conexión emocional, pero también espacio.<br/><br/>"
+            "<b>Observa:</b><br/>"
+            "• cómo reaccionas cuando algo te afecta<br/>"
+            "• si puedes tomar distancia cuando lo necesitas<br/>"
+            "• cómo vuelves a un estado más tranquilo"
+        ),
+        "bajo": (
+            "No siempre conectas fácilmente con lo que sientes. "
+            "Puede costar identificar o expresar emociones.<br/><br/>"
+            "<b>Observa:</b><br/>"
+            "• si te cuesta saber qué estás sintiendo<br/>"
+            "• si evitas lo emocional<br/>"
+            "• en qué momentos conectas más con ello"
+        ),
+    },
+
+    "Fuego": {
+        "alto": (
+            "Tienes mucha energía para actuar. Te mueves rápido y tomas iniciativa. "
+            "Puedes ir demasiado deprisa o no sostener lo que empiezas.<br/><br/>"
+            "<b>Observa:</b><br/>"
+            "• si te lanzas sin pensar<br/>"
+            "• si empiezas cosas y luego las dejas<br/>"
+            "• cuándo necesitas bajar el ritmo"
+        ),
+        "equilibrado": (
+            "Puedes actuar cuando hace falta y parar cuando no. "
+            "No estás siempre en marcha, pero tampoco bloqueada.<br/><br/>"
+            "<b>Observa:</b><br/>"
+            "• cuándo te pones en marcha<br/>"
+            "• si te cuesta empezar algo<br/>"
+            "• cómo regulas tu ritmo"
+        ),
+        "bajo": (
+            "Te cuesta arrancar o tomar iniciativa. Necesitas más tiempo para empezar algo.<br/><br/>"
+            "<b>Observa:</b><br/>"
+            "• qué te frena al empezar<br/>"
+            "• qué te ayuda a activarte<br/>"
+            "• si esperas demasiado antes de actuar"
+        ),
+    },
+}
+
 # ─── FUNCIONES DE CÁLCULO ────────────────────────────────────────────────────
 
 import time
@@ -728,14 +847,7 @@ def calcular_carta(año, mes, dia, hora, minuto, lat, lon, tz_name):
     for nombre in planetas:
         planetas[nombre]["casa"] = casa_de(planetas[nombre]["lon"])
 
-    print("DEBUG QUIRÓN")
-    print("  Lon:", planetas["Quirón"]["lon"])
-    print("  Signo:", planetas["Quirón"]["signo"])
-    print("  Grado:", grado_a_dms(planetas["Quirón"]["grado"]))
-    print("  Casa:", planetas["Quirón"]["casa"])
-    print("  Aproximado:", planetas["Quirón"].get("aprox", False))
-    print("  ASC:", asc["signo"] if "asc" in locals() else signo_asc,
-          grado_a_dms(grado_asc))
+
 
     return {
         "planetas": planetas,
@@ -752,7 +864,11 @@ def calcular_carta(año, mes, dia, hora, minuto, lat, lon, tz_name):
         },
         "jd": jd,
     }
-# ─── RUEDA ASTROLÓGICA ────────────────────────────────────────────────────────
+
+
+# ─────────────────────────────────────────────────────────────
+# RUEDA ASTROLÓGICA
+# ─────────────────────────────────────────────────────────────
 
 def dibujar_rueda(carta, nombre_persona, archivo_salida):
 
@@ -1084,6 +1200,10 @@ def dibujar_rueda(carta, nombre_persona, archivo_salida):
     plt.close()
 
 
+# ─────────────────────────────────────────────────────────────
+# ANÁLISIS ASTROLÓGICO
+# ─────────────────────────────────────────────────────────────
+
 # ─── ANÁLISIS DE ELEMENTOS Y MODALIDADES ─────────────────────────────────────
 
 _REGENTE_ASC = {
@@ -1234,190 +1354,148 @@ def textos_elementos_reportlab(conteo_elem):
         nivel = nivel_elemento(valor)
         texto = TEXTOS_ELEMENTOS_PDF[elem][nivel]
 
-        texto = (
-            texto
-            .replace("\\textbf{Observa:}", "<b>Observa:</b>")
-            .replace("\\begin{itemize}", "")
-            .replace("\\end{itemize}", "")
-            .replace("\\item ", "• ")
-            .replace("\n\n", "<br/><br/>")
-            .replace("\n", "<br/>")
-        )
-
         bloques.append((f"{elem} {nivel}", texto))
 
     return bloques
 
 
 
-TEXTOS_ELEMENTOS_PDF = {
-    "Aire": {
-        "alto": (
-            "La mente está muy activa. Piensas rápido y conectas ideas con facilidad. "
-            "Puedes darle muchas vueltas a las cosas o adelantarte demasiado.\n\n"
-            "\\textbf{Observa:}\n"
-            "\\begin{itemize}\n"
-            "\\item cuándo no paras de pensar\n"
-            "\\item si piensas en lugar de hacer o sentir\n"
-            "\\item si te cuesta desconectar la cabeza\n"
-            "\\end{itemize}"
-        ),
-        "equilibrado": (
-            "Puedes pensar cuando lo necesitas y parar cuando no hace falta. "
-            "La mente está disponible, pero no te arrastra.\n\n"
-            "\\textbf{Observa:}\n"
-            "\\begin{itemize}\n"
-            "\\item cuándo usas la cabeza para resolver algo\n"
-            "\\item cuándo sigues pensando sin necesidad\n"
-            "\\item si puedes parar y descansar la mente\n"
-            "\\end{itemize}"
-        ),
-        "bajo": (
-            "No pasas tanto por la cabeza. Tiendes a ir directa a lo que haces o sientes sin pensarlo mucho. "
-            "Puede costar ordenar ideas o explicar lo que te pasa.\n\n"
-            "\\textbf{Observa:}\n"
-            "\\begin{itemize}\n"
-            "\\item si te cuesta explicar lo que sientes o piensas\n"
-            "\\item si necesitas más tiempo para entender lo que te ocurre\n"
-            "\\item en qué momentos te vendría bien parar y pensar un poco\n"
-            "\\end{itemize}"
-        ),
-    },
+def bloque_portada(
+    nombre,
+    fecha_str,
+    hora_str,
+    ciudad,
+    asc,
+    titulo,
+    centro
+):
 
-    "Tierra": {
-        "alto": (
-            "Necesitas tener control y estabilidad. Te apoyas en lo que es seguro y conocido. "
-            "Puedes volverte rígida o exigirte demasiado.\n\n"
-            "\\textbf{Observa:}\n"
-            "\\begin{itemize}\n"
-            "\\item cuánto necesitas tener todo bajo control\n"
-            "\\item si te cuesta cambiar planes o improvisar\n"
-            "\\item si te exiges más de lo necesario\n"
-            "\\end{itemize}"
-        ),
-        "equilibrado": (
-            "Puedes organizarte y también adaptarte. Sabes cuándo mantener algo y cuándo cambiarlo.\n\n"
-            "\\textbf{Observa:}\n"
-            "\\begin{itemize}\n"
-            "\\item cómo te organizas en tu día a día\n"
-            "\\item cuándo mantienes algo aunque ya no sirve\n"
-            "\\item cuándo cambias sin problema\n"
-            "\\end{itemize}"
-        ),
-        "bajo": (
-            "Te cuesta mantener rutinas o seguir algo en el tiempo. "
-            "Puedes empezar cosas pero no siempre sostenerlas.\n\n"
-            "\\textbf{Observa:}\n"
-            "\\begin{itemize}\n"
-            "\\item si te cuesta mantener horarios o hábitos\n"
-            "\\item si dejas cosas a medias\n"
-            "\\item qué te ayudaría a tener más orden en tu día\n"
-            "\\end{itemize}"
-        ),
-    },
+    elementos = []
 
-    "Agua": {
-        "alto": (
-            "Sientes mucho. Lo que pasa por dentro tiene mucho peso. "
-            "Puedes saturarte o quedarte enganchada en lo emocional.\n\n"
-            "\\textbf{Observa:}\n"
-            "\\begin{itemize}\n"
-            "\\item cuándo te afecta demasiado lo que pasa\n"
-            "\\item si te cuesta separar lo tuyo de lo de los demás\n"
-            "\\item cómo te calmas cuando algo te desborda\n"
-            "\\end{itemize}"
-        ),
-        "equilibrado": (
-            "Puedes sentir sin perderte en lo que sientes. Hay conexión emocional, pero también espacio.\n\n"
-            "\\textbf{Observa:}\n"
-            "\\begin{itemize}\n"
-            "\\item cómo reaccionas cuando algo te afecta\n"
-            "\\item si puedes tomar distancia cuando lo necesitas\n"
-            "\\item cómo vuelves a un estado más tranquilo\n"
-            "\\end{itemize}"
-        ),
-        "bajo": (
-            "No siempre conectas fácilmente con lo que sientes. "
-            "Puede costar identificar o expresar emociones.\n\n"
-            "\\textbf{Observa:}\n"
-            "\\begin{itemize}\n"
-            "\\item si te cuesta saber qué estás sintiendo\n"
-            "\\item si evitas lo emocional\n"
-            "\\item en qué momentos conectas más con ello\n"
-            "\\end{itemize}"
-        ),
-    },
+    elementos.append(Spacer(1, 2*cm))
 
-    "Fuego": {
-        "alto": (
-            "Tienes mucha energía para actuar. Te mueves rápido y tomas iniciativa. "
-            "Puedes ir demasiado deprisa o no sostener lo que empiezas.\n\n"
-            "\\textbf{Observa:}\n"
-            "\\begin{itemize}\n"
-            "\\item si te lanzas sin pensar\n"
-            "\\item si empiezas cosas y luego las dejas\n"
-            "\\item cuándo necesitas bajar el ritmo\n"
-            "\\end{itemize}"
-        ),
-        "equilibrado": (
-            "Puedes actuar cuando hace falta y parar cuando no. "
-            "No estás siempre en marcha, pero tampoco bloqueada.\n\n"
-            "\\textbf{Observa:}\n"
-            "\\begin{itemize}\n"
-            "\\item cuándo te pones en marcha\n"
-            "\\item si te cuesta empezar algo\n"
-            "\\item cómo regulas tu ritmo\n"
-            "\\end{itemize}"
-        ),
-        "bajo": (
-            "Te cuesta arrancar o tomar iniciativa. Necesitas más tiempo para empezar algo.\n\n"
-            "\\textbf{Observa:}\n"
-            "\\begin{itemize}\n"
-            "\\item qué te frena al empezar\n"
-            "\\item qué te ayuda a activarte\n"
-            "\\item si esperas demasiado antes de actuar\n"
-            "\\end{itemize}"
-        ),
-    },
-}
-
-
-def bloque_elementos_pdf(conteo_elem):
-    orden = ["Aire", "Tierra", "Agua", "Fuego"]
-
-    partes = []
-
-    for elem in orden:
-        valor = conteo_elem.get(elem, 0)
-        nivel = nivel_elemento(valor)
-        titulo_nivel = {
-            "alto": "alto",
-            "equilibrado": "equilibrado",
-            "bajo": "bajo"
-        }[nivel]
-
-        partes.append(
-            f"\\subsection{{{elem} {titulo_nivel}}}\n\n"
-            f"{TEXTOS_ELEMENTOS_PDF[elem][nivel]}\n\n"
-            "\\vspace{0.4cm}\n"
-            "\\Needspace{5\\baselineskip}\n"
-        )
-
-    partes.append(
-        "\\subsection{Integración}\n\n"
-        "Esto no define quién eres. Solo muestra cómo tiendes a funcionar.\n\n"
-        "No hay nada que cambiar. Se trata de verlo y aprender a manejarlo mejor.\n\n"
-        "\\vspace{0.4cm}\n\n"
-        "\\begin{center}\n"
-        "{\\small\\itshape\n"
-        "Ten en cuenta que tienes que hacer la amalgama de todos los elementos. "
-        "Por ejemplo, si tienes Fuego muy alto pero también mucha Tierra, "
-        "puede que no dejes proyectos a medias.\n"
-        "}\n"
-        "\\end{center}\n"
+    frase_portada = ParagraphStyle(
+        "FrasePortadaAI",
+        parent=centro,
+        fontName="Times-Italic",
+        fontSize=11,
+        leading=16,
+        alignment=TA_CENTER,
+        textColor=colors.HexColor("#666666"),
+        spaceAfter=12
     )
 
-    return "\n".join(partes)
+    elementos.append(Paragraph("Carta Natal Base", titulo))
+    elementos.append(Paragraph("Arquitectura Interna", centro))
+    elementos.append(Spacer(1, 0.4*cm))
+    elementos.append(Paragraph(
+        "<i>Un mapa inicial para observar cómo se organiza tu energía.</i>",
+        frase_portada        
+    ))
+
+    elementos.append(Spacer(1, 1*cm))
+
+    elementos.append(Paragraph(f"<b>{nombre}</b>", centro))
+    elementos.append(Paragraph(f"{fecha_str} · {hora_str}", centro))
+    elementos.append(Paragraph(ciudad, centro))
+
+    elementos.append(Spacer(1, 0.5*cm))
+
+    elementos.append(PageBreak())
+
+    return elementos
+
+def bloque_introduccion(subtitulo, cuerpo):
+
+    elementos = []
+
+    elementos.append(Paragraph("Introducción", subtitulo))
+
+    elementos.append(Paragraph(
+        "Esta carta natal base no busca definir quién eres. "
+        "La astrología se utiliza aquí como lenguaje de observación: "
+        "una forma de mirar cómo se organiza tu energía, qué registros aparecen "
+        "con más facilidad y qué dinámicas pueden influir en tu manera de vivir, "
+        "sostenerte y relacionarte con el entorno.",
+        cuerpo
+    ))
+
+    elementos.append(Paragraph(
+        "No se trata de una lectura predictiva ni de una identidad fija. "
+        "Es un mapa inicial de orientación.",
+        cuerpo
+    ))
+
+    return elementos
+
+
+def bloque_rueda(
+    ruta_rueda,
+    sol,
+    luna,
+    asc,
+    mc,
+    subtitulo,
+    centro
+):
+
+    elementos = []
+    
+    elementos.append(Paragraph("Carta Natal", subtitulo))
+
+    elementos.append(
+        Image(ruta_rueda, width=11.2*cm, height=11.2*cm)
+    )
+
+    elementos.append(Spacer(1, 0.15*cm))
+
+    return elementos
+
+
+def bloque_pilares(
+    sol,
+    luna,
+    asc,
+    ejes,
+    subtitulo,
+    subtitulo2,
+    cuerpo
+):
+
+    elementos = []
+
+    elementos.append(Paragraph("Los tres pilares", subtitulo))
+
+    elementos.append(KeepTogether([
+        Paragraph(f"Sol en {sol.get('signo','')}", subtitulo2),
+        Paragraph(ejes["sol"], cuerpo)
+    ]))
+
+    elementos.append(KeepTogether([
+        Paragraph(f"Luna en {luna.get('signo','')}", subtitulo2),
+        Paragraph(ejes["luna"], cuerpo)
+    ]))
+
+    elementos.append(KeepTogether([
+        Paragraph(f"Ascendente {asc.get('signo','')}", subtitulo2),
+        Paragraph(ejes["asc"], cuerpo)
+    ]))
+
+    return elementos
+
+
+def bloque_vision_general(
+    vision,
+    subtitulo,
+    cuerpo
+):
+
+    elementos = []
+
+    elementos.append(Paragraph("Visión general", subtitulo))
+    elementos.append(Paragraph(vision, cuerpo))
+
+    return elementos
 
 
 # ─── SECCIÓN: EJES PRINCIPALES ───────────────────────────────────────────────
@@ -1445,405 +1523,9 @@ def texto_ejes_principales(carta):
 
 
 
-# ─── SECCIÓN: ESTRUCTURA Y TENSIÓN ───────────────────────────────────────────
+# ─── ESTILOS Y BLOQUES REPORTLAB ─────────────────────────
 
-def texto_estructura_tension(aspectos_ordenados):
-    planetas_clave = {"Sol","Luna","Mercurio","Venus","Marte","Ascendente","Saturno","Júpiter","Plutón"}
-    vistos = set()
-    exactos = []
-    estructurales = []
-
-    for asp in aspectos_ordenados:
-        p1, p2, tipo = asp["p1"], asp["p2"], asp["simbolo"]
-        clave1 = (p1, p2, tipo); clave2 = (p2, p1, tipo)
-        if clave1 in vistos or clave2 in vistos: continue
-        texto_asp = ASPECTOS_CLAVE.get(clave1) or ASPECTOS_CLAVE.get(clave2)
-        tiene_clave = p1 in planetas_clave or p2 in planetas_clave
-
-        if asp.get("relevancia") == "exacto":
-            if texto_asp:
-                exactos.append((asp, texto_asp)); vistos.add(clave1)
-
-        elif asp.get("relevancia") == "estructural" and tiene_clave:
-            if texto_asp:
-                estructurales.append((asp, texto_asp)); vistos.add(clave1)
-
-    return {"exactos": exactos, "estructurales": estructurales}
-
-
-# ─── CIERRE CARTA BASE ───────────────────────────────────────────────────────
-
-CIERRE_CARTA_BASE = (
-    "Esta carta no busca definirte ni cerrar una interpretación completa sobre ti. "
-    "Es una primera aproximación a tus tendencias principales: cómo se activa tu energía, "
-    "cómo se expresa tu mundo emocional y cómo sueles entrar en contacto con la vida. "
-    "La lectura ampliada desarrolla con más profundidad los vínculos, la acción, los patrones repetitivos, "
-    "las tensiones internas, la dirección de crecimiento y las configuraciones principales de la carta."
-)
-
-
-
-# ─── ESCAPADO LATEX ────────────────────────────────────────────────────────
-
-def esc(texto):
-    if texto is None:
-        return ""
-
-    reemplazos = [
-        ("\\", r"\textbackslash{}"),
-        ("&",  r"\&"),
-        ("%",  r"\%"),
-        ("$",  r"\$"),
-        ("#",  r"\#"),
-        ("_",  r"\_"),
-        ("{",  r"\{"),
-        ("}",  r"\}"),
-        ("~",  r"\textasciitilde{}"),
-        ("^",  r"\^{}"),
-    ]
-
-    for orig, repl in reemplazos:
-        texto = texto.replace(orig, repl)
-
-    return texto
-
-
-# ─── GENERACIÓN LATEX · CARTA BASE ──────────────────────────────────────────
-
-def generar_latex_ai(carta, nombre, año, mes, dia, hora, minuto,
-                     ciudad, lat, lon, tz_name, ruta_rueda):
-
-    planetas = carta["planetas"]
-    asc = carta["asc"]
-    mc  = carta["mc"]
-
-    ruta_rueda = os.path.basename(ruta_rueda).replace("\\", "/")
-
-    fecha_str = f"{dia:02d}/{mes:02d}/{año}"
-    hora_str  = f"{hora:02d}:{minuto:02d}"
-
-    tz_obj = pytz.timezone(tz_name)
-    dt_local = tz_obj.localize(datetime(año, mes, dia, hora, minuto))
-    utc_off  = dt_local.strftime("%z")
-    utc_str  = f"UTC{utc_off[:3]}:{utc_off[3:]}"
-
-    nom_esc = esc(nombre)
-    ciu_esc = esc(ciudad)
-
-    # ── Interpretación base ───────────────────────────────────────────────
-
-    conteo_elem  = analizar_elementos(
-        planetas,
-        asc["signo"],
-        hora_conocida=(minuto is not None)
-    )
-
-    conteo_modal = analizar_modalidades(planetas)
-
-    vision = texto_vision_general(
-        carta,
-        conteo_elem,
-        conteo_modal
-    )
-
-    elementos_pdf = bloque_elementos_pdf(conteo_elem)
-
-    ejes = texto_ejes_principales(carta)
-
-
-    # ── Posiciones resumidas ──────────────────────────────────────────────
-
-    sol   = planetas.get("Sol", {})
-    luna  = planetas.get("Luna", {})
-
-    posiciones = (
-        f"Sol en {sol.get('signo','')} — Casa {sol.get('casa','')}\\\\\n"
-        f"Luna en {luna.get('signo','')} — Casa {luna.get('casa','')}\\\\\n"
-        f"Ascendente {asc.get('signo','')}\\\\\n"
-        f"Medio Cielo en {mc.get('signo','')}"
-    )
-
-    # ── Documento ─────────────────────────────────────────────────────────
-
-    latex = f"""
-\\documentclass[11pt,a4paper]{{article}}
-
-\\usepackage[utf8]{{inputenc}}
-\\usepackage[T1]{{fontenc}}
-\\usepackage[spanish]{{babel}}
-
-\\usepackage{{tgpagella}}
-\\usepackage{{geometry}}
-\\usepackage{{graphicx}}
-\\usepackage{{xcolor}}
-\\usepackage{{titlesec}}
-\\usepackage{{fancyhdr}}
-\\usepackage[parfill]{{parskip}}
-\\usepackage[expansion=false]{{microtype}}
-\\usepackage{{hyperref}}
-\\usepackage{{setspace}}
-\\usepackage{{needspace}}
-
-\\geometry{{top=3.0cm,bottom=3.0cm,left=3.5cm,right=3.5cm}}
-
-\\setlength{{\\parskip}}{{0.65em}}
-\\setlength{{\\parindent}}{{0em}}
-
-\\definecolor{{azulai}}{{RGB}}{{30,80,140}}
-\\definecolor{{doradoai}}{{RGB}}{{140,90,0}}
-\\definecolor{{grisai}}{{RGB}}{{70,70,70}}
-
-\\titleformat{{\\section}}
-{{\\Large\\bfseries\\color{{azulai}}}}
-{{}}{{0em}}{{}}
-[{{\\color{{azulai}}\\titlerule[0.5pt]}}]
-
-\\titlespacing*{{\\section}}{{0pt}}{{1.8em}}{{0.8em}}
-
-\\titleformat{{\\subsection}}
-{{\\large\\bfseries\\color{{doradoai}}}}
-{{}}{{0em}}{{}}
-
-\\titlespacing*{{\\subsection}}{{0pt}}{{1.2em}}{{0.4em}}
-
-\\pagestyle{{fancy}}
-\\fancyhf{{}}
-
-\\rhead{{\\textcolor{{grisai}}{{\\small {nom_esc} — Arquitectura Interna}}}}
-\\lhead{{\\textcolor{{grisai}}{{\\small Carta Natal Base}}}}
-
-\\cfoot{{\\textcolor{{grisai}}{{\\small\\thepage}}}}
-
-\\renewcommand{{\\headrulewidth}}{{0.3pt}}
-
-\\hypersetup{{
-colorlinks=true,
-linkcolor=azulai,
-urlcolor=azulai
-}}
-
-\\setstretch{{1.4}}
-
-\\begin{{document}}
-
-% ── PORTADA ──────────────────────────────────────────────────────────────
-
-\\begin{{titlepage}}
-
-\\centering
-
-\\vspace*{{1.5cm}}
-
-{{\\Huge\\bfseries\\color{{azulai}} Carta Natal Base}}\\\\[0.5cm]
-
-{{\\large\\color{{grisai}} Arquitectura Interna}}\\\\[0.4cm]
-
-{{\\small\\itshape\\color{{grisai}}
-Un método para sostener cuerpo, energía y vida con coherencia
-}}\\\\[2cm]
-
-{{\\huge\\color{{doradoai}} {nom_esc}}}\\\\[1.5cm]
-
-{{\\Large {fecha_str} \\quad {hora_str}}}\\\\[0.3cm]
-
-{{\\Large {ciu_esc}}}\\\\[0.3cm]
-
-{{\\normalsize
-Lat: {lat:.4f}° \\quad
-Lon: {lon:.4f}° \\quad
-{utc_str}
-}}\\\\[0.5cm]
-
-{{\\normalsize
-Ascendente: {esc(asc['signo'])} {grado_a_dms(asc['grado'])}
-}}\\\\[2.5cm]
-
-\\vfill
-
-{{\\small Generado el {datetime.now().strftime("%d/%m/%Y")}}}
-
-\\end{{titlepage}}
-
-
-% ── INTRODUCCIÓN ─────────────────────────────────────────────────────────────
-
-\\section*{{Introducción}}
-
-Esta carta natal base no busca definir quién eres.
-
-La astrología se utiliza aquí como lenguaje de observación:
-una forma de mirar cómo se organiza tu energía,
-qué registros aparecen con más facilidad
-y qué dinámicas pueden influir en tu manera de vivir, sostenerte y relacionarte con el entorno.
-
-No se trata de una lectura predictiva ni de una identidad fija.
-Es un mapa inicial de orientación.
-
-Las siguientes páginas muestran únicamente las capas principales de la carta:
-los ejes más visibles,
-la distribución general de la energía
-y algunos patrones básicos desde los que sueles moverte.
-
-\\vspace{{0.4cm}}
-
-\\newpage
-
-
-% ── RUEDA ────────────────────────────────────────────────────────────────
-
-\\section{{Carta Natal}}
-
-\\begin{{center}}
-\\includegraphics[width=0.8\\textwidth]{{{ruta_rueda}}}
-\\end{{center}}
-
-\\vspace{{0.8cm}}
-
-% ── POSICIONES PRINCIPALES ───────────────────────────────────────────────
-
-\\section{{Posiciones principales}}
-
-\\begin{{center}}
-
-{posiciones}
-
-\\end{{center}}
-
-\\vspace{{0.5cm}}
-
-{{\\small\\itshape
-La lectura ampliada desarrolla el mapa completo de posiciones,
-aspectos y configuraciones de la carta.
-}}
-
-\\vspace{{0.8cm}}
-\\Needspace{{5\\baselineskip}}
-
-% ── VISIÓN GENERAL ───────────────────────────────────────────────────────
-
-\\section{{Visión general}}
-
-{esc(vision)}
-
-\\vspace{{0.8cm}}
-\\Needspace{{5\\baselineskip}}
-
-
-% ── LECTURA DE LOS ELEMENTOS ────────────────────────────────────────────
-
-\\section{{Lectura de los elementos}}
-
-{elementos_pdf}
-
-\\vspace{{0.8cm}}
-\\Needspace{{10\\baselineskip}}
-
-
-% ── LOS TRES PILARES ────────────────────────────────────────────────────
-
-\\section{{Los tres pilares}}
-
-\\Needspace{{14\\baselineskip}}
-\\subsection{{Sol en {esc(sol.get('signo',''))}}}
-
-{esc(ejes['sol'])}
-
-\\vspace{{0.8cm}}
-\\Needspace{{5\\baselineskip}}
-
-\\Needspace{{10\\baselineskip}}
-\\subsection{{Luna en {esc(luna.get('signo',''))}}}
-
-{esc(ejes['luna'])}
-
-\\vspace{{0.8cm}}
-\\Needspace{{5\\baselineskip}}
-
-\\Needspace{{10\\baselineskip}}
-\\subsection{{Ascendente {esc(asc['signo'])}}}
-
-{esc(ejes['asc'])}
-
-\\vspace{{0.8cm}}
-\\Needspace{{5\\baselineskip}}
-
-% ── CIERRE ───────────────────────────────────────────────────────────────
-
-\\section{{Cierre}}
-
-Esta carta no busca definirte ni darte una identidad fija.
-
-La astrología se utiliza aquí como lenguaje de observación:
-una forma de mirar tendencias, ritmos y maneras de relacionarte con la vida.
-
-La lectura ampliada desarrolla con más profundidad:
-los vínculos,
-la regulación emocional,
-los patrones repetitivos,
-la dirección de crecimiento,
-las tensiones internas
-y las configuraciones principales de la carta.
-
-La lectura completa no busca darte más información.
-Busca ayudarte a entender cómo sostener tu vida sin romperte por dentro.
-
-\\vspace{{1cm}}
-
-\\begin{{center}}
-
-{{\\small\\itshape\\color{{grisai}}
-Arquitectura Interna
-}}
-
-\\end{{center}}
-
-\\end{{document}}
-"""
-
-    return latex
-
-
-# ─── PROGRAMA PRINCIPAL ───────────────────────────────────────────────────────
-
-def generar_pdf_reportlab_base(
-    ruta_pdf, carta, nombre, año, mes, dia, hora, minuto,
-    ciudad, lat, lon, tz_name, ruta_rueda
-):
-    from reportlab.lib.pagesizes import A4
-    from reportlab.platypus import (
-        SimpleDocTemplate, Paragraph, Spacer, Image, PageBreak,
-        Table, TableStyle, KeepTogether
-    )
-    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-    from reportlab.lib.enums import TA_CENTER
-    from reportlab.lib.units import cm
-    from reportlab.lib import colors
-
-    planetas = carta["planetas"]
-    asc = carta["asc"]
-    mc = carta["mc"]
-
-    conteo_elem = analizar_elementos(planetas, asc["signo"], hora_conocida=True)
-    conteo_modal = analizar_modalidades(planetas)
-
-    vision = texto_vision_general(carta, conteo_elem, conteo_modal)
-    ejes = texto_ejes_principales(carta)
-
-    sol = planetas.get("Sol", {})
-    luna = planetas.get("Luna", {})
-
-    fecha_str = f"{dia:02d}/{mes:02d}/{año}"
-    hora_str = f"{hora:02d}:{minuto:02d}"
-
-    doc = SimpleDocTemplate(
-        ruta_pdf,
-        pagesize=A4,
-        rightMargin=2.5*cm,
-        leftMargin=2.5*cm,
-        topMargin=2.5*cm,
-        bottomMargin=2.5*cm
-    )
-
+def crear_estilos_reportlab():
     estilos = getSampleStyleSheet()
 
     titulo = ParagraphStyle(
@@ -1868,7 +1550,6 @@ def generar_pdf_reportlab_base(
         spaceAfter=10
     )
 
-
     subtitulo2 = ParagraphStyle(
         "Subtitulo2AI",
         parent=estilos["Heading3"],
@@ -1880,7 +1561,6 @@ def generar_pdf_reportlab_base(
         spaceAfter=6
     )
 
-
     cuerpo = ParagraphStyle(
         "CuerpoAI",
         parent=estilos["BodyText"],
@@ -1890,76 +1570,27 @@ def generar_pdf_reportlab_base(
         spaceAfter=10
     )
 
+
     centro = ParagraphStyle(
         "CentroAI",
         parent=cuerpo,
         alignment=TA_CENTER
     )
 
-    contenido = []
 
-    # Portada
-    contenido.append(Spacer(1, 2*cm))
-    contenido.append(Paragraph("Carta Natal Base", titulo))
-    contenido.append(Paragraph("Arquitectura Interna", centro))
-    contenido.append(Spacer(1, 1*cm))
-    contenido.append(Paragraph(f"<b>{nombre}</b>", centro))
-    contenido.append(Paragraph(f"{fecha_str} · {hora_str}", centro))
-    contenido.append(Paragraph(ciudad, centro))
-    contenido.append(Spacer(1, 0.5*cm))
-    contenido.append(Paragraph(
-        f"Ascendente: {asc['signo']} {grado_a_dms(asc['grado'])}",
-        centro
-    ))
-    contenido.append(PageBreak())
-
-    # Introducción
-    contenido.append(Paragraph("Introducción", subtitulo))
-    contenido.append(Paragraph(
-        "Esta carta natal base no busca definir quién eres. "
-        "La astrología se utiliza aquí como lenguaje de observación: "
-        "una forma de mirar cómo se organiza tu energía, qué registros aparecen "
-        "con más facilidad y qué dinámicas pueden influir en tu manera de vivir, "
-        "sostenerte y relacionarte con el entorno.",
-        cuerpo
-    ))
-    contenido.append(Paragraph(
-        "No se trata de una lectura predictiva ni de una identidad fija. "
-        "Es un mapa inicial de orientación.",
-        cuerpo
-    ))
-
-    # Rueda
-    contenido.append(Paragraph("Carta Natal", subtitulo))
-    contenido.append(Image(ruta_rueda, width=13*cm, height=13*cm))
-    contenido.append(Spacer(1, 0.5*cm))
+    return {
+        "titulo": titulo,
+        "subtitulo": subtitulo,
+        "subtitulo2": subtitulo2,
+        "cuerpo": cuerpo,
+        "centro": centro,
+    }
 
 
-    contenido.append(PageBreak())
+def bloque_distribucion_energetica(conteo_elem, conteo_modal, subtitulo, cuerpo):
+    elementos = []
 
-
-    contenido.append(Paragraph("Posiciones principales", subtitulo))
-    contenido.append(Paragraph(
-        f"Sol en {sol.get('signo','')} — Casa {sol.get('casa','')}<br/>"
-        f"Luna en {luna.get('signo','')} — Casa {luna.get('casa','')}<br/>"
-        f"Ascendente {asc.get('signo','')}<br/>"
-        f"Medio Cielo en {mc.get('signo','')}",
-        centro
-    ))
-
-
-    # Elementos y modalidades
-
-
-    print("ENTRANDO EN BLOQUE ELEMENTOS")
-    print("conteo_elem:", conteo_elem)
-    print("conteo_modal:", conteo_modal)
-
-
-    contenido.append(Spacer(1, 0.6*cm))
-
-    contenido.append(Spacer(1, 0.6*cm))
-    contenido.append(Paragraph("Distribución energética", subtitulo))
+    elementos.append(Paragraph("Distribución energética", subtitulo))
 
     tabla_datos = [
         ["Elemento", "Valor", "Modalidad", "Valor"],
@@ -1985,26 +1616,118 @@ def generar_pdf_reportlab_base(
         ("TOPPADDING", (0, 0), (-1, -1), 6),
     ]))
 
-    contenido.append(tabla)
+    elementos.append(tabla)
 
-    texto_modalidades = (
-        f"Cardinal: {conteo_modal.get('Cardinal', 0)}<br/>"
-        f"Fija: {conteo_modal.get('Fija', 0)}<br/>"
-        f"Mutable: {conteo_modal.get('Mutable', 0)}"
+    return elementos
+
+
+def bloque_resumen_carta(
+    sol,
+    luna,
+    asc,
+    mc,
+    conteo_elem,
+    conteo_modal,
+    subtitulo
+):
+
+    elementos = []
+
+    elementos.append(Paragraph("Resumen de la carta", subtitulo))
+
+    elementos.append(Spacer(1, 0.50*cm))
+
+    tabla_datos = [
+        ["Punto", "Signo", "Casa", "Elemento", "Valor", "Modalidad", "Valor"],
+
+        ["Sol", sol.get("signo", ""), sol.get("casa", ""),
+         "Fuego", conteo_elem.get("Fuego", 0),
+         "Cardinal", conteo_modal.get("Cardinal", 0)],
+
+        ["Luna", luna.get("signo", ""), luna.get("casa", ""),
+         "Tierra", conteo_elem.get("Tierra", 0),
+         "Fija", conteo_modal.get("Fija", 0)],
+
+        ["Asc.", asc.get("signo", ""), "",
+         "Aire", conteo_elem.get("Aire", 0),
+         "Mutable", conteo_modal.get("Mutable", 0)],
+
+        ["MC", mc.get("signo", ""), "",
+         "Agua", conteo_elem.get("Agua", 0),
+         "", ""],
+    ]
+
+    tabla = Table(
+        tabla_datos,
+        colWidths=[
+            1.9*cm, 2.1*cm, 1.3*cm,
+            2.0*cm, 1.3*cm,
+            2.0*cm, 1.3*cm
+        ]
     )
 
+    tabla.setStyle(TableStyle([
+
+        # Fondo cabecera
+        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#EDE3D3")),
+
+        # Texto cabecera
+        ("TEXTCOLOR", (0, 0), (-1, 0), colors.HexColor("#1E508C")),
+
+        # Fuentes
+        ("FONTNAME", (0, 0), (-1, 0), "Times-Bold"),
+        ("FONTNAME", (0, 1), (-1, -1), "Times-Roman"),
+
+        # Tamaño
+        ("FONTSIZE", (0, 0), (-1, -1), 8.5),
+
+        # Grid fino general
+        ("GRID", (0, 0), (-1, -1), 0.25, colors.HexColor("#D8CBB8")),
+
+        # Borde exterior grueso
+        ("BOX", (0, 0), (-1, -1), 1.2, colors.HexColor("#8C5A00")),
+
+        # Separadores gruesos entre bloques
+        ("LINEAFTER", (2, 0), (2, -1), 1.2, colors.HexColor("#8C5A00")),
+        ("LINEAFTER", (4, 0), (4, -1), 1.2, colors.HexColor("#8C5A00")),
+
+        # Alineaciones
+        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+        ("ALIGN", (2, 1), (2, -1), "CENTER"),
+        ("ALIGN", (4, 1), (4, -1), "CENTER"),
+        ("ALIGN", (6, 1), (6, -1), "CENTER"),
+
+        # Padding
+        ("TOPPADDING", (0, 0), (-1, -1), 5),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
+
+    ]))
+
+    elementos.append(tabla)
+
+    return elementos
 
 
-    contenido.append(PageBreak())
-    contenido.append(Paragraph("Lectura por elementos", subtitulo))
+def bloque_lectura_elementos(
+    conteo_elem,
+    subtitulo,
+    subtitulo2,
+    cuerpo
+):
+
+    elementos = []
+
+    elementos.append(Paragraph("Lectura por elementos", subtitulo))
 
     for titulo_elem, texto_elem in textos_elementos_reportlab(conteo_elem):
-        contenido.append(Paragraph(titulo_elem, subtitulo2))
-        contenido.append(Paragraph(texto_elem, cuerpo))
-        contenido.append(Spacer(1, 0.3*cm))
 
-    contenido.append(Paragraph("Integración", subtitulo))
-    contenido.append(Paragraph(
+        elementos.append(Paragraph(titulo_elem, subtitulo2))
+        elementos.append(Paragraph(texto_elem, cuerpo))
+        elementos.append(Spacer(1, 0.3*cm))
+
+    elementos.append(Paragraph("Integración de elementos", subtitulo))
+
+    elementos.append(Paragraph(
         "Esto no define quién eres. Solo muestra cómo tiendes a funcionar.<br/><br/>"
         "No hay nada que cambiar. Se trata de verlo y aprender a manejarlo mejor.<br/><br/>"
         "<i>Ten en cuenta que tienes que hacer la amalgama de todos los elementos. "
@@ -2013,44 +1736,166 @@ def generar_pdf_reportlab_base(
         cuerpo
     ))
 
+    return elementos
 
 
+def bloque_cierre(
+    subtitulo,
+    cuerpo
+):
 
-    # Visión general
-    contenido.append(Paragraph("Visión general", subtitulo))
-    contenido.append(Paragraph(vision, cuerpo))
+    elementos = []
 
-    # Tres pilares
-    contenido.append(Paragraph("Los tres pilares", subtitulo))
+    elementos.append(Paragraph("Cierre", subtitulo))
 
-    contenido.append(KeepTogether([
-        Paragraph(f"Sol en {sol.get('signo','')}", subtitulo2),
-        Paragraph(ejes["sol"], cuerpo)
-    ]))
-
-    contenido.append(KeepTogether([
-        Paragraph(f"Luna en {luna.get('signo','')}", subtitulo2),
-        Paragraph(ejes["luna"], cuerpo)
-    ]))
-
-    contenido.append(KeepTogether([
-        Paragraph(f"Ascendente {asc.get('signo','')}", subtitulo2),
-        Paragraph(ejes["asc"], cuerpo)
-    ]))
-
-    # Cierre
-    contenido.append(Paragraph("Cierre", subtitulo))
-    contenido.append(Paragraph(
+    elementos.append(Paragraph(
         "Esta carta no busca definirte ni darte una identidad fija. "
         "La astrología se utiliza aquí como lenguaje de observación: "
         "una forma de mirar tendencias, ritmos y maneras de relacionarte con la vida.",
         cuerpo
     ))
-    contenido.append(Paragraph(
+
+    elementos.append(Paragraph(
         "La lectura completa no busca darte más información. "
         "Busca ayudarte a entender cómo sostener tu vida sin romperte por dentro.",
         cuerpo
     ))
+
+    return elementos
+
+
+
+def generar_pdf_reportlab_base(
+    ruta_pdf, carta, nombre, año, mes, dia, hora, minuto,
+    ciudad, lat, lon, tz_name, ruta_rueda
+):
+    
+    planetas = carta["planetas"]
+    asc = carta["asc"]
+    mc = carta["mc"]
+
+    conteo_elem = analizar_elementos(planetas, asc["signo"], hora_conocida=True)
+    conteo_modal = analizar_modalidades(planetas)
+
+    vision = texto_vision_general(carta, conteo_elem, conteo_modal)
+    ejes = texto_ejes_principales(carta)
+
+    sol = planetas.get("Sol", {})
+    luna = planetas.get("Luna", {})
+
+    fecha_str = f"{dia:02d}/{mes:02d}/{año}"
+    hora_str = f"{hora:02d}:{minuto:02d}"
+
+    doc = SimpleDocTemplate(
+        ruta_pdf,
+        pagesize=A4,
+        rightMargin=2.5*cm,
+        leftMargin=2.5*cm,
+        topMargin=2.5*cm,
+        bottomMargin=2.5*cm
+    )
+
+    estilos_ai = crear_estilos_reportlab()
+
+    titulo = estilos_ai["titulo"]
+    subtitulo = estilos_ai["subtitulo"]
+    subtitulo2 = estilos_ai["subtitulo2"]
+    cuerpo = estilos_ai["cuerpo"]
+    centro = estilos_ai["centro"]
+
+
+    contenido = []
+
+    # Portada
+    contenido.extend(
+        bloque_portada(
+            nombre,
+            fecha_str,
+            hora_str,
+            ciudad,
+            asc,
+            titulo,
+            centro
+        )
+    )
+
+
+    # Rueda
+    contenido.extend(
+        bloque_rueda(
+            ruta_rueda,
+            sol,
+            luna,
+            asc,
+            mc,
+            subtitulo,
+            centro
+        )
+    )
+
+    # Tabla
+    contenido.extend(
+        bloque_resumen_carta(
+            sol,
+            luna,
+            asc,
+            mc,
+            conteo_elem,
+            conteo_modal,
+            subtitulo
+        )
+    )
+
+
+    contenido.append(PageBreak())
+    # Introducción
+    contenido.extend(
+        bloque_introduccion(subtitulo, cuerpo)
+    )
+
+    # Visión general
+    contenido.extend(
+        bloque_vision_general(
+            vision,
+            subtitulo,
+            cuerpo
+        )
+    )
+
+    # Elementos y modalidades
+    contenido.extend(
+            bloque_lectura_elementos(
+            conteo_elem,
+            subtitulo,
+            subtitulo2,
+            cuerpo
+        )
+    )
+
+
+
+    contenido.append(PageBreak())
+
+    # Tres pilares
+    contenido.extend(
+        bloque_pilares(
+            sol,
+            luna,
+            asc,
+            ejes,
+            subtitulo,
+            subtitulo2,
+            cuerpo
+        )
+    )
+
+    # Cierre
+    contenido.extend(
+        bloque_cierre(
+            subtitulo,
+            cuerpo
+        )
+    )
 
     doc.build(contenido)
 
@@ -2058,10 +1903,6 @@ def generar_pdf_reportlab_base(
 def generar_carta_api(nombre, fecha, hora, lugar, lat=None, lon=None, tz_name=None):
 
     print("Generando carta para:", nombre)
-
-    print("LAT RECIBIDA:", lat)
-    print("LON RECIBIDA:", lon)
-    print("TZ RECIBIDA:", tz_name)
 
     try:
 
@@ -2097,15 +1938,6 @@ def generar_carta_api(nombre, fecha, hora, lugar, lat=None, lon=None, tz_name=No
             tz_name
         )
 
-        print("DEBUG API")
-        print("Fecha:", dia, mes, año)
-        print("Hora:", hora, minuto)
-        print("Lugar:", lugar)
-        print("Lat/Lon:", lat, lon)
-        print("TZ:", tz_name)
-        print("Sol:", carta["planetas"]["Sol"]["signo"], grado_a_dms(carta["planetas"]["Sol"]["grado"]))
-        print("Luna:", carta["planetas"]["Luna"]["signo"], grado_a_dms(carta["planetas"]["Luna"]["grado"]))
-        print("ASC:", carta["asc"]["signo"], grado_a_dms(carta["asc"]["grado"]))
 
         # ── RUTAS ────────────────────────────────────────────
 
@@ -2121,7 +1953,6 @@ def generar_carta_api(nombre, fecha, hora, lugar, lat=None, lon=None, tz_name=No
         ruta_base = os.path.join(dir_sal, nombre_f + "_carta_base")
 
         ruta_png = ruta_base + "_rueda.png"
-        ruta_tex = ruta_base + ".tex"
         ruta_pdf = ruta_base + ".pdf"
 
         # ── RUEDA ────────────────────────────────────────────
@@ -2257,7 +2088,6 @@ def main():
 
     ruta_base = os.path.join(dir_sal, nombre_f + "_carta_base")
     ruta_png  = ruta_base + "_rueda.png"
-    ruta_tex  = ruta_base + ".tex"
     ruta_pdf  = ruta_base + ".pdf"
 
     print("  Dibujando rueda astrológica...")
@@ -2271,88 +2101,22 @@ def main():
 
     print("  Generando carta natal base...")
 
-    latex = generar_latex_ai(
-        carta,
-        nombre,
+    print("  Generando PDF con ReportLab...")
+
+    generar_pdf_reportlab_base(
+        ruta_pdf, carta, nombre,
         año, mes, dia,
         hora, minuto,
-        ciudad,
-        lat, lon,
-        tz_name,
+        ciudad, lat, lon, tz_name,
         ruta_png
     )
 
-    with open(ruta_tex, "w", encoding="utf-8") as f:
-        f.write(latex)
-
-    print(f"  LaTeX guardado: {ruta_tex}")
-
-    print("  Compilando PDF...")
-
-    try:
-        generar_pdf_reportlab_base(
-            ruta_pdf, carta, nombre,
-            año, mes, dia,
-            hora, minuto,
-            ciudad, lat, lon, tz_name,
-            ruta_png
-        )
-
-        if os.path.exists(ruta_pdf):
-            print(f"  PDF generado: {ruta_pdf}")
-
-        else:
-            print("  Error: no se generó el PDF.")
-
-            log_path = ruta_base + ".log"
-
-            if os.path.exists(log_path):
-                print(f"  Revisa el log en: {log_path}")
-
-                with open(
-                    log_path,
-                    encoding="latin-1",
-                    errors="replace"
-                ) as f:
-                    lineas = f.readlines()
-
-                errores = [
-                    l for l in lineas
-                    if l.startswith("!") or "Error" in l
-                ]
-
-                if errores:
-                    print("  Errores encontrados:")
-                    for e in errores[:10]:
-                        print("   ", e.rstrip())
-
-            else:
-                print("  Salida de pdflatex:")
-                print(
-                    resultado.stdout[-2000:]
-                    if resultado.stdout
-                    else "(vacía)"
-                )
-
-    except subprocess.TimeoutExpired:
-        print("  Timeout al compilar LaTeX.")
-
-    except FileNotFoundError:
-        print("  pdflatex no encontrado.")
-        print("  En Windows instala MiKTeX: https://miktex.org/download")
-        print("  En Linux/WSL: sudo apt install texlive-full")
-
-    for ext in [".aux", ".toc", ".out"]:
-        try:
-            os.remove(ruta_base + ext)
-        except FileNotFoundError:
-            pass
-
     if os.path.exists(ruta_pdf):
-        try:
-            os.remove(ruta_base + ".log")
-        except FileNotFoundError:
-            pass
+        print(f"  PDF generado: {ruta_pdf}")
+
+    else:
+        print("  Error: no se generó el PDF.")
+
 
     print()
     print("=" * 60)
