@@ -1910,11 +1910,17 @@ def generar_carta_api(nombre, fecha, hora, lugar, lat=None, lon=None, tz_name=No
 
         dia, mes, año = map(int, fecha.split("/"))
 
+        print("Fecha recibida:", fecha)
+        print("Lugar recibido:", lugar)
+
         # ── HORA ──────────────────────────────────────────────
 
-        hora_txt, minuto_txt = hora.split(":")
-        hora = int(hora_txt)
-        minuto = int(minuto_txt)
+        print("Hora recibida:", hora)
+
+        partes = hora.split(":")
+
+        hora = int(partes[0])
+        minuto = int(partes[1])
 
         # ── GEOLOCALIZACIÓN ──────────────────────────────────
 
