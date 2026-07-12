@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify, send_from_directory
 from carta_natal_base import generar_carta_api
+from luna_casa4_casa6 import generar_carta_api as generar_luna_api
 import os
 
 app = Flask(__name__)
@@ -14,12 +15,15 @@ def home():
 
 @app.route("/descargas/<path:nombre_archivo>")
 def descargar_pdf(nombre_archivo):
-    return send_from_directory(BASE_DIR, nombre_archivo, as_attachment=True)
+    return send_from_directory(
+        BASE_DIR,
+        nombre_archivo,
+        as_attachment=True
+    )
 
 
 @app.route("/generar-carta", methods=["POST"])
 def generar_carta():
-
     datos = request.json or {}
 
     nombre = datos.get("nombre")
@@ -31,17 +35,40 @@ def generar_carta():
     lon = datos.get("lon")
     tz_name = datos.get("tz_name")
 
-    print("Datos recibidos:", nombre, fecha, hora, lugar, lat, lon, tz_name)
+    opciones = datos.get("opciones", [])
 
-    resultado = generar_carta_api(
+    print(
+        "Datos recibidos:",
         nombre,
         fecha,
         hora,
         lugar,
-        lat=lat,
-        lon=lon,
-        tz_name=tz_name
+        lat,
+        lon,
+        tz_name,
+        opciones
     )
+
+    if "opLuna" in opciones:
+        resultado = generar_luna_api(
+            nombre,
+            fecha,
+            hora,
+            lugar,
+            lat=lat,
+            lon=lon,
+            tz_name=tz_name
+        )
+    else:
+        resultado = generar_carta_api(
+            nombre,
+            fecha,
+            hora,
+            lugar,
+            lat=lat,
+            lon=lon,
+            tz_name=tz_name
+        )
 
     return jsonify(resultado)
 
