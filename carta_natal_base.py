@@ -497,110 +497,163 @@ DINAMICA_GENERAL = {
 }
 
 TEXTOS_ELEMENTOS_PDF = {
-    "Aire": {
-        "alto": (
-            "La mente está muy activa. Piensas rápido y conectas ideas con facilidad. "
-            "Puedes darle muchas vueltas a las cosas o adelantarte demasiado.<br/><br/>"
-            "<b>Observa:</b><br/>"
-            "• cuándo no paras de pensar<br/>"
-            "• si piensas en lugar de hacer o sentir<br/>"
-            "• si te cuesta desconectar la cabeza"
-        ),
-        "equilibrado": (
-            "Puedes pensar cuando lo necesitas y parar cuando no hace falta. "
-            "La mente está disponible, pero no te arrastra.<br/><br/>"
-            "<b>Observa:</b><br/>"
-            "• cuándo usas la cabeza para resolver algo<br/>"
-            "• cuándo sigues pensando sin necesidad<br/>"
-            "• si puedes parar y descansar la mente"
-        ),
-        "bajo": (
-            "No pasas tanto por la cabeza. Tiendes a ir directa a lo que haces o sientes sin pensarlo mucho. "
-            "Puede costar ordenar ideas o explicar lo que te pasa.<br/><br/>"
-            "<b>Observa:</b><br/>"
-            "• si te cuesta explicar lo que sientes o piensas<br/>"
-            "• si necesitas más tiempo para entender lo que te ocurre<br/>"
-            "• en qué momentos te vendría bien parar y pensar un poco"
-        ),
-     },
+"Aire": {
+    "alto": (
+        "El Aire representa la forma de pensar, comunicar y establecer conexiones entre ideas. "
+        "Cuando tiene mucha presencia, suele aportar curiosidad, capacidad de análisis y facilidad "
+        "para comprender distintas perspectivas.<br/><br/>"
+        "En algunos momentos, esa actividad mental puede hacer que dediques mucho tiempo a pensar, "
+        "analizar o anticipar posibilidades antes de pasar a la acción.<br/><br/>"
+        "<b>Observa:</b><br/>"
+        "• cuándo pensar te ayuda a comprender y cuándo empieza a alejarte de la experiencia<br/>"
+        "• cómo equilibras reflexión y acción<br/>"
+        "• qué espacios permiten que tu mente también pueda descansar"
+    ),
 
-    "Tierra": {
-        "alto": (
-            "Necesitas tener control y estabilidad. Te apoyas en lo que es seguro y conocido. "
-            "Puedes volverte rígida o exigirte demasiado.<br/><br/>"
-            "<b>Observa:</b><br/>"
-            "• cuánto necesitas tener todo bajo control<br/>"
-            "• si te cuesta cambiar planes o improvisar<br/>"
-            "• si te exiges más de lo necesario"
-        ),
-        "equilibrado": (
-            "Puedes organizarte y también adaptarte. Sabes cuándo mantener algo y cuándo cambiarlo.<br/><br/>"
-            "<b>Observa:</b><br/>"
-            "• cómo te organizas en tu día a día<br/>"
-            "• cuándo mantienes algo aunque ya no sirve<br/>"
-            "• cuándo cambias sin problema"
-        ),
-        "bajo": (
-            "Te cuesta mantener rutinas o seguir algo en el tiempo. "
-            "Puedes empezar cosas pero no siempre sostenerlas.<br/><br/>"
-            "<b>Observa:</b><br/>"
-            "• si te cuesta mantener horarios o hábitos<br/>"
-            "• si dejas cosas a medias<br/>"
-            "• qué te ayudaría a tener más orden en tu día"
-        ),
-    },
+    "equilibrado": (
+        "El Aire representa la capacidad de comprender, comunicar y relacionar ideas. "
+        "Con una presencia equilibrada, suele existir facilidad para reflexionar, intercambiar "
+        "puntos de vista y adaptarte a nuevas formas de comprender la realidad.<br/><br/>"
+        "Puedes utilizar el pensamiento como una herramienta útil sin que llegue a ocupar todo "
+        "el espacio de la experiencia.<br/><br/>"
+        "<b>Observa:</b><br/>"
+        "• cómo integras lo que piensas con lo que sientes<br/>"
+        "• qué conversaciones enriquecen realmente tu visión<br/>"
+        "• cuándo una explicación deja paso a la experiencia"
+    ),
 
-    "Agua": {
-        "alto": (
-            "Sientes mucho. Lo que pasa por dentro tiene mucho peso. "
-            "Puedes saturarte o quedarte enganchada en lo emocional.<br/><br/>"
-            "<b>Observa:</b><br/>"
-            "• cuándo te afecta demasiado lo que pasa<br/>"
-            "• si te cuesta separar lo tuyo de lo de los demás<br/>"
-            "• cómo te calmas cuando algo te desborda"
-        ),
-        "equilibrado": (
-            "Puedes sentir sin perderte en lo que sientes. Hay conexión emocional, pero también espacio.<br/><br/>"
-            "<b>Observa:</b><br/>"
-            "• cómo reaccionas cuando algo te afecta<br/>"
-            "• si puedes tomar distancia cuando lo necesitas<br/>"
-            "• cómo vuelves a un estado más tranquilo"
-        ),
-        "bajo": (
-            "No siempre conectas fácilmente con lo que sientes. "
-            "Puede costar identificar o expresar emociones.<br/><br/>"
-            "<b>Observa:</b><br/>"
-            "• si te cuesta saber qué estás sintiendo<br/>"
-            "• si evitas lo emocional<br/>"
-            "• en qué momentos conectas más con ello"
-        ),
-    },
+    "bajo": (
+        "El Aire representa la forma de pensar, comunicar y organizar las ideas. "
+        "Cuando aparece con menor presencia, es posible que prefieras comprender las cosas "
+        "desde la experiencia directa antes que desde el análisis continuo.<br/><br/>"
+        "Esto no significa falta de capacidad intelectual ni dificultad para comunicarte. "
+        "Simplemente puede indicar que tu forma de entender el mundo nace más de lo vivido "
+        "que de darle muchas vueltas a una idea.<br/><br/>"
+        "<b>Observa:</b><br/>"
+        "• qué situaciones te ayudan a expresar con claridad lo que piensas<br/>"
+        "• cuándo merece la pena detenerse a reflexionar un poco más<br/>"
+        "• cómo encuentras equilibrio entre experiencia y comprensión"
+    ),
+},
 
-    "Fuego": {
-        "alto": (
-            "Tienes mucha energía para actuar. Te mueves rápido y tomas iniciativa. "
-            "Puedes ir demasiado deprisa o no sostener lo que empiezas.<br/><br/>"
-            "<b>Observa:</b><br/>"
-            "• si te lanzas sin pensar<br/>"
-            "• si empiezas cosas y luego las dejas<br/>"
-            "• cuándo necesitas bajar el ritmo"
-        ),
-        "equilibrado": (
-            "Puedes actuar cuando hace falta y parar cuando no. "
-            "No estás siempre en marcha, pero tampoco bloqueada.<br/><br/>"
-            "<b>Observa:</b><br/>"
-            "• cuándo te pones en marcha<br/>"
-            "• si te cuesta empezar algo<br/>"
-            "• cómo regulas tu ritmo"
-        ),
-        "bajo": (
-            "Te cuesta arrancar o tomar iniciativa. Necesitas más tiempo para empezar algo.<br/><br/>"
-            "<b>Observa:</b><br/>"
-            "• qué te frena al empezar<br/>"
-            "• qué te ayuda a activarte<br/>"
-            "• si esperas demasiado antes de actuar"
-        ),
-    },
+"Tierra": {
+    "alto": (
+        "La Tierra representa la capacidad de concretar, organizar y dar continuidad "
+        "a lo que construyes. Cuando tiene mucha presencia, suele aportar sentido práctico, "
+        "constancia y necesidad de contar con una base estable.<br/><br/>"
+        "En algunos momentos, esa búsqueda de seguridad puede llevarte a mantener demasiado "
+        "control, exigirte más de lo necesario o sentir incomodidad ante los cambios imprevistos.<br/><br/>"
+        "<b>Observa:</b><br/>"
+        "• qué estructuras te ayudan realmente a sentir estabilidad<br/>"
+        "• cuándo la organización se convierte en rigidez<br/>"
+        "• si puedes adaptarte sin sentir que pierdes tu base"
+    ),
+
+    "equilibrado": (
+        "La Tierra representa la capacidad de concretar, organizar y sostener procesos "
+        "en el tiempo. Con una presencia equilibrada, puedes apoyarte en lo práctico "
+        "sin necesitar que todo permanezca siempre igual.<br/><br/>"
+        "Suele existir una relación bastante flexible entre estructura y adaptación: "
+        "puedes mantener lo que funciona y modificarlo cuando deja de ser útil.<br/><br/>"
+        "<b>Observa:</b><br/>"
+        "• qué te ayuda a dar continuidad a lo que empiezas<br/>"
+        "• cuándo una estructura sigue sosteniéndote y cuándo empieza a limitarte<br/>"
+        "• cómo encuentras equilibrio entre estabilidad y cambio"
+    ),
+
+    "bajo": (
+        "La Tierra representa la capacidad de concretar, organizar y sostener procesos "
+        "en el tiempo. Cuando aparece con menor presencia, la estructura puede no surgir "
+        "de forma automática y quizá necesite construirse de manera consciente.<br/><br/>"
+        "Esto no significa falta de responsabilidad ni incapacidad para mantener compromisos. "
+        "Indica que los ritmos, los hábitos y las referencias concretas suelen funcionar mejor "
+        "cuando los eliges y los adaptas a tu forma real de vivir.<br/><br/>"
+        "<b>Observa:</b><br/>"
+        "• qué te ayuda a mantener continuidad sin sentirte limitada<br/>"
+        "• cuándo una idea necesita convertirse en un paso concreto<br/>"
+        "• qué estructuras te sostienen sin volverse rígidas"
+    ),
+},
+
+"Agua": {
+    "alto": (
+        "El Agua representa la sensibilidad, la percepción emocional y la capacidad "
+        "de conectar con lo que ocurre dentro de ti y a tu alrededor. Cuando tiene mucha "
+        "presencia, suele aportar intuición, profundidad y una gran receptividad.<br/><br/>"
+        "En algunos momentos, esa apertura puede hacer que vivas ciertas experiencias con mucha "
+        "intensidad, que te cueste tomar distancia o que absorbas con facilidad el clima emocional "
+        "de otras personas y situaciones.<br/><br/>"
+        "<b>Observa:</b><br/>"
+        "• qué emociones son realmente tuyas y cuáles pueden venir del entorno<br/>"
+        "• cuándo necesitas retirarte para recuperar claridad<br/>"
+        "• qué te ayuda a sentir sin quedarte atrapada en lo que sientes"
+    ),
+
+    "equilibrado": (
+        "El Agua representa la sensibilidad, la percepción emocional y la capacidad "
+        "de conectar con lo que ocurre dentro de ti y a tu alrededor. Con una presencia "
+        "equilibrada, puedes registrar lo emocional sin que ocupe necesariamente todo el espacio.<br/><br/>"
+        "Suele existir una buena capacidad para sentir, comprender lo que te afecta y recuperar "
+        "perspectiva cuando lo necesitas.<br/><br/>"
+        "<b>Observa:</b><br/>"
+        "• cómo reconoces lo que estás sintiendo<br/>"
+        "• cuándo necesitas cercanía y cuándo necesitas distancia<br/>"
+        "• qué te ayuda a volver a un estado de mayor calma"
+    ),
+
+    "bajo": (
+        "El Agua representa la sensibilidad, la percepción emocional y la capacidad "
+        "de conectar con lo que ocurre dentro de ti y a tu alrededor. Cuando aparece con "
+        "menor presencia, lo emocional puede necesitar más tiempo o más espacio para hacerse visible.<br/><br/>"
+        "Esto no significa falta de sensibilidad. Puede indicar que tiendes a procesar primero "
+        "desde otros registros y que reconocer o expresar lo que sientes requiere una atención "
+        "más consciente.<br/><br/>"
+        "<b>Observa:</b><br/>"
+        "• qué situaciones te ayudan a conectar con lo que sientes<br/>"
+        "• si necesitas tiempo antes de poder poner nombre a una emoción<br/>"
+        "• cómo puedes dar espacio a lo emocional sin sentirte invadida"
+    ),
+},
+
+"Fuego": {
+    "alto": (
+        "El Fuego representa el impulso para iniciar, actuar y avanzar hacia aquello que resulta "
+        "significativo. Cuando tiene mucha presencia, suele aportar entusiasmo, iniciativa y facilidad "
+        "para movilizar energía.<br/><br/>"
+        "En algunos momentos, ese impulso puede llevarte a querer avanzar antes de que todo esté preparado "
+        "o a perder interés cuando desaparece la sensación de novedad.<br/><br/>"
+        "<b>Observa:</b><br/>"
+        "• qué proyectos mantienen viva tu motivación a largo plazo<br/>"
+        "• cuándo merece la pena detenerse antes de actuar<br/>"
+        "• cómo sostienes el impulso inicial a lo largo del tiempo"
+    ),
+
+    "equilibrado": (
+        "El Fuego representa la capacidad de iniciar, movilizar recursos y responder a los desafíos. "
+        "Con una presencia equilibrada, suele existir una buena combinación entre iniciativa y capacidad "
+        "para valorar el momento adecuado para actuar.<br/><br/>"
+        "Puedes ilusionarte con nuevos proyectos sin necesidad de vivir en un estado constante de acción, "
+        "alternando movimiento y pausa cuando la situación lo requiere.<br/><br/>"
+        "<b>Observa:</b><br/>"
+        "• qué alimenta tu motivación de forma sostenida<br/>"
+        "• cómo equilibras entusiasmo y constancia<br/>"
+        "• cuándo actuar y cuándo esperar resulta igual de valioso"
+    ),
+
+    "bajo": (
+        "El Fuego representa el impulso para iniciar, actuar y avanzar hacia lo que deseas. "
+        "Cuando aparece con menor presencia, la motivación puede necesitar más tiempo para activarse "
+        "o surgir con mayor claridad cuando existe un propósito que realmente te conecta.<br/><br/>"
+        "Esto no significa falta de energía ni de capacidad para emprender proyectos. Puede indicar que "
+        "tu impulso no suele aparecer de manera inmediata y que necesitas encontrar un sentido profundo "
+        "antes de ponerte en marcha.<br/><br/>"
+        "<b>Observa:</b><br/>"
+        "• qué despierta realmente tus ganas de actuar<br/>"
+        "• cómo puedes favorecer el inicio de aquello que es importante para ti<br/>"
+        "• qué diferencia existe entre esperar el momento adecuado y posponer indefinidamente"
+    ),
+},
+
 }
 
 # ─── FUNCIONES DE CÁLCULO ────────────────────────────────────────────────────
@@ -1178,14 +1231,10 @@ def dibujar_rueda(carta, nombre_persona, archivo_salida):
         zorder=7
     )
 
-    # ─── TÍTULO ─────────────────────────────────────────────────────────────
+    # ─── GUARDAR IMAGEN ─────────────────────────────────────────────────────
 
-    plt.title(
-        f"Carta natal base — {nombre_persona}",
-        fontsize=14,
-        fontweight="bold",
-        pad=15
-    )
+    ax.set_title("")
+    fig.suptitle("")
 
     plt.tight_layout()
 
@@ -1197,7 +1246,7 @@ def dibujar_rueda(carta, nombre_persona, archivo_salida):
         edgecolor="none"
     )
 
-    plt.close()
+    plt.close(fig)
 
 
 # ─────────────────────────────────────────────────────────────
@@ -1277,63 +1326,244 @@ MC_SIGNO = {
 "Piscis": "sensibilidad, imaginación y capacidad de adaptación.",
 }
 
+def texto_apertura(conteo_elem):
 
-def texto_vision_general(carta, conteo_elem, conteo_modal):
-    mc_signo = carta["mc"]["signo"]
-
-    def _fpt(v):
-        return str(int(v)) if v == int(v) else str(v)
-
-    ordenado = sorted(conteo_elem.items(), key=lambda x: -x[1])
-    alto = [e for e, n in ordenado if n >= 5.5]
-    bajo = [e for e, n in ordenado if n <= 2.0]
-
-    texto = (
-        f"Tu carta muestra esta distribución de elementos: "
-        f"Fuego {_fpt(conteo_elem['Fuego'])}, "
-        f"Tierra {_fpt(conteo_elem['Tierra'])}, "
-        f"Aire {_fpt(conteo_elem['Aire'])}, "
-        f"Agua {_fpt(conteo_elem['Agua'])}. "
+    orden = sorted(
+        conteo_elem.items(),
+        key=lambda x: -x[1]
     )
 
-    if alto:
-        desc = " y ".join([f"{e} ({_desc_elemento(e)})" for e in alto])
-        texto += (
-            f"El elemento más presente es {desc}. "
-            f"Esto señala un registro que suele aparecer con facilidad en tu forma de funcionar. "
+    dominante = orden[0][0]
+
+    return (
+        "Toda carta tiene una forma particular de organizar la energía.<br/><br/>"
+        "En la tuya aparece una manera muy concreta de responder a la vida, de iniciar los procesos y de relacionarte con lo que ocurre alrededor.<br/><br/>"
+        "Lo que vas a leer a continuación no pretende definir quién eres. "
+        "Pretende ofrecer una primera mirada sobre aquello que parece organizar el conjunto de tu carta."
+    )
+
+
+def texto_vision_general(carta, conteo_elem, conteo_modal):
+
+    ordenado = sorted(
+        conteo_elem.items(),
+        key=lambda x: -x[1]
+    )
+
+    elementos_altos = [
+        elemento
+        for elemento, valor in ordenado
+        if valor >= 5.5
+    ]
+
+    elementos_bajos = [
+        elemento
+        for elemento, valor in ordenado
+        if valor <= 2.0
+    ]
+
+    modal_max = max(
+        conteo_modal,
+        key=conteo_modal.get
+    )
+
+    mc_signo = carta["mc"]["signo"]
+
+    parrafos = []
+
+    parrafos.append(
+        "Si tuviéramos que resumir tu carta en unas pocas ideas, "
+        "probablemente empezaríamos por aquí."
+    )
+
+    if len(elementos_altos) >= 2:
+
+        elemento_1 = elementos_altos[0]
+        elemento_2 = elementos_altos[1]
+
+        parrafos.append(
+            f"En ella aparecen dos fuerzas especialmente presentes: "
+            f"<b>{elemento_1}</b> y <b>{elemento_2}</b>."
         )
 
-    if bajo:
-        desc = " y ".join([f"{e} ({_desc_elemento(e)})" for e in bajo])
-        texto += (
-            f"El elemento menos presente es {desc}. "
-            f"No significa ausencia, sino una cualidad que puede necesitar más atención consciente. "
-        )
-
-    modal_max = max(conteo_modal, key=conteo_modal.get)
-
-    if conteo_modal[modal_max] >= 4:
-        desc_modal = {
-            "Cardinal": (
-                "Predomina la modalidad cardinal, asociada a la iniciativa, el comienzo y la capacidad de activar procesos. "
+        combinaciones = {
+            ("Fuego", "Agua"): (
+                "El Fuego impulsa a actuar, iniciar y avanzar. "
+                "El Agua percibe, siente y conecta profundamente con lo que ocurre "
+                "dentro y fuera de ti. Cuando ambas energías trabajan juntas, "
+                "pueden dar lugar a una gran capacidad para implicarte con intensidad "
+                "en aquello que consideras importante. Pero también pueden hacer que "
+                "algunas experiencias se vivan con mucha fuerza y necesiten más tiempo "
+                "para integrarse."
             ),
-            "Fija": (
-                "Predomina la modalidad fija, asociada a la constancia, la continuidad y la capacidad de sostener lo importante. "
+            ("Agua", "Fuego"): (
+                "El Agua percibe, siente y conecta profundamente con lo que ocurre "
+                "dentro y fuera de ti. El Fuego impulsa a actuar, iniciar y avanzar. "
+                "Cuando ambas energías trabajan juntas, pueden dar lugar a una gran "
+                "capacidad para implicarte con intensidad en aquello que consideras "
+                "importante. Pero también pueden hacer que algunas experiencias se "
+                "vivan con mucha fuerza y necesiten más tiempo para integrarse."
             ),
-            "Mutable": (
-                "Predomina la modalidad mutable, asociada a la adaptación, la flexibilidad y el movimiento entre distintas situaciones. "
+            ("Fuego", "Aire"): (
+                "El Fuego impulsa a actuar, iniciar y avanzar. "
+                "El Aire aporta ideas, perspectiva y necesidad de comprender. "
+                "Cuando ambas energías trabajan juntas, suelen generar rapidez, "
+                "curiosidad y capacidad para poner en marcha posibilidades nuevas."
+            ),
+            ("Aire", "Fuego"): (
+                "El Aire aporta ideas, perspectiva y necesidad de comprender. "
+                "El Fuego impulsa a actuar, iniciar y avanzar. "
+                "Cuando ambas energías trabajan juntas, suelen generar rapidez, "
+                "curiosidad y capacidad para poner en marcha posibilidades nuevas."
+            ),
+            ("Agua", "Tierra"): (
+                "El Agua aporta sensibilidad y percepción emocional. "
+                "La Tierra busca estabilidad, concreción y continuidad. "
+                "Cuando ambas energías trabajan juntas, puede existir una gran "
+                "capacidad para cuidar, sostener y dar forma concreta a aquello "
+                "que tiene valor emocional."
+            ),
+            ("Tierra", "Agua"): (
+                "La Tierra busca estabilidad, concreción y continuidad. "
+                "El Agua aporta sensibilidad y percepción emocional. "
+                "Cuando ambas energías trabajan juntas, puede existir una gran "
+                "capacidad para cuidar, sostener y dar forma concreta a aquello "
+                "que tiene valor emocional."
+            ),
+            ("Aire", "Tierra"): (
+                "El Aire aporta ideas, análisis y perspectiva. "
+                "La Tierra busca concreción, estabilidad y resultados que puedan "
+                "sostenerse en el tiempo. Cuando ambas energías trabajan juntas, "
+                "pueden facilitar una buena relación entre pensamiento y aplicación práctica."
+            ),
+            ("Tierra", "Aire"): (
+                "La Tierra busca concreción, estabilidad y resultados que puedan "
+                "sostenerse en el tiempo. El Aire aporta ideas, análisis y perspectiva. "
+                "Cuando ambas energías trabajan juntas, pueden facilitar una buena "
+                "relación entre pensamiento y aplicación práctica."
             ),
         }
 
-        texto += desc_modal.get(modal_max, "")
+        parrafos.append(
+            combinaciones.get(
+                (elemento_1, elemento_2),
+                (
+                    f"{elemento_1} y {elemento_2} aparecen con bastante presencia. "
+                    "La manera en que ambas energías se relacionan forma parte importante "
+                    "de tu forma de responder a la vida."
+                )
+            )
+        )
 
-    mc_desc = MC_SIGNO.get(mc_signo, "una forma propia de orientarte hacia el mundo externo")
+    elif len(elementos_altos) == 1:
 
-    texto += (
-        f"Tu Medio Cielo en {mc_signo} orienta tu presencia pública hacia la {mc_desc}"
+        elemento = elementos_altos[0]
+
+        parrafos.append(
+            f"El elemento con mayor presencia es <b>{elemento}</b>. "
+            f"Esto señala que {_desc_elemento(elemento)} tiende a aparecer "
+            "con bastante facilidad en tu forma de funcionar."
+        )
+
+    else:
+
+        parrafos.append(
+            "La distribución de elementos aparece bastante repartida. "
+            "Esto puede darte acceso a distintas formas de responder según el momento, "
+            "sin que una sola cualidad domine claramente sobre las demás."
+        )
+
+    if elementos_bajos:
+
+        if len(elementos_bajos) == 1:
+
+            elemento = elementos_bajos[0]
+
+            parrafos.append(
+                f"Mientras tanto, <b>{elemento}</b> aparece con menor presencia."
+            )
+
+            textos_bajos = {
+                "Tierra": (
+                    "No es una carencia. Tampoco algo que haya que corregir. "
+                    "Simplemente indica que la estabilidad, los ritmos, la organización "
+                    "o la capacidad de sostener procesos quizá necesiten construirse "
+                    "de forma más consciente, en lugar de surgir automáticamente."
+                ),
+                "Agua": (
+                    "No significa que no exista sensibilidad. Puede indicar que reconocer, "
+                    "expresar o permanecer en contacto con lo emocional necesita más tiempo, "
+                    "espacio y atención consciente."
+                ),
+                "Aire": (
+                    "No significa falta de inteligencia ni de capacidad para comprender. "
+                    "Puede indicar que tomar distancia, ordenar lo que piensas o ponerlo "
+                    "en palabras necesita más intención."
+                ),
+                "Fuego": (
+                    "No significa falta de energía o iniciativa. Puede indicar que el impulso, "
+                    "la confianza para empezar o la capacidad de actuar necesitan una razón "
+                    "clara para ponerse en movimiento."
+                ),
+            }
+
+            parrafos.append(
+                textos_bajos.get(
+                    elemento,
+                    "No se trata de una carencia, sino de una cualidad que puede necesitar "
+                    "más atención consciente para desarrollarse."
+                )
+            )
+
+        else:
+
+            texto_elementos = " y ".join(elementos_bajos)
+
+            parrafos.append(
+                f"<b>{texto_elementos}</b> aparecen con menor presencia. "
+                "No se trata de carencias, sino de cualidades que pueden necesitar "
+                "más intención y conciencia para integrarse en tu forma habitual de funcionar."
+            )
+
+    textos_modalidad = {
+        "Cardinal": (
+            "A todo ello se suma una modalidad predominantemente <b>cardinal</b>, "
+            "que aporta iniciativa, capacidad para comenzar y tendencia a activar procesos."
+        ),
+        "Fija": (
+            "A todo ello se suma una modalidad predominantemente <b>fija</b>, "
+            "que aporta constancia, continuidad y capacidad para sostener aquello "
+            "que consideras importante."
+        ),
+        "Mutable": (
+            "A todo ello se suma una modalidad predominantemente <b>mutable</b>, "
+            "que aporta flexibilidad, adaptación y facilidad para moverte entre "
+            "distintas etapas, ideas o circunstancias."
+        ),
+    }
+
+    if conteo_modal.get(modal_max, 0) >= 4:
+        parrafos.append(
+            textos_modalidad.get(modal_max, "")
+        )
+
+    mc_desc = MC_SIGNO.get(
+        mc_signo,
+        "una forma propia de orientarte hacia el mundo externo"
     )
 
-    return texto
+    parrafos.append(
+        f"Y, como telón de fondo, un <b>Medio Cielo en {mc_signo}</b>, "
+        f"que orienta tu presencia pública hacia {mc_desc}"
+    )
+
+    parrafos.append(
+        "No es una descripción completa de quién eres. "
+        "Es una primera aproximación a la manera en que tu energía "
+        "tiende a organizarse."
+    )
+
+    return "\n\n".join(parrafos)
 
 
 def nivel_elemento(valor):
@@ -1345,16 +1575,58 @@ def nivel_elemento(valor):
 
 
 def textos_elementos_reportlab(conteo_elem):
+
     orden = ["Aire", "Tierra", "Agua", "Fuego"]
+
+    etiquetas_nivel = {
+        "Aire": {
+            "alto": "alto",
+            "equilibrado": "equilibrado",
+            "bajo": "bajo"
+        },
+        "Tierra": {
+            "alto": "alta",
+            "equilibrado": "equilibrada",
+            "bajo": "baja"
+        },
+        "Agua": {
+            "alto": "alta",
+            "equilibrado": "equilibrada",
+            "bajo": "baja"
+        },
+        "Fuego": {
+            "alto": "alto",
+            "equilibrado": "equilibrado",
+            "bajo": "bajo"
+        },
+    }
 
     bloques = []
 
     for elem in orden:
+
         valor = conteo_elem.get(elem, 0)
         nivel = nivel_elemento(valor)
         texto = TEXTOS_ELEMENTOS_PDF[elem][nivel]
 
-        bloques.append((f"{elem} {nivel}", texto))
+        texto = texto.replace(
+            "<br/><br/>",
+            "<br/>"
+        )
+
+        texto = texto.replace(
+            "<br/>• ",
+            "<br/>&nbsp;&nbsp;&nbsp;&nbsp;• "
+        )
+
+        etiqueta = etiquetas_nivel[elem][nivel]
+
+        bloques.append(
+            (
+                f"{elem} {etiqueta}",
+                texto
+            )
+        )
 
     return bloques
 
@@ -1412,11 +1684,13 @@ def bloque_introduccion(subtitulo, cuerpo):
     elementos.append(Paragraph("Introducción", subtitulo))
 
     elementos.append(Paragraph(
-        "Esta carta natal base no busca definir quién eres. "
-        "La astrología se utiliza aquí como lenguaje de observación: "
-        "una forma de mirar cómo se organiza tu energía, qué registros aparecen "
-        "con más facilidad y qué dinámicas pueden influir en tu manera de vivir, "
-        "sostenerte y relacionarte con el entorno.",
+        """
+    <b>Toda carta tiene una forma particular de organizar la energía.</b> La astrología puede llegar a ser muy detallada. Pero antes de profundizar, merece la pena reconocer algunas de las fuerzas principales que organizan tu manera de funcionar.<br/><br/>
+
+    <b>No necesitas saber astrología para recorrer estas páginas.</b> Este cuaderno no está pensado para que aprendas un lenguaje nuevo, sino para ayudarte a mirarte de otra manera. La carta se convierte aquí en un mapa de observación: una forma de reconocer algunos patrones, recursos y desafíos que pueden estar presentes en tu vida.<br/><br/>
+
+    No busques encajar en cada frase. Quédate con aquello que resuene contigo y permite que el resto simplemente quede abierto. Algunas partes tendrán sentido desde la primera lectura. Otras quizá lo hagan más adelante, cuando la experiencia les dé un nuevo significado.
+        """,
         cuerpo
     ))
 
@@ -1440,14 +1714,25 @@ def bloque_rueda(
 ):
 
     elementos = []
-    
-    elementos.append(Paragraph("Carta Natal", subtitulo))
 
+    # Más separación respecto al texto anterior
     elementos.append(
-        Image(ruta_rueda, width=11.2*cm, height=11.2*cm)
+        Spacer(1, 0.7*cm)
     )
 
-    elementos.append(Spacer(1, 0.15*cm))
+    # Rueda más grande
+    elementos.append(
+        Image(
+            ruta_rueda,
+            width=13.2*cm,
+            height=13.2*cm
+        )
+    )
+
+    # Espacio antes del siguiente bloque
+    elementos.append(
+        Spacer(1, 0.4*cm)
+    )
 
     return elementos
 
@@ -1465,6 +1750,26 @@ def bloque_pilares(
     elementos = []
 
     elementos.append(Paragraph("Los tres pilares", subtitulo))
+
+    elementos.append(
+        Paragraph(
+            "Hasta ahora hemos mirado la carta desde cierta distancia. "
+            "Eso nos ha permitido reconocer algunas de las dinámicas que organizan tu energía.<br/><br/>"
+            "Ahora vamos a acercarnos a tres de sus puntos más importantes.<br/><br/>"
+            "El <b>Sol</b>, la <b>Luna</b> y el <b>Ascendente</b> actúan como tres pilares fundamentales "
+            "de cualquier carta natal. Cada uno responde a una pregunta diferente:<br/><br/>"
+            "<b>¿Hacia dónde tiendes a dirigirte?</b><br/>"
+            "<b>¿Qué necesitas para sentirte emocionalmente segura?</b><br/>"
+            "<b>¿Cómo entras en contacto con el mundo?</b><br/><br/>"
+            "Comprender estos tres pilares no explica toda tu carta, pero sí ofrece una base sólida "
+            "desde la que empezar a comprenderte.",
+            cuerpo
+        )
+    )
+
+    elementos.append(
+        Spacer(1, 0.35*cm)
+    )
 
     elementos.append(KeepTogether([
         Paragraph(f"Sol en {sol.get('signo','')}", subtitulo2),
@@ -1492,8 +1797,18 @@ def bloque_vision_general(
 
     elementos = []
 
-    elementos.append(Paragraph("Visión general", subtitulo))
-    elementos.append(Paragraph(vision, cuerpo))
+    elementos.append(Paragraph("Una primera mirada", subtitulo))
+
+    for parrafo in vision.split("\n\n"):
+
+        if parrafo.strip():
+
+            elementos.append(
+                Paragraph(
+                    parrafo.strip(),
+                    cuerpo
+                )
+            )
 
     return elementos
 
@@ -1570,6 +1885,11 @@ def crear_estilos_reportlab():
         spaceAfter=10
     )
 
+    cuerpo_elementos = ParagraphStyle(
+        "CuerpoElementosAI",
+        parent=cuerpo,
+        spaceAfter=10
+    )
 
     centro = ParagraphStyle(
         "CentroAI",
@@ -1583,40 +1903,98 @@ def crear_estilos_reportlab():
         "subtitulo": subtitulo,
         "subtitulo2": subtitulo2,
         "cuerpo": cuerpo,
+        "cuerpo_elementos": cuerpo_elementos,
         "centro": centro,
     }
 
 
-def bloque_distribucion_energetica(conteo_elem, conteo_modal, subtitulo, cuerpo):
-    elementos = []
+def bloque_distribucion_energetica(
+    conteo_elem,
+    conteo_modal,
+    subtitulo,
+    cuerpo
+):
 
-    elementos.append(Paragraph("Distribución energética", subtitulo))
+    elementos = []
 
     tabla_datos = [
         ["Elemento", "Valor", "Modalidad", "Valor"],
-        ["Fuego", conteo_elem.get("Fuego", 0), "Cardinal", conteo_modal.get("Cardinal", 0)],
-        ["Tierra", conteo_elem.get("Tierra", 0), "Fija", conteo_modal.get("Fija", 0)],
-        ["Aire", conteo_elem.get("Aire", 0), "Mutable", conteo_modal.get("Mutable", 0)],
-        ["Agua", conteo_elem.get("Agua", 0), "", ""],
+        [
+            "Fuego",
+            conteo_elem.get("Fuego", 0),
+            "Cardinal",
+            conteo_modal.get("Cardinal", 0)
+        ],
+        [
+            "Tierra",
+            conteo_elem.get("Tierra", 0),
+            "Fija",
+            conteo_modal.get("Fija", 0)
+        ],
+        [
+            "Aire",
+            conteo_elem.get("Aire", 0),
+            "Mutable",
+            conteo_modal.get("Mutable", 0)
+        ],
+        [
+            "Agua",
+            conteo_elem.get("Agua", 0),
+            "",
+            ""
+        ],
     ]
 
-    tabla = Table(tabla_datos, colWidths=[3.2*cm, 2*cm, 3.2*cm, 2*cm])
+    tabla = Table(
+        tabla_datos,
+        colWidths=[
+            3.2*cm,
+            2*cm,
+            3.2*cm,
+            2*cm
+        ]
+    )
 
     tabla.setStyle(TableStyle([
         ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#EDE3D3")),
         ("TEXTCOLOR", (0, 0), (-1, 0), colors.HexColor("#1E508C")),
+
         ("FONTNAME", (0, 0), (-1, 0), "Times-Bold"),
         ("FONTNAME", (0, 1), (-1, -1), "Times-Roman"),
+
         ("FONTSIZE", (0, 0), (-1, -1), 10),
+
         ("ALIGN", (1, 1), (1, -1), "CENTER"),
         ("ALIGN", (3, 1), (3, -1), "CENTER"),
+
         ("GRID", (0, 0), (-1, -1), 0.25, colors.HexColor("#C8B89E")),
+        ("BOX", (0, 0), (-1, -1), 1.2, colors.HexColor("#8C5A00")),
+
         ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+
         ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
         ("TOPPADDING", (0, 0), (-1, -1), 6),
     ]))
 
-    elementos.append(tabla)
+    bloque_completo = KeepTogether([
+        Paragraph(
+            "Distribución energética",
+            subtitulo
+        ),
+
+        Paragraph(
+            "Cada carta organiza su energía de una manera diferente. "
+            "Esta distribución nos permite reconocer esa organización antes de observar "
+            "con más detalle el papel de cada elemento.",
+            cuerpo
+        ),
+
+        Spacer(1, 0.15*cm),
+
+        tabla
+    ])
+
+    elementos.append(bloque_completo)
 
     return elementos
 
@@ -1626,87 +2004,137 @@ def bloque_resumen_carta(
     luna,
     asc,
     mc,
-    conteo_elem,
-    conteo_modal,
     subtitulo
 ):
 
     elementos = []
 
-    elementos.append(Paragraph("Resumen de la carta", subtitulo))
-
-    elementos.append(Spacer(1, 0.50*cm))
-
     tabla_datos = [
-        ["Punto", "Signo", "Casa", "Elemento", "Valor", "Modalidad", "Valor"],
-
-        ["Sol", sol.get("signo", ""), sol.get("casa", ""),
-         "Fuego", conteo_elem.get("Fuego", 0),
-         "Cardinal", conteo_modal.get("Cardinal", 0)],
-
-        ["Luna", luna.get("signo", ""), luna.get("casa", ""),
-         "Tierra", conteo_elem.get("Tierra", 0),
-         "Fija", conteo_modal.get("Fija", 0)],
-
-        ["Asc.", asc.get("signo", ""), "",
-         "Aire", conteo_elem.get("Aire", 0),
-         "Mutable", conteo_modal.get("Mutable", 0)],
-
-        ["MC", mc.get("signo", ""), "",
-         "Agua", conteo_elem.get("Agua", 0),
-         "", ""],
+        ["Punto", "Signo", "Casa"],
+        [
+            "Sol",
+            sol.get("signo", ""),
+            sol.get("casa", "")
+        ],
+        [
+            "Luna",
+            luna.get("signo", ""),
+            luna.get("casa", "")
+        ],
+        [
+            "Ascendente",
+            asc.get("signo", ""),
+            ""
+        ],
+        [
+            "Medio Cielo",
+            mc.get("signo", ""),
+            ""
+        ],
     ]
 
     tabla = Table(
         tabla_datos,
         colWidths=[
-            1.9*cm, 2.1*cm, 1.3*cm,
-            2.0*cm, 1.3*cm,
-            2.0*cm, 1.3*cm
+            4.2*cm,
+            4.2*cm,
+            2.4*cm
         ]
     )
 
     tabla.setStyle(TableStyle([
 
-        # Fondo cabecera
         ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#EDE3D3")),
-
-        # Texto cabecera
         ("TEXTCOLOR", (0, 0), (-1, 0), colors.HexColor("#1E508C")),
 
-        # Fuentes
         ("FONTNAME", (0, 0), (-1, 0), "Times-Bold"),
         ("FONTNAME", (0, 1), (-1, -1), "Times-Roman"),
 
-        # Tamaño
-        ("FONTSIZE", (0, 0), (-1, -1), 8.5),
+        ("FONTSIZE", (0, 0), (-1, -1), 10),
 
-        # Grid fino general
         ("GRID", (0, 0), (-1, -1), 0.25, colors.HexColor("#D8CBB8")),
-
-        # Borde exterior grueso
         ("BOX", (0, 0), (-1, -1), 1.2, colors.HexColor("#8C5A00")),
 
-        # Separadores gruesos entre bloques
-        ("LINEAFTER", (2, 0), (2, -1), 1.2, colors.HexColor("#8C5A00")),
-        ("LINEAFTER", (4, 0), (4, -1), 1.2, colors.HexColor("#8C5A00")),
-
-        # Alineaciones
         ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
         ("ALIGN", (2, 1), (2, -1), "CENTER"),
-        ("ALIGN", (4, 1), (4, -1), "CENTER"),
-        ("ALIGN", (6, 1), (6, -1), "CENTER"),
 
-        # Padding
-        ("TOPPADDING", (0, 0), (-1, -1), 5),
-        ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
+        ("TOPPADDING", (0, 0), (-1, -1), 7),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 7),
 
     ]))
 
-    elementos.append(tabla)
+    bloque_completo = KeepTogether([
+        Paragraph("Claves principales", subtitulo),
+
+        Paragraph(
+            "Antes de profundizar, conviene situar los cuatro puntos desde los que "
+            "empieza esta primera lectura de tu carta.",
+            ParagraphStyle(
+                "IntroduccionClavesAI",
+                parent=subtitulo,
+                fontName="Times-Roman",
+                fontSize=11,
+                leading=16,
+                textColor=colors.HexColor("#333333"),
+                spaceBefore=0,
+                spaceAfter=8
+            )
+        ),
+
+        Spacer(1, 0.15*cm),
+
+        tabla
+    ])
+
+    elementos.append(bloque_completo)
 
     return elementos
 
+def texto_integracion_elementos(conteo_elem):
+
+    ordenados = sorted(
+        conteo_elem.items(),
+        key=lambda item: item[1],
+        reverse=True
+    )
+
+    principal = ordenados[0][0]
+    secundario = ordenados[1][0]
+    menor = ordenados[-1][0]
+
+    funciones = {
+        "Fuego": "impulso, iniciativa y necesidad de movimiento",
+        "Tierra": "estabilidad, concreción y capacidad de sostener",
+        "Aire": "perspectiva, pensamiento y comunicación",
+        "Agua": "sensibilidad, percepción emocional y conexión"
+    }
+
+    texto = (
+        f"Ningún elemento funciona de manera aislada. En tu carta, "
+        f"{principal} y {secundario} aparecen con especial fuerza. "
+        f"{principal} aporta {funciones[principal]}, mientras que "
+        f"{secundario} incorpora {funciones[secundario]}. "
+        "La manera en la que ambas energías se relacionan forma parte importante "
+        "de tu modo de responder a la vida."
+    )
+
+    if conteo_elem.get(menor, 0) <= 2.0:
+
+        texto += (
+            f"<br/><br/>{menor} aparece con menor presencia. "
+            f"Esto no significa que te falten {funciones[menor]}. "
+            "Significa que estas cualidades quizá necesiten construirse de una forma "
+            "más consciente para poder sostener el movimiento del resto de tu energía."
+        )
+
+    texto += (
+        "<br/><br/>La clave no está en potenciar todavía más aquello que ya aparece "
+        "con facilidad, sino en aprender a relacionar todas estas cualidades de una "
+        "forma más coherente. Lo que una parte de ti inicia, otra necesita poder "
+        "comprenderlo, sentirlo o sostenerlo."
+    )
+
+    return texto
 
 def bloque_lectura_elementos(
     conteo_elem,
@@ -1717,24 +2145,41 @@ def bloque_lectura_elementos(
 
     elementos = []
 
-    elementos.append(Paragraph("Lectura por elementos", subtitulo))
+    elementos.append(
+        Paragraph(
+            "Lectura por elementos",
+            subtitulo
+        )
+    )
 
     for titulo_elem, texto_elem in textos_elementos_reportlab(conteo_elem):
 
-        elementos.append(Paragraph(titulo_elem, subtitulo2))
-        elementos.append(Paragraph(texto_elem, cuerpo))
-        elementos.append(Spacer(1, 0.3*cm))
+        bloque_elemento = KeepTogether([
+            Paragraph(
+                titulo_elem,
+                subtitulo2
+            ),
+            Paragraph(
+                texto_elem,
+                cuerpo
+            )
+        ])
 
-    elementos.append(Paragraph("Integración de elementos", subtitulo))
+        elementos.append(bloque_elemento)
 
-    elementos.append(Paragraph(
-        "Esto no define quién eres. Solo muestra cómo tiendes a funcionar.<br/><br/>"
-        "No hay nada que cambiar. Se trata de verlo y aprender a manejarlo mejor.<br/><br/>"
-        "<i>Ten en cuenta que tienes que hacer la amalgama de todos los elementos. "
-        "Por ejemplo, si tienes Fuego muy alto pero también mucha Tierra, "
-        "puede que no dejes proyectos a medias.</i>",
-        cuerpo
-    ))
+    elementos.append(
+        Paragraph(
+            "Cuando todas las piezas se relacionan",
+            subtitulo
+        )
+    )
+
+    elementos.append(
+        Paragraph(
+            texto_integracion_elementos(conteo_elem),
+            cuerpo
+        )
+    )
 
     return elementos
 
@@ -1746,20 +2191,34 @@ def bloque_cierre(
 
     elementos = []
 
-    elementos.append(Paragraph("Cierre", subtitulo))
+    elementos.append(
+        Paragraph(
+            "Cierre",
+            subtitulo
+        )
+    )
 
-    elementos.append(Paragraph(
-        "Esta carta no busca definirte ni darte una identidad fija. "
-        "La astrología se utiliza aquí como lenguaje de observación: "
-        "una forma de mirar tendencias, ritmos y maneras de relacionarte con la vida.",
-        cuerpo
-    ))
-
-    elementos.append(Paragraph(
-        "La lectura completa no busca darte más información. "
-        "Busca ayudarte a entender cómo sostener tu vida sin romperte por dentro.",
-        cuerpo
-    ))
+    elementos.append(
+        Paragraph(
+            "Esta carta es solo el comienzo.<br/><br/>"
+            "Quizá algunas partes te hayan resultado evidentes. "
+            "Otras pueden necesitar tiempo para cobrar sentido. "
+            "Eso también forma parte del proceso.<br/><br/>"
+            "Una carta natal no se comprende de una sola vez. "
+            "Se va revelando poco a poco, a medida que la experiencia permite "
+            "reconocer aquello que antes pasaba desapercibido.<br/><br/>"
+            "Este cuaderno no busca responder todas las preguntas, sino ofrecerte "
+            "un primer mapa desde el que empezar a observar cómo estas dinámicas "
+            "aparecen en tu vida cotidiana.<br/><br/>"
+            "Si deseas seguir profundizando, el siguiente paso natural es la <b>Luna</b>.<br/><br/>"
+            "Si en estas páginas hemos observado cómo se organiza tu energía de forma general, "
+            "la Luna nos invita a un lugar mucho más íntimo: la forma en la que buscas seguridad, "
+            "procesas lo que sientes y aprendes a cuidar de ti.<br/><br/>"
+            "Comprender cómo funcionas es importante. "
+            "Aprender a vivir desde esa comprensión puede transformar muchas cosas.",
+            cuerpo
+        )
+    )
 
     return elementos
 
@@ -1802,6 +2261,7 @@ def generar_pdf_reportlab_base(
     subtitulo2 = estilos_ai["subtitulo2"]
     cuerpo = estilos_ai["cuerpo"]
     centro = estilos_ai["centro"]
+    cuerpo_elementos = estilos_ai["cuerpo_elementos"]
 
 
     contenido = []
@@ -1819,6 +2279,13 @@ def generar_pdf_reportlab_base(
         )
     )
 
+    # Introducción
+    contenido.extend(
+        bloque_introduccion(
+            subtitulo,
+            cuerpo
+        )
+    )
 
     # Rueda
     contenido.extend(
@@ -1833,25 +2300,20 @@ def generar_pdf_reportlab_base(
         )
     )
 
+
+
     # Tabla
     contenido.extend(
-        bloque_resumen_carta(
-            sol,
-            luna,
-            asc,
-            mc,
-            conteo_elem,
-            conteo_modal,
-            subtitulo
-        )
-    )
+	    bloque_resumen_carta(
+        	sol,
+	        luna,
+        	asc,
+	        mc,
+        	subtitulo
+	    )
+	)
 
-
-    contenido.append(PageBreak())
-    # Introducción
-    contenido.extend(
-        bloque_introduccion(subtitulo, cuerpo)
-    )
+    contenido.append(Spacer(1, 0.45*cm))
 
     # Visión general
     contenido.extend(
@@ -1862,13 +2324,25 @@ def generar_pdf_reportlab_base(
         )
     )
 
+    # Distribución de elementos y modalidades
+    contenido.extend(
+	    bloque_distribucion_energetica(
+        	conteo_elem,
+	        conteo_modal,
+        	subtitulo,
+	        cuerpo
+	    )
+	)
+
+    contenido.append(Spacer(1, 0.8*cm))
+
     # Elementos y modalidades
     contenido.extend(
             bloque_lectura_elementos(
             conteo_elem,
             subtitulo,
             subtitulo2,
-            cuerpo
+            cuerpo_elementos
         )
     )
 
@@ -1888,6 +2362,8 @@ def generar_pdf_reportlab_base(
             cuerpo
         )
     )
+
+    contenido.append(PageBreak())
 
     # Cierre
     contenido.extend(
