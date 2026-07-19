@@ -4334,5 +4334,118 @@ def main():
     print(f"\nPDF generado correctamente:\n{ruta_pdf}")
 
 
+def generar_carta_api(
+    nombre,
+    fecha,
+    hora,
+    lugar,
+    lat=None,
+    lon=None,
+    tz_name=None
+):
+    print("Generando informe Sol · Ascendente · Nodos para:", nombre)
+
+    try:
+        # ── FECHA ─────────────────────────────────────────────
+        dia, mes, anio = map(int, fecha.split("/"))
+
+        # ── HORA ──────────────────────────────────────────────
+        partes_hora = hora.split(":")
+        hora_num = int(partes_hora[0])
+        minuto = int(partes_hora[1])
+
+        # ── GEOLOCALIZACIÓN ───────────────────────────────────
+        if lat is not None and lon is not None:
+            lat = float(lat)
+            lon = float(lon)
+
+            if not tz_name:
+                tz_name = obtener_timezone(lat, lon)
+        else:
+            lat, lon = geocodificar(lugar)
+            tz_name = obtener_timezone(lat, lon)
+
+        # ── CÁLCULO ───────────────────────────────────────────
+        carta = calcular_carta(
+            anio,
+            mes,
+            dia,
+            hora_num,
+            minuto,
+            lat,
+            lon,
+            tz_name
+        )
+
+        aspectos = calcular_aspectos_sol_asc_nodos(
+            carta["planetas"],
+            carta["asc"]
+        )
+
+        # ── ARCHIVOS ──────────────────────────────────────────
+        nombre_f = (
+            nombre
+            .replace(" ", "_")
+            .replace("/", "-")
+            .replace("\\", "-")
+        )
+
+        ruta_base = os.path.join(
+            BASE_DIR,
+            nombre_f + "_Sol_ASC_Nodos"
+        )
+
+        ruta_pdf = ruta_base + ".pdf"
+        ruta_rueda = ruta_base + "_rueda.png"
+
+        dibujar_rueda_sol_asc_nodos(
+            carta,
+            aspectos,
+            ruta_rueda
+        )
+
+        generar_pdf_sol_asc_nodos(
+            ruta_pdf,
+            carta,
+            nombre,
+            anio,
+            mes,
+            dia,
+            hora_num,
+            minuto,
+            lugar,
+            lat,
+            lon,
+            tz_name,
+            aspectos,
+            ruta_rueda
+        )
+
+        if not os.path.exists(ruta_pdf):
+            return {
+                "ok": False,
+                "error": "No se ha podido crear el PDF."
+            }
+
+        nombre_archivo = os.path.basename(ruta_pdf)
+
+        return {
+            "ok": True,
+            "pdf": f"/descargas/{nombre_archivo}",
+            "pdf_url": f"/descargas/{nombre_archivo}"
+        }
+
+    except Exception as error:
+        print(
+            "Error generando Sol · Ascendente · Nodos:",
+            error
+        )
+
+        return {
+            "ok": False,
+            "error": str(error)
+        }
+
+
 if __name__ == "__main__":
     main()
