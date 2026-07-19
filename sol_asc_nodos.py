@@ -2774,7 +2774,7 @@ ASPECTOS_NODO_NORTE_LUNA = {
 }
 
 
-ASPECTOS_NODO_NORTE_LUNA = {
+ASPECTOS_NODO_SUR_LUNA = {
 
 ("Nodo Sur", "Luna", "="): (
     "La Luna y el Nodo Sur se encuentran unidos, por lo que una parte importante de tu mundo emocional "
