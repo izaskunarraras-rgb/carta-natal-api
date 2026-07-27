@@ -3,6 +3,7 @@ from flask import Flask, request, jsonify, send_from_directory
 from carta_natal_base import generar_carta_api
 from luna_casa4_casa6 import generar_carta_api as generar_luna_api
 from sol_asc_nodos import generar_carta_api as generar_sol_asc_nodos_api
+from planetas_personales import generar_carta_api as generar_planetas_personales_api
 
 import os
 
@@ -71,6 +72,19 @@ def generar_carta():
         print("Generando informe Sol · Ascendente · Nodos")
 
         resultado = generar_sol_asc_nodos_api(
+            nombre,
+            fecha,
+            hora,
+            lugar,
+            lat=lat,
+            lon=lon,
+            tz_name=tz_name
+        )
+
+    elif "opPersonales" in opciones:
+        print("Generando informe Planetas Personales")
+
+        resultado = generar_planetas_personales_api(
             nombre,
             fecha,
             hora,
