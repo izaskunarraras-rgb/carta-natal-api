@@ -4,6 +4,7 @@ from carta_natal_base import generar_carta_api
 from luna_casa4_casa6 import generar_carta_api as generar_luna_api
 from sol_asc_nodos import generar_carta_api as generar_sol_asc_nodos_api
 from planetas_personales import generar_carta_api as generar_planetas_personales_api
+from planetas_sociales import generar_carta_api as generar_planetas_sociales_api
 
 import os
 
@@ -93,6 +94,19 @@ def generar_carta():
             lon=lon,
             tz_name=tz_name
         )
+
+        elif "opSociales" in opciones:
+            print("Generando informe Planetas Sociales")
+
+            resultado = generar_planetas_sociales_api(
+                nombre,
+                fecha,
+                hora,
+                lugar,
+                lat=lat,
+                lon=lon,
+                tz_name=tz_name
+            )
 
     else:
         print("Generando Carta Base")
