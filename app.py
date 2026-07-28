@@ -95,18 +95,18 @@ def generar_carta():
             tz_name=tz_name
         )
 
-        elif "opSociales" in opciones:
-            print("Generando informe Planetas Sociales")
+    elif "opSociales" in opciones:
+        print("Generando informe Planetas Sociales")
 
-            resultado = generar_planetas_sociales_api(
-                nombre,
-                fecha,
-                hora,
-                lugar,
-                lat=lat,
-                lon=lon,
-                tz_name=tz_name
-            )
+        resultado = generar_planetas_sociales_api(
+            nombre,
+            fecha,
+            hora,
+            lugar,
+            lat=lat,
+            lon=lon,
+            tz_name=tz_name
+        )
 
     else:
         print("Generando Carta Base")
