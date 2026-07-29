@@ -5,6 +5,7 @@ from luna_casa4_casa6 import generar_carta_api as generar_luna_api
 from sol_asc_nodos import generar_carta_api as generar_sol_asc_nodos_api
 from planetas_personales import generar_carta_api as generar_planetas_personales_api
 from planetas_sociales import generar_carta_api as generar_planetas_sociales_api
+from planetas_transpersonales import generar_carta_api as generar_planetas_transpersonales_api
 
 import os
 
