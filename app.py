@@ -135,7 +135,12 @@ def generar_carta():
             tz_name=tz_name
         )
 
-    return jsonify(resultado)
+    print("=" * 60)
+    print("RESULTADO QUE SE ENVÍA A WIX:")
+    print(resultado)
+    print("=" * 60)
+
+return jsonify(resultado)
 
 
 if __name__ == "__main__":
