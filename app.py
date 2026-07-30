@@ -140,7 +140,7 @@ def generar_carta():
     print(resultado)
     print("=" * 60)
 
-return jsonify(resultado)
+    return jsonify(resultado)
 
 
 if __name__ == "__main__":
