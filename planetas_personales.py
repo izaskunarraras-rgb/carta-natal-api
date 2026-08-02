@@ -101,6 +101,58 @@ COLORES_PLANETA  = {
 }
 
 
+PLANETAS_PERSONALES_TEXTOS_TIPO_ASPECTO = {
+
+    "Conjunción": (
+        "Estas dos partes de ti se encuentran muy unidas y tienden a expresarse de manera simultánea. "
+        "En ocasiones puede resultar difícil distinguir dónde termina una y comienza la otra, porque ambas participan en una misma respuesta.\n\n"
+
+        "Esta unión concentra mucha energía y hace que la relación entre ambas tenga una presencia importante en tu forma de vivir. "
+        "El aprendizaje consiste en reconocerlas por separado para que puedan colaborar sin que una quede completamente absorbida por la otra."
+    ),
+
+    "Sextil": (
+        "Entre ambas existe una posibilidad natural de colaboración. "
+        "La conexión está disponible, pero suele desarrollarse con mayor claridad cuando la utilizas de forma consciente y le das espacio en la vida cotidiana.\n\n"
+
+        "Cada vez que pones en relación estas dos partes de ti aparecen nuevos recursos. "
+        "El aprendizaje consiste en no esperar que esa facilidad se despliegue sola, sino participar activamente en su desarrollo."
+    ),
+
+    "Trígono": (
+        "Estas dos partes de ti tienden a apoyarse de manera espontánea. "
+        "Existe una fluidez natural que facilita que una refuerce a la otra sin generar demasiada fricción interna.\n\n"
+
+        "Precisamente por resultar tan familiar, es posible que no siempre reconozcas todo su valor. "
+        "El aprendizaje consiste en hacer consciente esta facilidad y utilizarla como uno de tus recursos internos."
+    ),
+
+    "Cuadratura": (
+        "Estas dos partes de ti no siempre avanzan en la misma dirección. "
+        "En determinados momentos pueden generar tensión, respuestas contradictorias o la sensación de que atender una implica descuidar la otra.\n\n"
+
+        "Esa incomodidad no representa un fallo, sino una fuerza que te impulsa a desarrollar nuevas respuestas. "
+        "El aprendizaje consiste en construir una forma propia de integrar ambas necesidades sin intentar eliminar ninguna."
+    ),
+
+    "Oposición": (
+        "Estas dos partes de ti buscan constantemente un punto de equilibrio. "
+        "Es posible que, en diferentes momentos, una tome todo el protagonismo mientras la otra parezca quedar proyectada en las personas o situaciones que encuentras fuera de ti.\n\n"
+
+        "El aprendizaje no consiste en elegir una de las dos, sino en reconocer que ambas forman parte de tu experiencia. "
+        "Cuando pueden dialogar, dejan de vivirse como extremos enfrentados y comienzan a complementarse."
+    ),
+
+    "Quincuncio": (
+        "La relación entre estas dos partes de ti suele requerir ajustes continuos. "
+        "No siempre resulta evidente qué tienen que ver entre sí o cómo atenderlas al mismo tiempo, por lo que pueden producir una sensación difícil de identificar.\n\n"
+
+        "El aprendizaje se desarrolla mediante la observación, la adaptación y pequeños cambios sostenidos. "
+        "Con el tiempo puedes construir una manera muy personal y precisa de dar espacio a ambas."
+    ),
+}
+
+
 # ─── TEXTOS: MERCURIO ─────────────────────────────────────────────
 MERCURIO_SIGNO = {
 
@@ -473,57 +525,6 @@ MERCURIO_COMBINACIONES = {
     ),
 }
 
-
-TEXTOS_TIPO_ASPECTO = {
-
-    "Conjunción": (
-        "Estas dos partes de ti se encuentran muy unidas y tienden a expresarse de manera simultánea. "
-        "En ocasiones puede resultar difícil distinguir dónde termina una y comienza la otra, porque ambas participan en una misma respuesta.\n\n"
-
-        "Esta unión concentra mucha energía y hace que la relación entre ambas tenga una presencia importante en tu forma de vivir. "
-        "El aprendizaje consiste en reconocerlas por separado para que puedan colaborar sin que una quede completamente absorbida por la otra."
-    ),
-
-    "Sextil": (
-        "Entre ambas existe una posibilidad natural de colaboración. "
-        "La conexión está disponible, pero suele desarrollarse con mayor claridad cuando la utilizas de forma consciente y le das espacio en la vida cotidiana.\n\n"
-
-        "Cada vez que pones en relación estas dos partes de ti aparecen nuevos recursos. "
-        "El aprendizaje consiste en no esperar que esa facilidad se despliegue sola, sino participar activamente en su desarrollo."
-    ),
-
-    "Trígono": (
-        "Estas dos partes de ti tienden a apoyarse de manera espontánea. "
-        "Existe una fluidez natural que facilita que una refuerce a la otra sin generar demasiada fricción interna.\n\n"
-
-        "Precisamente por resultar tan familiar, es posible que no siempre reconozcas todo su valor. "
-        "El aprendizaje consiste en hacer consciente esta facilidad y utilizarla como uno de tus recursos internos."
-    ),
-
-    "Cuadratura": (
-        "Estas dos partes de ti no siempre avanzan en la misma dirección. "
-        "En determinados momentos pueden generar tensión, respuestas contradictorias o la sensación de que atender una implica descuidar la otra.\n\n"
-
-        "Esa incomodidad no representa un fallo, sino una fuerza que te impulsa a desarrollar nuevas respuestas. "
-        "El aprendizaje consiste en construir una forma propia de integrar ambas necesidades sin intentar eliminar ninguna."
-    ),
-
-    "Oposición": (
-        "Estas dos partes de ti buscan constantemente un punto de equilibrio. "
-        "Es posible que, en diferentes momentos, una tome todo el protagonismo mientras la otra parezca quedar proyectada en las personas o situaciones que encuentras fuera de ti.\n\n"
-
-        "El aprendizaje no consiste en elegir una de las dos, sino en reconocer que ambas forman parte de tu experiencia. "
-        "Cuando pueden dialogar, dejan de vivirse como extremos enfrentados y comienzan a complementarse."
-    ),
-
-    "Quincuncio": (
-        "La relación entre estas dos partes de ti suele requerir ajustes continuos. "
-        "No siempre resulta evidente qué tienen que ver entre sí o cómo atenderlas al mismo tiempo, por lo que pueden producir una sensación difícil de identificar.\n\n"
-
-        "El aprendizaje se desarrolla mediante la observación, la adaptación y pequeños cambios sostenidos. "
-        "Con el tiempo puedes construir una manera muy personal y precisa de dar espacio a ambas."
-    ),
-}
 
 MERCURIO_INTEGRACION = {
 
@@ -1794,7 +1795,7 @@ def obtener_texto_aspecto(combinaciones, planeta, tipo_aspecto):
     """
 
     texto_combinacion = combinaciones.get(planeta)
-    texto_aspecto = TEXTOS_TIPO_ASPECTO.get(tipo_aspecto)
+    texto_aspecto = PLANETAS_PERSONALES_TEXTOS_TIPO_ASPECTO.get(tipo_aspecto)
 
     if not texto_combinacion or not texto_aspecto:
         return ""
@@ -3000,7 +3001,7 @@ def bloque_planeta_personal(
         planeta=planeta,
         aspectos=aspectos,
         combinaciones=combinaciones,
-        textos_tipo_aspecto=textos_tipo_aspecto,
+        textos_tipo_aspecto=PLANETAS_PERSONALES_TEXTOS_TIPO_ASPECTO,
         estilos=estilos,
     )
 
@@ -3025,7 +3026,7 @@ def bloque_mercurio(
         textos_signo=MERCURIO_SIGNO,
         textos_casa=MERCURIO_CASA,
         combinaciones=MERCURIO_COMBINACIONES,
-        textos_tipo_aspecto=MERCURIO_TEXTOS_TIPO_ASPECTO,
+        textos_tipo_aspecto=PLANETAS_PERSONALES_TEXTOS_TIPO_ASPECTO,
         integracion=MERCURIO_INTEGRACION,
         subtitulo_capitulo=(
             "La forma en que observas, comprendes y das significado a lo que vives."
@@ -3046,7 +3047,7 @@ def bloque_venus(
         textos_signo=VENUS_SIGNO,
         textos_casa=VENUS_CASA,
         combinaciones=VENUS_COMBINACIONES,
-        textos_tipo_aspecto=VENUS_TEXTOS_TIPO_ASPECTO,
+        textos_tipo_aspecto=PLANETAS_PERSONALES_TEXTOS_TIPO_ASPECTO,
         integracion=VENUS_INTEGRACION,
         subtitulo_capitulo=(
             "La forma en que valoras, te vinculas y reconoces aquello que merece un lugar en tu vida."
@@ -3067,7 +3068,7 @@ def bloque_marte(
         textos_signo=MARTE_SIGNO,
         textos_casa=MARTE_CASA,
         combinaciones=MARTE_COMBINACIONES,
-        textos_tipo_aspecto=MARTE_TEXTOS_TIPO_ASPECTO,
+        textos_tipo_aspecto=PLANETAS_PERSONALES_TEXTOS_TIPO_ASPECTO,
         integracion=MARTE_INTEGRACION,
         subtitulo_capitulo=(
             "La forma en que actúas, afirmas tus límites y diriges tu energía."
