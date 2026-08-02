@@ -1786,7 +1786,12 @@ def calcular_aspectos_modulo(planetas, asc, planetas_focales):
 
 
 
-def obtener_texto_aspecto(combinaciones, planeta, tipo_aspecto):
+def obtener_texto_aspecto(
+    combinaciones,
+    textos_tipo_aspecto,
+    planeta,
+    tipo_aspecto,
+):
     """
     Construye la interpretación de un aspecto combinando:
 
@@ -1795,14 +1800,12 @@ def obtener_texto_aspecto(combinaciones, planeta, tipo_aspecto):
     """
 
     texto_combinacion = combinaciones.get(planeta)
-    texto_aspecto = PLANETAS_PERSONALES_TEXTOS_TIPO_ASPECTO.get(tipo_aspecto)
+    texto_aspecto = textos_tipo_aspecto.get(tipo_aspecto)
 
     if not texto_combinacion or not texto_aspecto:
         return ""
 
     return f"{texto_combinacion}\n\n{texto_aspecto}"
-
-
 
 def calcular_aspectos_planetas_personales(planetas, asc):
     return calcular_aspectos_modulo(
