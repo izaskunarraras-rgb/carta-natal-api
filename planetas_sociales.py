@@ -143,7 +143,7 @@ Tu confianza aumenta cuando conviertes la curiosidad en conocimiento integrado y
 "Cáncer":
 """Necesitas sentir que el crecimiento protege también tu mundo emocional. La confianza suele desarrollarse cuando puedes cuidar, pertenecer y construir vínculos que aporten seguridad.
 
-"Tiendes a ampliar tu vida fortaleciendo aquello que consideras un hogar, ya sea una familia, una comunidad o cualquier espacio donde puedas sentir una acogida profunda."
+Tiendes a ampliar tu vida fortaleciendo aquello que consideras un hogar, ya sea una familia, una comunidad o cualquier espacio donde puedas sentir una acogida profunda.
 
 Cuando esta energía se desregula puedes buscar protección en exceso o limitar nuevas experiencias por temor a perder esa seguridad emocional.
 
@@ -183,7 +183,7 @@ Es habitual que desarrolles una gran capacidad para descubrir significados ocult
 
 Cuando esta energía se desregula puedes buscar intensidad de forma constante o desconfiar de aquello que parece demasiado sencillo.
 
-La confianza aumenta cuando comprendes que no toda transformación necesita producirse desde el sufrimiento; también puede surgir desde la conciencia y la integración.""",
+La confianza aumenta cuando comprendes que no toda transformación necesita producirse desde el sufrimiento; también puede surgir desde la consciencia y la integración.""",
 
 "Sagitario":
 """Necesitas sentir que la vida siempre puede abrir nuevos horizontes. La confianza aparece cuando amplías conocimientos, exploras otros lugares o encuentras ideas que den sentido a tu experiencia.
@@ -294,7 +294,7 @@ Tiendes a ampliar tu visión explorando temas complejos y buscando significado i
 
 Cuando esta energía se desregula puedes sentir atracción por procesos excesivamente extremos o mantener la sensación de que solo se crece a través de la dificultad.
 
-La expansión encuentra un apoyo más sólido cuando reconoces que la transformación también puede producirse desde la conciencia, la intimidad y la confianza.""",
+La expansión encuentra un apoyo más sólido cuando reconoces que la transformación también puede producirse desde la consciencia, la intimidad y la confianza.""",
 
 9:
 """Necesitas ampliar constantemente tu horizonte. La confianza suele crecer cuando estudias, viajas, conoces otras culturas o encuentras ideas que aportan un sentido más amplio a tu experiencia.
@@ -343,7 +343,7 @@ JUPITER_COMBINACIONES = {
         "Cuando ambas partes colaboran, aparece una confianza natural en tus recursos y una mayor facilidad para reconocer oportunidades de desarrollo. "
         "Tu entusiasmo puede ayudarte a afirmar tu presencia y a compartir con otras personas una visión amplia de lo que es posible.\n\n"
 
-        "Esta combinación te invita a distinguir entre confiar en ti y necesitar demostrar constantemente tu valor. "
+        "Esta combinación te invita a distinguir entre confiar en ti y sentir que necesitas demostrar constantemente tu valor. "
         "La seguridad interior crece cuando puedes reconocer tus posibilidades sin perder de vista tus límites, tus dudas y todo aquello que todavía estás aprendiendo."
     ),
 
@@ -391,7 +391,7 @@ JUPITER_COMBINACIONES = {
 
     "Saturno": (
         "Tu necesidad de crecer mantiene un diálogo constante con la parte de ti que busca estructura, prudencia y resultados sostenibles. "
-        "Una función amplía las posibilidades; la otra comprueba qué puede mantenerse realmente en el tiempo.\n\n"
+        "Una función amplía las posibilidades; la otra comprueba qué puede sostenerse realmente en el tiempo.\n\n"
 
         "Cuando ambas partes colaboran, puedes convertir una visión amplia en un proyecto concreto, desarrollar confianza a través de la experiencia y avanzar sin perder de vista las responsabilidades que has asumido.\n\n"
 
@@ -622,7 +622,7 @@ JUPITER_INTEGRACION = {
             "Puede ser un aprendizaje, una conversación, una decisión, un cambio de perspectiva o la posibilidad de mirar de otra manera algo que ya conocías.\n\n"
 
             "También puede ayudarte observar qué expectativas ocupan mucho espacio sin ofrecer un crecimiento real. "
-            "Distinguir entre expansión y exceso es una forma de utilizar tu energía con mayor conciencia."
+            "Distinguir entre expansión y exceso es una forma de utilizar tu energía con mayor consciencia."
         )
     },
 
@@ -858,7 +858,7 @@ Cuando esta función pierde equilibrio puedes sentir una cierta desconexión den
 La estabilidad aparece cuando descubres que los grandes cambios también necesitan pequeños pasos sostenidos y colaboración constante.""",
 
 12:
-"""Necesitas construir una relación consciente con tu mundo interior. Saturno en esta casa invita a desarrollar una estructura que permita contener la sensibilidad, el silencio y los procesos internos sin quedar atrapado en ellos.
+"""Necesitas construir una relación consciente con tu mundo interior. Saturno en esta casa invita a desarrollar una estructura que permita contener la sensibilidad, el silencio y los procesos internos sin perderte en ellos.
 
 Es habitual que una parte importante de tu maduración ocurra lejos del reconocimiento externo, a través de procesos de introspección, aceptación y profundo autoconocimiento.
 
@@ -887,7 +887,7 @@ SATURNO_COMBINACIONES = {
 
         "Cuando ambas partes colaboran, puedes afrontar momentos difíciles con serenidad, cuidar de otras personas sin perderte a ti y desarrollar una gran madurez emocional.\n\n"
 
-        "Esta combinación te invita a observar si sostienes demasiado tiempo aquello que te pesa o si te cuesta mostrar vulnerabilidad por miedo a parecer débil. "
+        "Esta combinación te invita a observar si sostienes demasiado tiempo aquello que te pesa o si te cuesta mostrar vulnerabilidad por miedo a que pueda interpretarse como debilidad. "
         "La fortaleza también incluye permitirte sentir y pedir apoyo cuando lo necesitas."
     ),
 
@@ -924,7 +924,7 @@ SATURNO_COMBINACIONES = {
 
     "Júpiter": (
         "Tu necesidad de crecer mantiene un diálogo constante con la parte de ti que busca estructura, prudencia y resultados sostenibles. "
-        "Una función amplía las posibilidades; la otra comprueba qué puede mantenerse realmente en el tiempo.\n\n"
+        "Una función amplía las posibilidades; la otra comprueba qué puede sostenerse realmente en el tiempo.\n\n"
 
         "Cuando ambas partes colaboran, puedes convertir una visión amplia en un proyecto concreto, desarrollar confianza a través de la experiencia y avanzar sin perder de vista las responsabilidades que has asumido.\n\n"
 

@@ -813,9 +813,6 @@ def calcular_carta(año, mes, dia, hora, minuto, lat, lon, tz_name):
     try:
         pos_ch, _ = swe.calc_ut(jd, CHIRON_ID, FLAGS)
 
-        if pos_ch[0] == 0.0:
-            raise ValueError()
-
         signo_ch, grado_ch = grados_a_signo(pos_ch[0])
 
         planetas["Quirón"] = {

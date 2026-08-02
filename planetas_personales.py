@@ -109,7 +109,7 @@ MERCURIO_SIGNO = {
     "Las ideas suelen aparecer deprisa y muchas veces las expresas casi al mismo tiempo que las descubres.\n\n"
 
     "También tiendes a comunicarte de forma directa. Prefieres las conversaciones vivas, donde las ideas pueden moverse con libertad, y te cuesta mantener el interés cuando todo se vuelve excesivamente lento, repetitivo o lleno de rodeos. "
-    "No necesitas tener todas las respuestas antes de hablar; muchas veces piensas mientras conversas.\n\n"
+    "No necesitas tener todas las respuestas antes de hablar. Muchas veces piensas mientras conversas.\n\n"
 
     "Cuando la impaciencia toma el control puedes responder antes de haber escuchado del todo o dar por cerrada una idea demasiado pronto. "
     "No porque te falte capacidad de reflexión, sino porque tu mente necesita sentir que avanza. Aprender a detenerte unos instantes antes de responder suele darte una comprensión mucho más completa sin perder espontaneidad."
@@ -156,7 +156,7 @@ MERCURIO_SIGNO = {
     "Sueles comunicarte de manera cálida, expresiva y cercana. Te gusta que las conversaciones tengan vida y que haya espacio para compartir opiniones, experiencias y creatividad. "
     "Cuando sientes que puedes mostrarte tal como eres, las palabras fluyen con naturalidad.\n\n"
 
-    "Lo que más bloquea tu mente es sentir que tu voz no cuenta o que debes esconder continuamente lo que piensas para adaptarte a los demás. "
+    "Lo que más bloquea tu mente es sentir que tu voz no cuenta o que necesitas esconder continuamente lo que piensas para adaptarte a los demás. "
     "Cuando recuperas la confianza para expresarte desde la autenticidad, tu comunicación se convierte en una fuente de inspiración para quienes te rodean."
 ),
 
@@ -280,7 +280,7 @@ MERCURIO_CASA = {
 
     "Tu comunicación suele ser cercana, cálida y creativa. Te resulta natural explicar las cosas de una forma que despierte interés, emocione o invite a participar. Las conversaciones cobran vida cuando puedes mostrar entusiasmo y compartir aquello que realmente te apasiona.\n\n"
 
-    "El reto aparece cuando buscas el reconocimiento a través de tus ideas o cuando dejas de expresarte por miedo a no ser valorado. Descubrir que el verdadero valor de tu comunicación nace de la autenticidad, y no de la aprobación, permite que tu creatividad fluya con mucha más libertad."
+    "El reto aparece cuando buscas el reconocimiento a través de tus ideas o cuando dejas de expresarte por miedo a que lo que aportas no sea apreciado. Descubrir que el verdadero valor de tu comunicación nace de la autenticidad, y no de la aprobación, permite que tu creatividad fluya con mucha más libertad."
 ),
 
 6: (
@@ -304,7 +304,7 @@ MERCURIO_CASA = {
 
     "No sueles conformarte con conversaciones superficiales. Prefieres los diálogos donde existe honestidad, profundidad y la posibilidad de descubrir algo verdadero sobre ti o sobre la otra persona. Cuando encuentras ese espacio, tu capacidad para comprender resulta extraordinaria.\n\n"
 
-    "El reto aparece cuando la desconfianza hace que guardes demasiado para ti o cuando analizas una situación hasta quedar atrapado en ella. Aprender a compartir tus descubrimientos con apertura permite que tu profundidad se convierta en una fuente de transformación y no de aislamiento."
+    "El reto aparece cuando la desconfianza hace que guardes demasiado para ti o cuando analizas una situación hasta perder la capacidad de tomar distancia. Aprender a compartir tus descubrimientos con apertura permite que tu profundidad se convierta en una fuente de transformación y no de aislamiento."
 ),
 
 9: (
@@ -320,7 +320,7 @@ MERCURIO_CASA = {
 
     "Sueles expresarte de manera clara y responsable. Antes de compartir una opinión acostumbras a reflexionar sobre ella, porque te importa que tus palabras tengan peso y sean coherentes con quien eres. Con frecuencia otras personas valoran tu criterio y buscan tu consejo.\n\n"
 
-    "El reto aparece cuando sientes que debes demostrar constantemente cuánto sabes o cuando el miedo a equivocarte limita tu espontaneidad. Descubrir que la autoridad nace de la autenticidad y no de la perfección permite que tu voz encuentre una fuerza mucho más natural."
+    "El reto aparece cuando sientes que debes demostrar constantemente cuánto sabes o cuando el miedo a equivocarte termina limitando tu espontaneidad. Descubrir que la autoridad nace de la autenticidad y no de la perfección permite que tu voz encuentre una fuerza mucho más natural."
 ),
 
 11: (
@@ -430,7 +430,7 @@ MERCURIO_COMBINACIONES = {
         "Cuando ambas partes colaboran, desarrollas una enorme capacidad de concentración, profundidad psicológica y una palabra capaz de señalar aspectos esenciales de una situación.\n\n"
 
         "Esta combinación te invita a observar cuándo la necesidad de comprender se transforma en control, sospecha o pensamiento repetitivo. "
-        "No todo necesita resolverse de inmediato para poder ser atravesado con conciencia."
+        "No todo necesita resolverse de inmediato para poder ser atravesado con consciencia."
     ),
 
     "Ascendente": (
@@ -658,7 +658,7 @@ VENUS_SIGNO = {
         "Necesitas sentir que las relaciones permanecen vivas, que existe interés mutuo por descubrir al otro y que siempre hay algo nuevo que compartir.\n\n"
 
         "Disfrutas aprendiendo, riendo, haciendo preguntas y encontrando personas con las que puedas hablar con libertad. "
-        "La conexión intelectual suele convertirse en una puerta de entrada hacia el afecto, porque comprender y ser comprendido alimenta tu manera de vincularte.\n\n"
+        "La conexión intelectual suele convertirse en una puerta de entrada hacia el afecto, porque comprender y sentir que te comprenden alimenta tu manera de vincularte.\n\n"
 
         "Cuando Venus encuentra equilibrio en Géminis, la comunicación fortalece las relaciones y la variedad no impide el compromiso. "
         "Puedes adaptarte a personas y situaciones diferentes sin perder tu autenticidad ni dispersarte entre demasiadas posibilidades.\n\n"
@@ -669,7 +669,7 @@ VENUS_SIGNO = {
 
     "Cáncer": (
         "Con Venus en Cáncer, el vínculo nace del cuidado, la confianza y la sensación de pertenecer. "
-        "Necesitas sentir que puedes bajar las defensas y compartir aquello que eres sin miedo a dejar de ser acogido.\n\n"
+        "Necesitas sentir que puedes bajar las defensas y compartir aquello que eres sin miedo a que desaparezca esa sensación de acogida.\n\n"
 
         "Disfrutas creando espacios donde las personas puedan sentirse seguras, protegidas y escuchadas. "
         "Los pequeños gestos, la cercanía cotidiana y los recuerdos compartidos suelen tener para ti un valor mucho mayor que las grandes demostraciones.\n\n"
@@ -714,7 +714,7 @@ VENUS_SIGNO = {
         "Necesitas sentir que existe reciprocidad, respeto y una disposición mutua para comprenderse y crecer juntos.\n\n"
 
         "Disfrutas de la belleza compartida, de las conversaciones donde ambas personas pueden expresarse y de los espacios donde la armonía facilita el acercamiento. "
-        "Para ti, el vínculo florece cuando nadie necesita imponerse para sentirse visto.\n\n"
+        "Para ti, el vínculo florece cuando nadie necesita imponerse para sentir que cuenta dentro de la relación.\n\n"
 
         "Cuando Venus encuentra equilibrio en Libra, puedes escuchar sin perder tu propia voz y buscar acuerdos sin renunciar a aquello que verdaderamente tiene valor para ti. "
         "La armonía deja de depender de evitar el conflicto y nace de la honestidad con la que ambas personas sostienen la relación.\n\n"
@@ -827,7 +827,7 @@ VENUS_CASA = {
 
         "Disfrutas creando espacios acogedores, cuidando de quienes forman parte de tu vida y construyendo relaciones donde la confianza crece con el paso del tiempo. El afecto suele expresarse a través de la cercanía cotidiana y la sensación de pertenencia.\n\n"
 
-        "Esta posición te invita a recordar que un hogar no se construye únicamente cuidando de los demás. También necesita incluirte a ti, tus necesidades y la posibilidad de sentirte sostenido sin tener que hacerlo todo por tu cuenta."
+        "Esta posición te invita a recordar que un hogar no se construye únicamente cuidando de los demás. También necesita incluirte a ti, tus necesidades y la posibilidad de sentir que también puedes recibir apoyo sin tener que hacerlo todo por tu cuenta."
     ),
 
     5: (
@@ -978,7 +978,7 @@ VENUS_COMBINACIONES = {
         "Cuando Venus y el Ascendente trabajan en sintonía, la forma en que te muestras al mundo refleja con naturalidad aquello que valoras y la manera en que te relacionas. "
         "La calidez, la belleza y el afecto encuentran una expresión auténtica en tu presencia, facilitando vínculos que nacen desde la coherencia.\n\n"
 
-        "Esta combinación invita a recordar que no necesitas construir una imagen para resultar valioso. "
+        "Esta combinación invita a recordar que no necesitas construir una imagen para reconocer tu propio valor. "
         "Cuanto más te permites mostrar quién eres, más fácil resulta que las relaciones conecten con tu verdadera esencia."
     ),
 
@@ -987,7 +987,7 @@ VENUS_COMBINACIONES = {
         "Aprender a amar de una manera más consciente, reconocer tu propio valor y elegir vínculos coherentes con quien estás llegando a ser constituye una parte importante de tu desarrollo.\n\n"
 
         "Esta combinación recuerda que cada relación significativa puede convertirse en una oportunidad para crecer. "
-        "La manera de amar evoluciona cuando se atreve a elegir aquello que realmente lo nutre."
+        "La manera de amar evoluciona cuando te atreves a elegir aquello que realmente te nutre."
     ),
 
     "Nodo Sur": (
@@ -1011,7 +1011,7 @@ VENUS_COMBINACIONES = {
         "Puede aparecer una tensión entre adaptarte a lo que se espera de ti y expresar aquello que realmente deseas, valoras o necesitas.\n\n"
 
         "Esta combinación invita a construir relaciones donde no sea necesario renunciar a una parte de ti para sentir que mereces amor. "
-        "El amor encuentra toda su fuerza cuando nace de la libertad de mostrarse sin ocultar ninguna parte, incluso en aquello que resulta menos convencional."
+        "El amor encuentra toda su fuerza cuando nace de la libertad de mostrarte tal como eres, sin ocultar ninguna parte de ti, incluso en aquello que resulta menos convencional."
     ),
 }
 
@@ -1044,7 +1044,7 @@ VENUS_INTEGRACION = {
             "Cuando Venus funciona de forma equilibrada, puedes construir relaciones donde existe cercanía sin dependencia, compromiso sin pérdida de libertad y disfrute sin necesidad de exceso. "
             "Reconoces tu propio valor y, desde ahí, eliges aquello que verdaderamente merece un lugar en tu vida.\n\n"
 
-            "El amor deja de ser una necesidad que busca completarte y se convierte en una forma de compartir la plenitud que ya habita en ti."
+            "El amor deja de ser una necesidad que intenta llenar un vacío y se convierte en una forma de compartir la plenitud que ya habita en ti."
         )
     },
 
@@ -1054,7 +1054,7 @@ VENUS_INTEGRACION = {
             "Cuando esta función se desregula, puede aparecer la necesidad de buscar fuera el reconocimiento, el afecto o la sensación de valor que resulta difícil sostener desde dentro. "
             "También pueden surgir relaciones desequilibradas, dificultades para poner límites o una tendencia a confundir amor con sacrificio, dependencia o control.\n\n"
 
-            "En otras ocasiones ocurre lo contrario: el corazón se protege tanto que termina alejándose precisamente de aquello que más desea experimentar."
+            "En otras ocasiones ocurre lo contrario: el corazón se protege tanto que acaba alejándose precisamente de aquello que más necesita."
         )
     },
 
@@ -1071,7 +1071,7 @@ VENUS_INTEGRACION = {
             "Integrar Venus no consiste en aprender a gustar más a los demás. "
             "Consiste en reconocer qué tiene verdadero valor para ti y construir una vida donde el amor, la belleza y el disfrute dejen de depender de las circunstancias externas.\n\n"
 
-            "Cuando Venus ocupa su lugar, el corazón deja de pedir permiso para abrirse. Simplemente reconoce aquello que merece ser cuidado y elige permanecer ahí."
+            "Cuando Venus ocupa su lugar, el corazón deja de pedir permiso para abrirse. Reconoce aquello que tiene verdadero valor y decide cuidarlo."
         )
     }
 
@@ -1142,7 +1142,7 @@ MARTE_SIGNO = {
 
         "Tu impulso suele expresarse a través del trabajo bien hecho, la planificación y la atención a los detalles. Disfrutas perfeccionando procesos, encontrando soluciones prácticas y avanzando paso a paso hacia un objetivo claro.\n\n"
 
-        "Cuando Marte encuentra equilibrio en Virgo, la exigencia deja de convertirse en bloqueo y se transforma en excelencia. Puedes actuar con precisión sin quedar atrapado en la necesidad de que todo sea perfecto antes de empezar.\n\n"
+        "Cuando Marte encuentra equilibrio en Virgo, la exigencia deja de convertirse en bloqueo y se transforma en excelencia. Puedes actuar con precisión sin que la necesidad de que todo sea perfecto antes de empezar termine bloqueándote.\n\n"
 
         "Esta posición te invita a recordar que la acción imperfecta suele transformar más la realidad que la perfección que nunca llega a ponerse en marcha."
     ),
@@ -1258,7 +1258,7 @@ MARTE_CASA = {
         "Con Marte en la casa 5, la acción nace del deseo de crear, expresarte y disfrutar de aquello que despierta tu entusiasmo. "
         "Necesitas sentir que puedes poner tu energía al servicio de proyectos que te ilusionan y que reflejan quién eres.\n\n"
 
-        "Tu impulso suele dirigirse hacia la creatividad, el juego, el liderazgo y todas aquellas experiencias donde puedes mostrar tu iniciativa con libertad. Cuando algo enciende tu motivación, eres capaz de contagiar entusiasmo y movilizar también a quienes te rodean.\n\n"
+        "Tu impulso suele dirigirse hacia la creatividad, el juego, el liderazgo y todas aquellas experiencias donde puedes expresar tu iniciativa con libertad. Cuando algo enciende tu motivación, eres capaz de contagiar entusiasmo y movilizar también a quienes te rodean.\n\n"
 
         "Esta posición te invita a recordar que crear no significa demostrar constantemente tu valía. Tu fuerza encuentra su mayor expresión cuando actúas por el placer de construir, no por la necesidad de obtener reconocimiento."
     ),
@@ -1283,7 +1283,7 @@ MARTE_CASA = {
 
     8: (
         "Con Marte en la casa 8, la acción busca transformar, profundizar y afrontar aquello que otras personas prefieren evitar. "
-        "Necesitas sentir que tu energía sirve para atravesar las crisis, comprender lo que permanece oculto y generar cambios que tengan un verdadero impacto.\n\n"
+        "Necesitas sentir que tu energía sirve para atravesar las crisis, comprender aquello que normalmente permanece oculto y generar cambios que tengan un verdadero impacto.\n\n"
 
         "Tu impulso suele manifestarse con intensidad, perseverancia y una gran capacidad para sostener procesos complejos. Cuando decides implicarte en algo, rara vez te conformas con soluciones superficiales.\n\n"
 
@@ -1323,7 +1323,7 @@ MARTE_CASA = {
 
         "Tu energía suele activarse cuando puedes ayudar, acompañar procesos de transformación o dedicarte a actividades que requieren sensibilidad, intuición o creatividad. Con frecuencia, gran parte de tu fuerza se desarrolla lejos del reconocimiento externo.\n\n"
 
-        "Esta posición te invita a recordar que la acción también necesita hacerse visible. La intuición y la inspiración encuentran toda su utilidad cuando se traducen en decisiones concretas capaces de transformar la realidad."
+        "Esta posición te invita a recordar que la acción también necesita hacerse visible. La intuición y la inspiración encuentran todo su potencial cuando se traducen en decisiones concretas capaces de transformar la realidad."
     )
 
 }
@@ -1340,7 +1340,7 @@ MARTE_COMBINACIONES = {
 
     "Luna": (
         "Cuando Marte y la Luna colaboran, la acción y las emociones dejan de vivirse como fuerzas opuestas. "
-        "Puedes responder a lo que sientes sin quedar atrapado por el impulso del momento, utilizando tu energía para proteger aquello que realmente importa.\n\n"
+        "Puedes responder a lo que sientes sin dejarte arrastrar por el impulso del momento, utilizando tu energía para proteger aquello que realmente importa.\n\n"
 
         "Esta combinación recuerda que actuar con sensibilidad no es una muestra de debilidad. "
         "La firmeza alcanza su mayor fuerza cuando también sabe escuchar al mundo emocional."
@@ -1393,7 +1393,7 @@ MARTE_COMBINACIONES = {
 
     "Plutón": (
         "Cuando Marte y Plutón colaboran, la voluntad adquiere una enorme capacidad de transformación. "
-        "Puedes afrontar procesos intensos, sostener cambios profundos y movilizar recursos internos que permanecían ocultos hasta ese momento.\n\n"
+        "Puedes afrontar procesos intensos, sostener cambios profundos y movilizar recursos internos que hasta entonces permanecían sin desarrollar.\n\n"
 
         "Esta combinación invita a recordar que la verdadera fuerza no necesita imponerse. "
         "Su mayor poder aparece cuando utiliza la intensidad para construir, regenerar y abrir nuevos caminos."
@@ -1426,7 +1426,7 @@ MARTE_COMBINACIONES = {
         "Precisamente ese recorrido puede convertirte en una persona capaz de actuar con una enorme sensibilidad hacia los procesos de los demás.\n\n"
 
         "Esta combinación recuerda que sanar no significa perder fuerza. "
-        "Significa descubrir una forma de actuar que nace de la conciencia y no de la herida."
+        "Significa descubrir una forma de actuar que nace de la consciencia y no de la herida."
     ),
 
     "Lilith": (
@@ -1473,7 +1473,7 @@ MARTE_INTEGRACION = {
     "desregulacion": {
         "titulo": "Cuando Marte pierde el equilibrio",
         "texto": (
-            "Cuando esta función se desregula, la energía suele desplazarse hacia dos extremos. "
+            "Cuando esta función se desregula, la energía suele oscilar entre dos extremos. "
             "A veces aparece la impulsividad, la prisa, la irritabilidad o la sensación de tener que luchar continuamente. Otras veces ocurre lo contrario: cuesta iniciar proyectos, tomar decisiones, defender las propias necesidades o mantener el impulso en el tiempo.\n\n"
 
             "En ambos casos, el desafío no consiste en tener más fuerza, sino en recuperar una dirección clara para que la energía vuelva a estar al servicio de tu vida y no de la reacción automática."
@@ -1491,7 +1491,7 @@ MARTE_INTEGRACION = {
         "titulo": "Integrar Marte",
         "texto": (
             "Integrar Marte no consiste en hacer más cosas ni en demostrar fortaleza constantemente. "
-            "Consiste en desarrollar una voluntad capaz de elegir con conciencia dónde implicarse, cuándo avanzar, cuándo detenerse y qué merece realmente tu energía.\n\n"
+            "Consiste en desarrollar una voluntad consciente, capaz de elegir dónde implicarse, cuándo avanzar, cuándo detenerse y qué merece realmente tu energía.\n\n"
 
             "Cuando Marte ocupa su lugar, la acción deja de nacer de la urgencia y comienza a surgir desde la coherencia. Entonces cada decisión, por pequeña que sea, contribuye a construir una vida más sólida, más libre y más alineada contigo."
         )
@@ -2551,7 +2551,7 @@ def bloque_aspectos_principales_personales(
     elementos = [
         Spacer(1, 0.8 * cm),
         Paragraph(
-            "Aspectos principales",
+            "Aspectos relevantes",
             estilos["subtitulo2"],
         ),
         Spacer(1, 0.45 * cm),
@@ -2569,7 +2569,7 @@ def bloque_aspectos_principales_personales(
     if not aspectos:
         elementos.append(
             Paragraph(
-                "No aparecen aspectos principales de Mercurio, Venus o Marte "
+                "No aparecen aspectos relevantes de Mercurio, Venus o Marte "
                 "dentro de los orbes utilizados en este informe.",
                 estilos["cuerpo"],
             )
@@ -2822,7 +2822,7 @@ def bloque_aspectos_planeta(
     if not aspectos_planeta:
         elementos.append(
             Paragraph(
-                f"No se han encontrado aspectos principales de {planeta} "
+                f"No se han encontrado aspectos relevantes de {planeta} "
                 "dentro de los orbes utilizados en este informe.",
                 estilos["cuerpo"],
             )
@@ -2844,25 +2844,13 @@ def bloque_aspectos_planeta(
         # Venus interpreta su aspecto con Marte.
         # Marte no vuelve a interpretar esos vínculos.
 
-        planetas_personales = {
-            "Mercurio",
-            "Venus",
-            "Marte",
-        }
-
-        orden_personales = {
-            "Mercurio": 1,
-            "Venus": 2,
-            "Marte": 3,
-        }
-
-        if (
-            planeta in planetas_personales
-            and otro_punto in planetas_personales
-            and orden_personales[planeta]
-            > orden_personales[otro_punto]
-        ):
-            continue
+    if (
+        planeta in PLANETAS_PERSONALES
+        and otro_punto in PLANETAS_PERSONALES
+        and ORDEN_PLANETAS_PERSONALES[planeta]
+           > ORDEN_PLANETAS_PERSONALES[otro_punto]
+    ):
+        continue
 
         texto = obtener_texto_aspecto(
             combinaciones,
