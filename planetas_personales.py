@@ -2954,6 +2954,7 @@ def bloque_planeta_personal(
     textos_signo,
     textos_casa,
     combinaciones,
+    textos_tipo_aspecto,
     integracion,
     subtitulo_capitulo,
     estilos,
