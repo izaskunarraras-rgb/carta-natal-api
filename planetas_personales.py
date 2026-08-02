@@ -3000,6 +3000,7 @@ def bloque_planeta_personal(
         planeta=planeta,
         aspectos=aspectos,
         combinaciones=combinaciones,
+        textos_tipo_aspecto=textos_tipo_aspecto,
         estilos=estilos,
     )
 
@@ -3024,6 +3025,7 @@ def bloque_mercurio(
         textos_signo=MERCURIO_SIGNO,
         textos_casa=MERCURIO_CASA,
         combinaciones=MERCURIO_COMBINACIONES,
+        textos_tipo_aspecto=MERCURIO_TEXTOS_TIPO_ASPECTO,
         integracion=MERCURIO_INTEGRACION,
         subtitulo_capitulo=(
             "La forma en que observas, comprendes y das significado a lo que vives."
@@ -3044,6 +3046,7 @@ def bloque_venus(
         textos_signo=VENUS_SIGNO,
         textos_casa=VENUS_CASA,
         combinaciones=VENUS_COMBINACIONES,
+        textos_tipo_aspecto=VENUS_TEXTOS_TIPO_ASPECTO,
         integracion=VENUS_INTEGRACION,
         subtitulo_capitulo=(
             "La forma en que valoras, te vinculas y reconoces aquello que merece un lugar en tu vida."
@@ -3064,6 +3067,7 @@ def bloque_marte(
         textos_signo=MARTE_SIGNO,
         textos_casa=MARTE_CASA,
         combinaciones=MARTE_COMBINACIONES,
+        textos_tipo_aspecto=MARTE_TEXTOS_TIPO_ASPECTO,
         integracion=MARTE_INTEGRACION,
         subtitulo_capitulo=(
             "La forma en que actúas, afirmas tus límites y diriges tu energía."
