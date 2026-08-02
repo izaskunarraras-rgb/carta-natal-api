@@ -10227,7 +10227,7 @@ def bloque_tabla_resumen_casas(
     ]
 
 
-def generar_pdf_casas_por_signo(
+def generar_casas_por_signo(
     ruta_pdf,
     carta,
     nombre,
@@ -10650,7 +10650,7 @@ def main():
     )
 
     try:
-        generar_pdf_casas_por_signo(
+        generar_casas_por_signo(
             ruta_pdf=ruta_pdf,
             carta=carta,
             nombre=nombre,
