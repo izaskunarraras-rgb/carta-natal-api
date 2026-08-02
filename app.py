@@ -6,6 +6,7 @@ from sol_asc_nodos import generar_carta_api as generar_sol_asc_nodos_api
 from planetas_personales import generar_carta_api as generar_planetas_personales_api
 from planetas_sociales import generar_carta_api as generar_planetas_sociales_api
 from planetas_transpersonales import generar_carta_api as generar_planetas_transpersonales_api
+from casas_por_signo import generar_carta_api as generar_casas_por_signo_api
 
 import os
 
@@ -113,6 +114,19 @@ def generar_carta():
         print("Generando informe Planetas Transpersonales")
 
         resultado = generar_planetas_transpersonales_api(
+            nombre,
+            fecha,
+            hora,
+            lugar,
+            lat=lat,
+            lon=lon,
+            tz_name=tz_name
+        )
+
+    elif "opCasas" in opciones:
+        print("Generando informe Casas por Signo")
+
+        resultado = generar_casas_por_signo_api(
             nombre,
             fecha,
             hora,
