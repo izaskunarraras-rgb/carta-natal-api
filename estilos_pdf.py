@@ -66,6 +66,18 @@ def crear_estilos_pdf():
         keepWithNext=True,
     )
 
+    subtitulo3 = ParagraphStyle(
+        "Subtitulo3AI",
+        parent=estilos_base["Heading4"],
+        fontName="Times-Bold",
+        fontSize=11.5,
+        leading=15,
+        textColor=colors.HexColor("#333333"),
+        spaceBefore=8,
+        spaceAfter=4,
+        keepWithNext=True,
+    )
+
     cuerpo = ParagraphStyle(
         "CuerpoAI",
         parent=estilos_base["BodyText"],
@@ -74,6 +86,8 @@ def crear_estilos_pdf():
         leading=16,
         spaceAfter=10,
         alignment=TA_JUSTIFY,
+        allowWidows=0,
+        allowOrphans=0,
     )
 
     titulo_aspecto = ParagraphStyle(
@@ -98,6 +112,7 @@ def crear_estilos_pdf():
         "titulo": titulo,
         "subtitulo": subtitulo,
         "subtitulo2": subtitulo2,
+        "subtitulo3": subtitulo3,
         "cuerpo": cuerpo,
         "centro": centro,
         "titulo_aspecto": titulo_aspecto,
