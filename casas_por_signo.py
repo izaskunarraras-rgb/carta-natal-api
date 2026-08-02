@@ -10493,6 +10493,173 @@ def generar_casas_por_signo(
     )
 
 
+def generar_carta_api(
+    nombre,
+    fecha,
+    hora,
+    lugar,
+    lat=None,
+    lon=None,
+    tz_name=None,
+):
+    print(
+        "Generando informe Casas por Signo para:",
+        nombre,
+    )
+
+    try:
+        # ── FECHA ─────────────────────────────────────────────
+
+        partes_fecha = fecha.split("/")
+
+        if len(partes_fecha) != 3:
+            raise ValueError(
+                "La fecha debe tener el formato DD/MM/AAAA."
+            )
+
+        dia = int(partes_fecha[0])
+        mes = int(partes_fecha[1])
+        anio = int(partes_fecha[2])
+
+        datetime(
+            anio,
+            mes,
+            dia,
+        )
+
+        # ── HORA ──────────────────────────────────────────────
+
+        partes_hora = hora.split(":")
+
+        if len(partes_hora) != 2:
+            raise ValueError(
+                "La hora debe tener el formato HH:MM."
+            )
+
+        hora_num = int(partes_hora[0])
+        minuto = int(partes_hora[1])
+
+        if not 0 <= hora_num <= 23:
+            raise ValueError(
+                "La hora debe estar entre 0 y 23."
+            )
+
+        if not 0 <= minuto <= 59:
+            raise ValueError(
+                "Los minutos deben estar entre 0 y 59."
+            )
+
+        # ── GEOLOCALIZACIÓN ───────────────────────────────────
+
+        if lat is not None and lon is not None:
+            lat = float(lat)
+            lon = float(lon)
+
+            if not tz_name:
+                tz_name = obtener_timezone(
+                    lat,
+                    lon,
+                )
+
+        else:
+            lat, lon = geocodificar(
+                lugar
+            )
+
+            tz_name = obtener_timezone(
+                lat,
+                lon,
+            )
+
+        # ── CÁLCULO DE LA CARTA ───────────────────────────────
+
+        carta = calcular_carta(
+            anio,
+            mes,
+            dia,
+            hora_num,
+            minuto,
+            lat,
+            lon,
+            tz_name,
+        )
+
+        # ── ARCHIVOS ──────────────────────────────────────────
+
+        nombre_f = (
+            nombre
+            .replace(" ", "_")
+            .replace("/", "-")
+            .replace("\\", "-")
+        )
+
+        ruta_base = os.path.join(
+            BASE_DIR,
+            nombre_f + "_Casas_por_Signo",
+        )
+
+        ruta_pdf = ruta_base + ".pdf"
+        ruta_rueda = ruta_base + "_rueda.png"
+
+        # ── RUEDA ─────────────────────────────────────────────
+
+        dibujar_arquitectura_casas(
+            carta,
+            ruta_rueda,
+        )
+
+        if not os.path.exists(ruta_rueda):
+            return {
+                "ok": False,
+                "error": "No se ha podido crear la rueda.",
+            }
+
+        # ── PDF ───────────────────────────────────────────────
+
+        generar_casas_por_signo(
+            ruta_pdf=ruta_pdf,
+            carta=carta,
+            nombre=nombre,
+            anio=anio,
+            mes=mes,
+            dia=dia,
+            hora=hora_num,
+            minuto=minuto,
+            ciudad=lugar,
+            lat=lat,
+            lon=lon,
+            tz_name=tz_name,
+            ruta_rueda=ruta_rueda,
+        )
+
+        if not os.path.exists(ruta_pdf):
+            return {
+                "ok": False,
+                "error": "No se ha podido crear el PDF.",
+            }
+
+        nombre_archivo = os.path.basename(
+            ruta_pdf
+        )
+
+        return {
+            "ok": True,
+            "pdf": f"/descargas/{nombre_archivo}",
+            "pdf_url": f"/descargas/{nombre_archivo}",
+        }
+
+    except Exception as error:
+        print(
+            "Error generando Casas por Signo:",
+            error,
+        )
+
+        return {
+            "ok": False,
+            "error": str(error),
+        }
+
+
 
 # ─── MAIN ─────────────────────────────────────────────────────────────────────
 
