@@ -83,13 +83,13 @@ SOL_SIGNO = {
 
 "Géminis": (
     "Con el Sol en Géminis, necesitas movimiento mental, estímulos y sensación de conexión con lo que ocurre alrededor. "
-    "Sueles adaptarte bien a situaciones cambiantes y aprender rápido cuando algo despierta tu curiosidad. "
+    "Sueles adaptarte bien a situaciones cambiantes y aprender con rápidez cuando algo despierta tu curiosidad. "
     "Las ideas, las conversaciones y la variedad suelen ser importantes para ti."
 ),
 
 "Cáncer": (
     "Con el Sol en Cáncer, el vínculo, la cercanía y la sensación de confianza suelen tener mucha importancia para ti. "
-    "Tiendes a percibir rápidamente cómo están las personas y el ambiente que te rodea. "
+    "Tiendes a percibir rápidamente cómo se encuentran las personas y el ambiente que te rodea. "
     "La capacidad de cuidar, sostener o acompañar suele aparecer de forma bastante natural."
 ),
 
@@ -112,7 +112,7 @@ SOL_SIGNO = {
 ),
 
 "Escorpio": (
-    "Con el Sol en Escorpio, suele haber necesidad de profundidad, implicación real e intensidad emocional. "
+    "Con el Sol en Escorpio, suele haber una necesidad de profundidad, implicación real e intensidad emocional. "
     "No te resulta fácil permanecer mucho tiempo en situaciones que sientes vacías o superficiales. "
     "Cuando algo te importa de verdad, normalmente tiendes a implicarte profundamente."
 ),
@@ -136,9 +136,9 @@ SOL_SIGNO = {
 ),
 
 "Piscis": (
-    "Con el Sol en Piscis, suele haber bastante sensibilidad hacia el entorno y hacia lo que ocurre alrededor. "
+    "Con el Sol en Piscis, suele haber una gran sensibilidad hacia el entorno y hacia lo que ocurre alrededor. "
     "Percibes matices, estados o necesidades que otras personas pueden pasar por alto. "
-    "La empatía y la capacidad de conectar emocionalmente suelen tener bastante importancia en tu vida."
+    "La empatía y la capacidad de conectar emocionalmente suelen ocupar un lugar importante en tu vida.."
 ),
 }
 
@@ -152,9 +152,9 @@ SOL_CASA = {
 ),
 
 2: (
-    "Con el Sol en Casa 2, necesitas construir estabilidad y confianza a través de lo que haces, sostienes o desarrollas por ti. "
+    "Con el Sol en Casa 2, necesitas construir estabilidad y confianza a través de lo que haces, sostienes o desarrollas con tus propios recursos. "
     "Los recursos, los valores personales y la sensación de autonomía suelen tener bastante peso en tu vida. "
-    "Muchas veces necesitas sentir que puedes apoyarte en algo sólido construido desde ti."
+    "Muchas veces necesitas sentir que puedes apoyarte en algo sólido construido por ti."
 ),
 
 3: (
@@ -172,24 +172,24 @@ SOL_CASA = {
 5: (
     "Con el Sol en Casa 5, la creatividad, la expresión personal y la necesidad de disfrutar lo que haces suelen ocupar un lugar importante en tu vida. "
     "Necesitas sentir que puedes crear, compartir o expresar algo propio. "
-    "Cuando hay espacio para la autenticidad y el disfrute, normalmente sueles sentirte más vital."
+    "Cuando hay espacio para la autenticidad y el disfrute, sueles sentirte más vital."
 ),
 
 6: (
-    "Con el Sol en Casa 6, el trabajo cotidiano, los hábitos y la necesidad de sentir utilidad suelen ser importantes para ti. "
+    "Con el Sol en Casa 6, el trabajo cotidiano, los hábitos y la necesidad de sentir que lo que haces es útil suelen ser importantes para ti "
     "Tu energía normalmente se organiza mejor cuando hay cierta estructura o algo concreto de lo que ocuparte. "
-    "Muchas veces cuidar los ritmos y el día a día influye directamente en cómo te sientes contigo."
+    "Muchas veces cuidar tus ritmos y el día a día influye directamente en cómo te sientes."
 ),
 
 7: (
-    "Con el Sol en Casa 7, los vínculos y las relaciones suelen tener un impacto importante en tu vida. "
+    "Con el Sol en Casa 7, los vínculos y las relaciones suelen tener un peso importante en tu vida. "
     "Muchas veces conocerte mejor implica también verte a través del encuentro con otras personas. "
-    "Las asociaciones, relaciones o colaboraciones significativas suelen influir mucho en tu desarrollo."
+    "Las asociaciones y colaboraciones significativas suelen influir mucho en tu desarrollo."
 ),
 
 8: (
-    "Con el Sol en Casa 8, suele haber necesidad de profundidad, intensidad e implicación emocional. "
-    "Las experiencias importantes normalmente tienden a afectarte de forma profunda, aunque no siempre lo muestres hacia fuera. "
+    "Con el Sol en Casa 8, suele haber una necesidad de profundidad, intensidad e implicación emocional. "
+    "Lo que vives como importante tiende a afectarte profundamente, aunque no siempre lo muestres hacia fuera. "
     "Muchas veces necesitas sentir conexión real para implicarte de verdad con algo o con alguien."
 ),
 
@@ -200,7 +200,7 @@ SOL_CASA = {
 ),
 
 10: (
-    "Con el Sol en Casa 10, la vocación, el reconocimiento y la construcción de algo visible suelen tener bastante importancia en tu vida. "
+    "Con el Sol en Casa 10, la vocación, el reconocimiento y la construcción de algo visible suelen ocupar un lugar importante en tu vida. "
     "Necesitas sentir que lo que haces tiene coherencia con quién eres y hacia dónde quieres ir. "
     "Muchas veces el desarrollo profesional influye directamente en tu sensación de dirección y estabilidad."
 ),
@@ -208,7 +208,7 @@ SOL_CASA = {
 11: (
     "Con el Sol en Casa 11, los grupos, amistades y proyectos compartidos suelen ocupar un lugar importante en tu vida. "
     "Muchas veces funcionas mejor cuando sientes conexión con personas, ideas o espacios con visión de futuro. "
-    "Compartir intereses o formar parte de algo colectivo suele tener bastante significado para ti."
+    "Compartir intereses o formar parte de algo colectivo suele ser significativo para ti."
 ),
 
 12: (
@@ -236,24 +236,24 @@ LUNA_SIGNO = {
 "Géminis": (
     "Con la Luna en Géminis, las emociones suelen pasar mucho por el pensamiento, la palabra y la necesidad de entender lo que ocurre. "
     "Hablar, preguntar o poner en palabras lo que sientes puede ayudarte bastante. "
-    "Muchas veces necesitas movimiento mental y variedad para no sentirte estancado emocionalmente."
+    "Muchas veces necesitas movimiento mental y variedad para que tus emociones no se estanquen."
 ),
 
 "Cáncer": (
     "Con la Luna en Cáncer, hay mucha sensibilidad hacia el entorno emocional y hacia las personas importantes para ti. "
-    "La cercanía, el cuidado y la sensación de confianza suelen tener bastante peso en cómo te sientes. "
+    "La cercanía, el cuidado y la sensación de confianza suelen influir mucho en cómo te sientes. "
     "Cuando el ambiente es acogedor y seguro, normalmente te resulta más fácil relajarte y abrirte."
 ),
 
 "Leo": (
     "Con la Luna en Leo, las emociones suelen expresarse de forma cálida, visible y bastante espontánea. "
-    "Sentirte apreciado, valorado o tenido en cuenta influye mucho en tu bienestar emocional. "
+    "Sentir aprecio, reconocimiento y atención por parte de los demás influye mucho en tu bienestar emocional. "
     "La creatividad, la expresión personal y los vínculos donde puedes mostrarte con libertad suelen ayudarte a sentirte bien."
 ),
 
 "Virgo": (
     "Con la Luna en Virgo, tiendes a observar y analizar bastante cómo te encuentras emocionalmente. "
-    "El orden, la claridad y la sensación de que las cosas funcionan ayudan a que puedas sentirte más tranquilo. "
+    "El orden, la claridad y la sensación de que las cosas funcionan te ayudan a recuperar tranquilidad. "
     "Muchas veces necesitas entender lo que ocurre para sentir estabilidad interna."
 ),
 
@@ -264,9 +264,9 @@ LUNA_SIGNO = {
 ),
 
 "Escorpio": (
-    "Con la Luna en Escorpio, las emociones suelen vivirse con bastante intensidad aunque no siempre lo muestres hacia fuera. "
+    "Con la Luna en Escorpio, las emociones suelen vivirse con bastante intensidad, aunque no siempre las muestres hacia fuera. "
     "Necesitas tiempo y confianza antes de abrirte del todo emocionalmente. "
-    "Cuando algo te afecta de verdad, normalmente lo vives de forma profunda."
+    "Cuando algo te afecta de verdad, sueles vivirlo con profundidad."
 ),
 
 "Sagitario": (
@@ -276,14 +276,14 @@ LUNA_SIGNO = {
 ),
 
 "Capricornio": (
-    "Con la Luna en Capricornio, normalmente tiendes a contener bastante lo que sientes antes de mostrarlo hacia fuera. "
+    "Con la Luna en Capricornio, tiendes a contener bastante lo que sientes antes de mostrarlo hacia fuera. "
     "La estabilidad, la responsabilidad y la sensación de construir algo sólido suelen darte seguridad emocional. "
     "Muchas veces necesitas tiempo antes de sentir suficiente confianza para mostrar vulnerabilidad."
 ),
 
 "Acuario": (
     "Con la Luna en Acuario, necesitas cierta libertad emocional y espacio propio para sentirte bien. "
-    "Cuando las emociones son demasiado intensas o invasivas, puedes necesitar tomar distancia para entender lo que te ocurre. "
+    "Cuando las emociones son demasiado intensas o invasivas, puedes necesitar cierta distancia para entender lo que te ocurre. "
     "Los vínculos donde hay respeto por la individualidad suelen ser especialmente importantes para ti."
 ),
 
@@ -299,16 +299,16 @@ LUNA_SIGNO = {
 LUNA_CASA = {
 1: (
     "Con la Luna en Casa 1, las emociones suelen expresarse de forma bastante visible y directa. "
-    "Muchas veces lo que sientes se refleja rápidamente en la forma de reaccionar, en el cuerpo o en la presencia."
+    "Muchas veces, lo que sientes se refleja rápidamente en tu forma de reaccionar, en el cuerpo o en tu manera de estar."
 ),
 
 2: (
     "Con la Luna en Casa 2, la estabilidad y la sensación de seguridad suelen influir mucho en cómo te sientes emocionalmente. "
-    "Los recursos, el cuerpo y aquello que puedes sostener de forma concreta suelen tener bastante importancia para ti."
+    "Los recursos, el cuerpo y aquello que puedes sostener de forma concreta suelen ocupar un lugar importante en tu vida."
 ),
 
 3: (
-    "Con la Luna en Casa 3, las emociones suelen procesarse a través de la palabra, el pensamiento o la necesidad de compartir lo que ocurre. "
+    "Con la Luna en Casa 3, las emociones suelen procesarse a través de la palabra, el pensamiento o la necesidad de compartir lo que te ocurre. "
     "Hablar, escribir o entender mentalmente lo que sientes puede ayudarte bastante a encontrar claridad."
 ),
 
@@ -319,22 +319,22 @@ LUNA_CASA = {
 
 5: (
     "Con la Luna en Casa 5, la expresión emocional suele estar conectada con la creatividad, el disfrute y la necesidad de mostrar lo que sientes. "
-    "Los espacios donde puedes expresarte con autenticidad suelen ayudarte mucho emocionalmente."
+    "Los espacios donde puedes expresarte con autenticidad suelen favorecer tu bienestar emocional."
 ),
 
 6: (
     "Con la Luna en Casa 6, el cuerpo, los hábitos y el día a día suelen influir directamente en cómo te encuentras emocionalmente. "
-    "Muchas veces una rutina más ordenada o ciertos cuidados cotidianos ayudan bastante a que puedas sentirte mejor."
+    "Muchas veces, una rutina más ordenada o ciertos cuidados cotidianos te ayudan a sentirte mejor."
 ),
 
 7: (
-    "Con la Luna en Casa 7, los vínculos y las relaciones cercanas suelen tener mucho impacto en tu mundo emocional. "
-    "Las relaciones importantes normalmente influyen bastante en cómo te sientes contigo y con tu vida."
+    "Con la Luna en Casa 7, los vínculos y las relaciones cercanas suelen influir mucho en tu mundo emocional. "
+    "Las relaciones importantes suelen influir bastante en cómo te sientes y en la percepción que tienes de tu vida."
 ),
 
 8: (
     "Con la Luna en Casa 8, las emociones suelen vivirse con bastante intensidad aunque no siempre se expresen fácilmente. "
-    "Los vínculos profundos y las experiencias importantes tienden a afectarte más de lo que otras personas perciben desde fuera."
+    "Los vínculos profundos y lo que vives como significativo tienden a afectarte más de lo que otras personas perciben desde fuera."
 ),
 
 9: (
@@ -344,16 +344,16 @@ LUNA_CASA = {
 
 10: (
     "Con la Luna en Casa 10, la vocación, los objetivos y el reconocimiento suelen influir bastante en tu estado emocional. "
-    "Muchas veces lo profesional o lo visible hacia fuera tiene un impacto importante en cómo te sientes."
+    "Muchas veces, tu vida profesional o la imagen que proyectas influyen de forma importante en cómo te sientes."
 ),
 
 11: (
-    "Con la Luna en Casa 11, las amistades, los grupos y la sensación de pertenecer a algo compartido suelen tener bastante importancia emocional para ti. "
-    "Sentirte conectado con personas o proyectos con visión de futuro normalmente influye mucho en tu bienestar."
+    "Con la Luna en Casa 11, las amistades, los grupos y la sensación de pertenecer a algo compartido suelen ocupar un lugar importante en tu mundo emocional. "
+    "La conexión con personas o proyectos con visión de futuro suele influir mucho en tu bienestar."
 ),
 
 12: (
-    "Con la Luna en Casa 12, gran parte de lo emocional suele vivirse de forma reservada o difícil de expresar rápidamente. "
+    "Con la Luna en Casa 12, gran parte de lo que sientes suele vivirse de forma reservada o puede resultar difícil de expresar en el momento. "
     "Los espacios de silencio, descanso o retirada suelen ayudarte bastante a entender cómo te encuentras realmente."
 ),
 }
@@ -418,7 +418,7 @@ ASC_SIGNO = {
 "Capricornio": (
     "Con Ascendente en Capricornio, normalmente transmites una imagen seria, contenida y bastante responsable. "
     "Sueles entrar en los entornos con prudencia y observación antes de mostrarte del todo. "
-    "Las demás personas suelen percibir solidez y cierta sensación de competencia desde el principio."
+    "Las demás personas suelen percibir solidez y cierta sensación de capacidad desde el principio."
 ),
 
 "Acuario": (
@@ -505,7 +505,7 @@ TEXTOS_ELEMENTOS_PDF = {
         "En algunos momentos, esa actividad mental puede hacer que dediques mucho tiempo a pensar, "
         "analizar o anticipar posibilidades antes de pasar a la acción.<br/><br/>"
         "<b>Observa:</b><br/>"
-        "• cuándo pensar te ayuda a comprender y cuándo empieza a alejarte de la experiencia<br/>"
+        "• cuándo pensar te ayuda a comprender y cuándo empieza a alejarte de lo que estás viviendo<br/>"
         "• cómo equilibras reflexión y acción<br/>"
         "• qué espacios permiten que tu mente también pueda descansar"
     ),
@@ -515,11 +515,11 @@ TEXTOS_ELEMENTOS_PDF = {
         "Con una presencia equilibrada, suele existir facilidad para reflexionar, intercambiar "
         "puntos de vista y adaptarte a nuevas formas de comprender la realidad.<br/><br/>"
         "Puedes utilizar el pensamiento como una herramienta útil sin que llegue a ocupar todo "
-        "el espacio de la experiencia.<br/><br/>"
+        "el espacio de tu vida.<br/><br/>"
         "<b>Observa:</b><br/>"
         "• cómo integras lo que piensas con lo que sientes<br/>"
         "• qué conversaciones enriquecen realmente tu visión<br/>"
-        "• cuándo una explicación deja paso a la experiencia"
+        "• cuándo una explicación deja paso a vivir las cosas directamente"
     ),
 
     "bajo": (
@@ -564,7 +564,7 @@ TEXTOS_ELEMENTOS_PDF = {
     "bajo": (
         "La Tierra representa la capacidad de concretar, organizar y sostener procesos "
         "en el tiempo. Cuando aparece con menor presencia, la estructura puede no surgir "
-        "de forma automática y quizá necesite construirse de manera consciente.<br/><br/>"
+        "de forma automática y quizá necesite construirse de manera más consciente.<br/><br/>"
         "Esto no significa falta de responsabilidad ni incapacidad para mantener compromisos. "
         "Indica que los ritmos, los hábitos y las referencias concretas suelen funcionar mejor "
         "cuando los eliges y los adaptas a tu forma real de vivir.<br/><br/>"
@@ -645,7 +645,7 @@ TEXTOS_ELEMENTOS_PDF = {
         "Cuando aparece con menor presencia, la motivación puede necesitar más tiempo para activarse "
         "o surgir con mayor claridad cuando existe un propósito que realmente te conecta.<br/><br/>"
         "Esto no significa falta de energía ni de capacidad para emprender proyectos. Puede indicar que "
-        "tu impulso no suele aparecer de manera inmediata y que necesitas encontrar un sentido profundo "
+        "tu impulso no siempre aparece de manera inmediata y que necesitas encontrar un sentido profundo "
         "antes de ponerte en marcha.<br/><br/>"
         "<b>Observa:</b><br/>"
         "• qué despierta realmente tus ganas de actuar<br/>"
@@ -1522,7 +1522,7 @@ def texto_vision_general(carta, conteo_elem, conteo_modal):
             parrafos.append(
                 f"<b>{texto_elementos}</b> aparecen con menor presencia. "
                 "No se trata de carencias, sino de cualidades que pueden necesitar "
-                "más intención y conciencia para integrarse en tu forma habitual de funcionar."
+                "más intención y consciencia para integrarse en tu forma habitual de funcionar."
             )
 
     textos_modalidad = {
@@ -1689,7 +1689,7 @@ def bloque_introduccion(subtitulo, cuerpo):
 
     <b>No necesitas saber astrología para recorrer estas páginas.</b> Este cuaderno no está pensado para que aprendas un lenguaje nuevo, sino para ayudarte a mirarte de otra manera. La carta se convierte aquí en un mapa de observación: una forma de reconocer algunos patrones, recursos y desafíos que pueden estar presentes en tu vida.<br/><br/>
 
-    No busques encajar en cada frase. Quédate con aquello que resuene contigo y permite que el resto simplemente quede abierto. Algunas partes tendrán sentido desde la primera lectura. Otras quizá lo hagan más adelante, cuando la experiencia les dé un nuevo significado.
+    No busques encajar en cada frase. Quédate con aquello que resuene contigo y permite que el resto simplemente quede abierto. Algunas partes tendrán sentido desde la primera lectura. Otras quizá lo hagan más adelante, cuando lo que vayas viviendo les dé un nuevo significado.
         """,
         cuerpo
     ))
@@ -1759,7 +1759,7 @@ def bloque_pilares(
             "El <b>Sol</b>, la <b>Luna</b> y el <b>Ascendente</b> actúan como tres pilares fundamentales "
             "de cualquier carta natal. Cada uno responde a una pregunta diferente:<br/><br/>"
             "<b>¿Hacia dónde tiendes a dirigirte?</b><br/>"
-            "<b>¿Qué necesitas para sentirte emocionalmente segura?</b><br/>"
+            "<b>¿Qué necesitas para sentir seguridad emocional?</b><br/>"
             "<b>¿Cómo entras en contacto con el mundo?</b><br/><br/>"
             "Comprender estos tres pilares no explica toda tu carta, pero sí ofrece una base sólida "
             "desde la que empezar a comprenderte.",
@@ -2123,8 +2123,8 @@ def texto_integracion_elementos(conteo_elem):
         texto += (
             f"<br/><br/>{menor} aparece con menor presencia. "
             f"Esto no significa que te falten {funciones[menor]}. "
-            "Significa que estas cualidades quizá necesiten construirse de una forma "
-            "más consciente para poder sostener el movimiento del resto de tu energía."
+            "Significa que estas cualidades quizá necesiten desarrollarse de una forma "
+            "mmás consciente para poder sostener el conjunto de tu energía."
         )
 
     texto += (
@@ -2203,10 +2203,10 @@ def bloque_cierre(
             "Esta carta es solo el comienzo.<br/><br/>"
             "Quizá algunas partes te hayan resultado evidentes. "
             "Otras pueden necesitar tiempo para cobrar sentido. "
-            "Eso también forma parte del proceso.<br/><br/>"
+            "Eso también forma parte del camino.<br/><br/>"
             "Una carta natal no se comprende de una sola vez. "
-            "Se va revelando poco a poco, a medida que la experiencia permite "
-            "reconocer aquello que antes pasaba desapercibido.<br/><br/>"
+            "Se va revelando poco a poco, a medida que vas viviendo y "
+            "reconociendo aquello que antes pasaba desapercibido.<br/><br/>"
             "Este cuaderno no busca responder todas las preguntas, sino ofrecerte "
             "un primer mapa desde el que empezar a observar cómo estas dinámicas "
             "aparecen en tu vida cotidiana.<br/><br/>"
@@ -2215,7 +2215,7 @@ def bloque_cierre(
             "la Luna nos invita a un lugar mucho más íntimo: la forma en la que buscas seguridad, "
             "procesas lo que sientes y aprendes a cuidar de ti.<br/><br/>"
             "Comprender cómo funcionas es importante. "
-            "Aprender a vivir desde esa comprensión puede transformar muchas cosas.",
+            "Aprender a vivir desde esa comprensión puede cambiar profundamente la manera en que te relacionas contigo, con los demás y con la vida.",
             cuerpo
         )
     )
