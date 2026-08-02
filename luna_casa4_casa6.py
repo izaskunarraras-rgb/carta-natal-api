@@ -156,7 +156,7 @@ ASPECTOS_DEF = [
 # ─── TEXTOS NARRATIVOS DEL CUADERNO ───────────────────────────────────────────
 
 TEXTO_BIENVENIDA = (
-    "Todos necesitamos sentirnos seguros.\n\n"
+    "Todos necesitamos sentir seguridad.\n\n"
 
     "Sin embargo, no todas las personas encuentran esa seguridad de la misma manera.\n\n"
 
@@ -172,13 +172,13 @@ TEXTO_BIENVENIDA = (
     "En astrología, la Luna representa precisamente ese lugar.\n\n"
 
     "Habla de cómo sentimos, de aquello que necesitamos para recuperar la calma "
-    "y de la manera en la que aprendimos, desde muy pequeños, a relacionarnos "
+    "y de la manera en la que aprendimos, desde la infancia, a relacionarnos "
     "con nuestras emociones.\n\n"
 
     "Este cuaderno no pretende decirte quién eres.\n\n"
 
-    "Pretende ayudarte a comprender por qué hay partes de ti que reaccionan "
-    "como lo hacen.\n\n"
+    "Pretende ayudarte a comprender por qué algunas partes de ti reaccionan "
+    "de determinada manera.\n\n"
 
     "Porque cuando comprendemos nuestras necesidades, dejamos de luchar contra "
     "ellas y empezamos a construir una vida capaz de sostenerlas."
@@ -209,8 +209,8 @@ TEXTO_COMO_LEER = (
 INTRO_LUNA = (
     "La Luna describe aquello que hace que tu mundo emocional pueda descansar.\n\n"
 
-    "Cuando esa necesidad está atendida, solemos sentirnos más presentes, "
-    "más disponibles y más conectados con nosotros mismos.\n\n"
+    "Cuando esa necesidad está atendida, solemos sentir más presencia, "
+    "más disponibilidad y una mayor conexión interna.\n\n"
 
     "Cuando no lo está, es fácil reaccionar desde el miedo, la defensa "
     "o la sensación de que algo importante falta.\n\n"
@@ -225,7 +225,7 @@ INTRO_LUNA = (
 INTRO_CASA4 = (
     "Ninguna persona aprende a relacionarse con sus emociones desde cero.\n\n"
 
-    "Todos comenzamos a construir nuestra seguridad en un entorno concreto, "
+    "Comenzamos a construir nuestra seguridad en un entorno concreto, "
     "con unas experiencias determinadas y unas formas particulares de recibir cuidado.\n\n"
 
     "La Casa 4 no pretende señalar culpables ni explicar toda una infancia.\n\n"
@@ -238,7 +238,7 @@ INTRO_CASA4 = (
 INTRO_CASA6 = (
     "Comprender nuestras necesidades es importante, pero comprenderlas "
     "no siempre basta. Necesitamos traducir ese conocimiento en pequeños "
-    "hábitos, rutinas y formas de relacionarnos con nosotros mismos.\n\n"
+    "hábitos, rutinas y formas de tratarnos.\n\n"
 
     "La Casa 6 representa precisamente ese espacio. No habla de grandes "
     "cambios, sino de todo aquello que repetimos cada día y que, poco a poco, "
@@ -247,7 +247,7 @@ INTRO_CASA6 = (
 
 
 INTRO_INTEGRACION = (
-    "Llegados a este punto, ya conoces varias piezas importantes "
+    "En este punto del recorrido, ya conoces varias piezas importantes "
     "de tu mundo emocional.\n\n"
 
     "Ninguna de ellas funciona por separado.\n\n"
@@ -261,8 +261,8 @@ INTRO_INTEGRACION = (
     "Cuando estas piezas empiezan a relacionarse entre sí, resulta más fácil "
     "comprender lo que ocurre dentro de ti.\n\n"
 
-    "Y cuanto más coherentes puedan ser entre ellas, más fácil será sostener "
-    "tu vida desde dentro y no únicamente reaccionar a lo que ocurre fuera."
+    "Y cuanto mayor sea la coherencia entre ellas, más fácil será sostener "
+    "tu vida desde dentro, en lugar de limitarte a reaccionar a lo que ocurre fuera."
 )
 
 
@@ -285,7 +285,7 @@ TEXTO_INVITACION = (
 
     "Y está bien.\n\n"
 
-    "Construir una nueva relación contigo no consiste en hacerlo perfecto.\n\n"
+    "Construir una nueva relación contigo no consiste en hacerlo todo perfecto.\n\n"
 
     "Consiste en aprender a escucharte un poco mejor cada día."
 )
@@ -357,7 +357,7 @@ LUNA_SIGNO = {
     "Muchas veces el cansancio aparece sin entender del todo por qué, "
     "y la causa suele estar en haber sostenido demasiada carga emocional alrededor. "
     "Tu memoria emocional es profunda y persistente. "
-    "Hay experiencias que pueden seguir activándose dentro mucho tiempo después de haber ocurrido.\n\n"
+    "Hay vivencias que pueden seguir activándose dentro mucho tiempo después de haber ocurrido.\n\n"
 
     "Cuando no existe un lugar donde sentir seguridad emocional, "
     "tu cuerpo suele notarlo enseguida.\n\n"
@@ -387,7 +387,7 @@ LUNA_SIGNO = {
     "Tiendes a analizar lo que sientes antes de terminar de sentirlo. "
     "Tu mente intenta entender rápidamente si la emoción tiene sentido, "
     "si es razonable o si debería estar ocurriendo. "
-    "Muchas veces, lo que no consigues procesar emocionalmente termina desplazándose hacia el cuerpo.\n\n"
+    "Muchas veces, lo que no consigues procesar emocionalmente termina expresándose a través del cuerpo.\n\n"
 
     "La tensión suele aparecer entonces como cansancio, sobrecarga mental o sensación de no llegar a todo. "
     "También puede existir una tendencia constante a corregirte internamente sin darte cuenta.\n\n"
@@ -447,7 +447,7 @@ LUNA_SIGNO = {
     "Antes de abrirte emocionalmente, una parte de ti evalúa si es seguro hacerlo. "
     "Muchas veces acabas procesando en soledad lo que te ocurre. "
     "Puedes sostener tensión emocional durante muchísimo tiempo sin derrumbarte, "
-    "pero eso no significa que no exista un coste. "
+    "pero eso no significa que no tenga un coste. "
     "El cuerpo suele registrar la carga acumulada como cansancio sostenido, rigidez o dificultad para relajarse.\n\n"
 
     "La desregulación suele aparecer más como agotamiento que como explosión emocional.\n\n"
@@ -463,7 +463,7 @@ LUNA_SIGNO = {
     "Eso puede darte claridad, pero también hacer que tus propias necesidades emocionales lleguen tarde. "
     "Cuando la intensidad emocional supera cierto límite, "
     "puede aparecer desconexión repentina. "
-    "Tu cuerpo suele pedir distancia antes incluso de que seas plenamente consciente de la saturación.\n\n"
+    "Tu cuerpo suele pedir distancia antes incluso de que tomes plena consciencia de la saturación.\n\n"
 
     "Necesitas espacio interno y margen para procesar lo que sientes a tu manera.\n\n"
 
@@ -506,7 +506,7 @@ LUNA_CASA = {
     "Tu estabilidad emocional está muy ligada a la sensación de seguridad concreta. Cuando aparece incertidumbre económica, cambios materiales o dudas sobre tu propio valor, todo dentro suele moverse rápidamente. "
     "No se vive solo como una preocupación mental. Puede aparecer tensión física, necesidad de controlar más las cosas o sensación de perder suelo interno. "
     "Necesitas cierta continuidad y estabilidad para relajarte de verdad. Cuando todo cambia demasiado rápido, puedes permanecer en alerta aunque desde fuera parezca que sigues funcionando con normalidad. "
-    "Te ayuda sentir que existe una base suficiente sobre la que apoyarte y que la vida tiene cierta estabilidad. En cambio, las pérdidas, la inseguridad o sentir que no tienes dónde sostenerte suelen generar mucho desorden interno."
+    "Te ayuda sentir que existe una base suficiente sobre la que apoyarte y que tu vida mantiene cierta estabilidad. En cambio, las pérdidas, la inseguridad o sentir que no tienes dónde sostenerte suelen generar mucho desorden interno."
 ),
 
 3: (
@@ -525,8 +525,8 @@ LUNA_CASA = {
 ),
 
 5: (
-    "Necesitas expresar lo que sientes para mantenerte vivo por dentro. La creatividad, el juego, el disfrute o la posibilidad de ser espontáneo no son algo superficial para ti: forman parte de lo que te ayuda a sentirte bien emocionalmente. "
-    "Cuando pasas demasiado tiempo reprimiendo esa parte de ti, la energía empieza a acumularse y pueden aparecer irritabilidad, vacío o sensación de desconexión contigo mismo. "
+    "Necesitas expresar lo que sientes para mantenerte vivo por dentro. La creatividad, el juego, el disfrute o la posibilidad de actuar con espontaneidad no son algo superficial para ti: forman parte de lo que te ayuda a sentirte bien emocionalmente. "
+    "Cuando pasas demasiado tiempo reprimiendo esa parte de ti, la energía empieza a acumularse y pueden aparecer irritabilidad, vacío o sensación de desconexión contigo. "
     "Tu cuerpo suele apagarse cuando la vida pierde espacio para el disfrute auténtico o para la expresión personal. "
     "Te ayuda crear, disfrutar y sentir que puedes expresarte libremente. En cambio, la exigencia constante, la represión emocional o sentir que no tienes espacio para ser quien eres suele desgastarte profundamente."
 ),
@@ -541,14 +541,14 @@ LUNA_CASA = {
 7: (
     "Tus relaciones cercanas influyen muchísimo en cómo te sientes por dentro. Cuando un vínculo importante está bien, suele aparecer mucha más calma y estabilidad. Cuando entra en tensión, lo notas enseguida. "
     "Muchas veces intentas sostener la relación incluso cuando emocionalmente ya casi no quedan recursos disponibles, porque la necesidad de armonía puede hacer que postergues durante demasiado tiempo lo que tú necesitas. "
-    "El conflicto sostenido suele dejarte cansado, bloqueado o con dificultad para relajarte de verdad. "
+    "El conflicto sostenido suele dejarte sin energía, con sensación de bloqueo o con dificultad para relajarte de verdad. "
     "Te ayuda sentir reciprocidad, claridad emocional y estabilidad en los vínculos. En cambio, las relaciones desequilibradas, la ambigüedad afectiva o vivir demasiado tiempo en conflicto suele generar mucho desgaste interno."
 ),
 
 8: (
     "Las emociones superficiales rara vez te movilizan demasiado. Lo que realmente te afecta suelen ser las experiencias intensas: la intimidad profunda, las pérdidas, las crisis o los vínculos donde hay algo importante en juego. "
     "Tiendes a vivir muchas emociones intensamente en privado y, cuando no existe un espacio seguro para atravesar todo eso, la tensión empieza a acumularse dentro poco a poco. "
-    "Hay experiencias que puedes sostener en silencio durante muchísimo tiempo sin que casi nadie lo note. "
+    "Hay vivencias que puedes sostener en silencio durante muchísimo tiempo sin que casi nadie lo note. "
     "Te ayuda sentir confianza profunda, intimidad real y seguridad emocional. En cambio, la traición, las pérdidas emocionales o atravesar demasiada intensidad sin apoyo suele dejar estados internos difíciles de relajar."
 ),
 
@@ -561,7 +561,7 @@ LUNA_CASA = {
 
 10: (
     "Lo que ocurre en tu vida profesional o pública te afecta emocionalmente mucho más de lo que aparentas. El reconocimiento puede darte una sensación profunda de estabilidad interna, mientras que la crítica o la exposición pueden impactarte muchísimo aunque no siempre lo muestres. "
-    "Muchas veces la sensación de valor personal se conecta con cómo sientes que ocupas tu lugar frente al mundo. "
+    "Muchas veces la sensación de valor personal se relaciona con cómo sientes que ocupas tu lugar frente al mundo. "
     "Cuando desaparece la dirección o el reconocimiento, la energía emocional puede caer muy rápido. "
     "Te ayuda sentir propósito, coherencia y reconocimiento genuino. En cambio, la exposición excesiva, la sensación de fracaso o la inseguridad pública suele afectar profundamente tu estabilidad emocional."
 ),
@@ -575,7 +575,7 @@ LUNA_CASA = {
 
 12: (
     "Muchas de tus emociones se mueven dentro de ti antes incluso de que consigas entenderlas del todo. A veces aparece cansancio, saturación o tristeza sin una causa completamente clara. "
-    "Necesitas períodos reales de silencio y retirada para vaciar todo lo que se va acumulando dentro. Cuando pasas demasiado tiempo expuesto a ruido, demandas o estímulos externos, tu mundo interior empieza a saturarse aunque desde fuera parezca que sigues funcionando. "
+    "Necesitas períodos reales de silencio y retirada para dar espacio a todo lo que se va acumulando dentro. Cuando pasas demasiado tiempo expuesto a ruido, demandas o estímulos externos, tu mundo interior empieza a saturarse aunque desde fuera parezca que sigues funcionando. "
     "Tu cuerpo suele necesitar descanso profundo con más frecuencia de la que imaginas. "
     "Te ayuda tener momentos de soledad elegida, silencio y suficiente espacio interior. En cambio, el exceso de exposición, el ruido constante o no disponer de tiempo para desconectar suele generar mucha saturación emocional."
 ),
@@ -622,7 +622,7 @@ CASA4_SIGNO = {
 
 "Virgo": (
     "Cuando aparece sensación de desorden dentro de ti, muchas veces intentas recuperar estabilidad organizando algo fuera. Ordenar, limpiar, resolver tareas o estructurar el entorno puede ayudarte a bajar momentáneamente la tensión interna. "
-    "La dificultad aparece cuando pasas demasiado tiempo intentando corregir lo externo sin terminar de entrar en lo que realmente te está ocurriendo por dentro. "
+    "La dificultad aparece cuando pasas demasiado tiempo intentando corregir lo externo sin llegar a atender lo que realmente te está ocurriendo por dentro. "
     "Tu sensación de seguridad aumenta cuando la vida cotidiana tiene cierto orden y funcionalidad. Cuando todo alrededor se vuelve caótico, el cuerpo entra rápidamente en sobrecarga. "
     "Te ayuda sentir estructura simple, orden y claridad en lo cotidiano. En cambio, el caos, la sobreexigencia o sentir que nunca llegas a todo suele generar mucha tensión interna."
 ),
@@ -638,25 +638,25 @@ CASA4_SIGNO = {
     "Percibes muy rápido lo que ocurre debajo de la superficie. Las tensiones no dichas, las emociones contenidas o las dinámicas ocultas te afectan incluso cuando nadie las nombra. "
     "Eso hace que muchas veces permanezcas en vigilancia aunque externamente todo parezca tranquilo. "
     "Necesitas sentir confianza profunda para relajarte de verdad. Cuando percibes manipulación, secretos o falta de honestidad emocional, el cuerpo vuelve rápidamente al estado de alerta. "
-    "Te ayuda la intimidad real, la honestidad emocional y la sensación de confianza profunda. En cambio, la manipulación, las tensiones ocultas o sentir amenaza emocional suele activar mucha intensidad interna."
+    "Te ayuda la intimidad real, la honestidad emocional y la sensación de confianza profunda. En cambio, la manipulación, las tensiones ocultas o sentir una amenaza emocional suele activar mucha intensidad interna."
 ),
 
 "Sagitario": (
     "Necesitas sentir que tu vida tiene dirección para experimentar estabilidad interna. Cuando existe horizonte, expansión o sensación de crecimiento, tu mundo interno se sostiene mucho mejor. "
     "La dificultad aparece cuando la vida empieza a sentirse demasiado estrecha, repetitiva o sin sentido. Entonces puede surgir inquietud, necesidad de escapar o sensación de encierro interno. "
     "Muchas veces intentas recuperar estabilidad tomando distancia, moviéndote o buscando aire y perspectiva. "
-    "Te ayuda la libertad, el movimiento y sentir que existe propósito en lo que vives. En cambio, sentir límites constantes, falta de salida o vivir algo que no tiene sentido para ti suele aumentar rápidamente la tensión interna."
+    "Te ayuda la libertad, el movimiento y sentir que existe propósito en lo que vives. En cambio, sentir límites constantes, no encontrar una salida o vivir algo que no tiene sentido para ti suele aumentar rápidamente la tensión interna."
 ),
 
 "Capricornio": (
-    "Muy pronto apareció la necesidad de sostenerte emocionalmente con muy poco apoyo. Muchas veces resulta más fácil resistir que pedir ayuda, porque la sensación de seguridad suele estar muy ligada a sentir que puedes hacerte cargo de lo que venga. "
+    "Desde muy pronto apareció la necesidad de sostenerte emocionalmente con muy poco apoyo. Muchas veces resulta más fácil resistir que pedir ayuda, porque la sensación de seguridad suele estar muy ligada a sentir que puedes hacerte cargo de lo que venga. "
     "La dificultad aparece cuando sostienes demasiado peso durante demasiado tiempo antes de reconocer que también necesitas apoyo y descanso. "
     "El cuerpo suele acumular muchísimo cansancio antes de detenerse realmente. "
     "Te ayuda sentir estructura, estabilidad y cierta sensación de capacidad interna. En cambio, la sobrecarga prolongada, el exceso de responsabilidad o sentir que todo depende de ti suele desgastar profundamente la energía."
 ),
 
 "Acuario": (
-    "Existe una parte de ti que observa lo que siente desde cierta distancia. Muchas veces entiendes emocionalmente lo que ocurre antes de terminar de habitarlo por completo. "
+    "Existe una parte de ti que observa lo que siente desde cierta distancia. Muchas veces entiendes emocionalmente lo que ocurre antes de terminar de sentirlo por completo. "
     "Necesitas bastante espacio interno para sentir seguridad y estabilidad emocional. Cuando los vínculos se vuelven demasiado invasivos o absorbentes, el cuerpo empieza a retirarse aunque emocionalmente sigas presente. "
     "La independencia tiene muchísimo peso en tu sensación de estabilidad interna. "
     "Te ayuda la autonomía, el espacio personal y sentir libertad emocional. En cambio, la invasión emocional, la dependencia excesiva o sentir que pierdes espacio interno suele generar desconexión y tensión."
@@ -681,7 +681,7 @@ CASA6_SIGNO = {
     "Primero suele aparecer irritación, después impaciencia y más tarde la sensación de que cualquier cosa molesta más de lo normal. "
     "Pensar más rara vez resuelve ese exceso de intensidad. Lo que realmente ayuda es mover el cuerpo y darle salida a lo que se ha ido acumulando dentro. "
     "El movimiento físico tiene un impacto directo sobre cómo te sientes. Cuando no puedes moverte —por cansancio, enfermedad o bloqueo— la tensión empieza a quedarse atrapada dentro. "
-    "Te ayuda la acción física, el movimiento y poder descargar corporalmente lo que vas acumulando. En cambio, la inmovilidad, contener demasiado tiempo lo que sientes o sentirte bloqueado suele aumentar rápidamente la tensión interna."
+    "Te ayuda la acción física, el movimiento y poder descargar corporalmente lo que vas acumulando. En cambio, la inmovilidad, contener demasiado tiempo lo que sientes o sentir que no puedes avanzar suele aumentar rápidamente la tensión interna."
 ),
 
 "Tauro": (
@@ -693,7 +693,7 @@ CASA6_SIGNO = {
 ),
 
 "Géminis": (
-    "Necesitas movimiento mental y estímulo constante para sentirte despierto por dentro. Cuando falta variedad, conversación o aprendizaje, la mente empieza a girar sobre sí misma. "
+    "Necesitas movimiento mental y estímulo constante para mantener la mente activa. Cuando falta variedad, conversación o aprendizaje, la mente empieza a girar sobre sí misma. "
     "La dificultad no suele ser falta de energía, sino demasiadas cosas abiertas al mismo tiempo. Puedes pasar días con muchísima actividad mental mientras el cuerpo queda completamente en segundo plano. "
     "La sobrecarga suele aparecer como inquietud, dificultad para desconectar o sensación de que la mente nunca termina de apagarse del todo. "
     "Necesitas alternar estímulo y pausa de forma mucho más consciente de lo que imaginas. "
@@ -710,15 +710,15 @@ CASA6_SIGNO = {
 ),
 
 "Leo": (
-    "Tu energía cotidiana necesita algo que sientas verdaderamente propio. Cuando toda la vida se reduce a obligación, rutina o gestión, algo dentro empieza a apagarse poco a poco. "
+    "Tu energía cotidiana necesita algo que sientas verdaderamente propio. Cuando tu vida se reduce a obligación, rutina o gestión, algo dentro empieza a apagarse poco a poco. "
     "Puedes seguir funcionando durante mucho tiempo, pero sin sensación real de vitalidad. "
     "Necesitas espacios donde puedas expresarte, crear o sentir conexión auténtica contigo. "
-    "Cuando pasas demasiado tiempo lejos de esa parte interna, el cuerpo empieza a vaciarse antes incluso de que puedas ponerle nombre a lo que te ocurre. "
+    "CCuando pasas demasiado tiempo lejos de esa parte de ti, la energía empieza a disminuir antes incluso de que puedas ponerle nombre a lo que te ocurre. "
     "Te ayudan la creatividad, la expresión auténtica y sentir conexión personal con lo que haces. En cambio, la rutina mecánica, el exceso de obligación o no tener espacio propio suele apagar progresivamente la energía."
 ),
 
 "Virgo": (
-    "Tu cuerpo detecta señales muy rápidamente. Muchas veces notas antes que algo no va bien incluso antes de que sea evidente para los demás. "
+    "Tu cuerpo detecta señales muy rápidamente. Muchas veces notas que algo no va bien antes incluso de que sea evidente para los demás. "
     "Eso puede ayudarte muchísimo a cuidarte, pero también hacer que vivas en observación constante. "
     "Cuando algo se descoloca, la tendencia suele ser analizarlo, corregirlo o intentar mejorarlo enseguida. "
     "La dificultad aparece cuando el cuerpo necesita descanso y recibe todavía más exigencia o supervisión. "
@@ -753,7 +753,7 @@ CASA6_SIGNO = {
 
 "Capricornio": (
     "Puedes sostener muchísimo más de lo que la mayoría imagina. La dificultad es que también puedes ignorar las señales de cansancio durante demasiado tiempo. "
-    "Existe tendencia a seguir funcionando incluso cuando el cuerpo ya está pidiendo parar. Muchas veces las responsabilidades aparecen antes que la recuperación. "
+    "Existe tendencia a seguir funcionando incluso cuando el cuerpo ya está pidiendo parar. Muchas veces priorizas las responsabilidades antes que la recuperación. "
     "No porque no sientas el agotamiento, sino porque el umbral interno para detenerte suele ser muy alto. "
     "El desgaste suele aparecer de golpe, cuando la acumulación ya supera lo que podías sostener. "
     "Te ayudan los límites claros, el descanso suficiente y una estructura estable. En cambio, la sobrecarga prolongada, el exceso de responsabilidad o no permitirte parar suele desgastar profundamente el cuerpo."
@@ -770,7 +770,7 @@ CASA6_SIGNO = {
 "Piscis": (
     "Tu cuerpo absorbe muchísimo del entorno. Muchas veces aparece cansancio extremo sin que exista una causa física completamente clara. "
     "La saturación emocional, el exceso de estímulos o los ambientes cargados se quedan dentro aunque no siempre seas consciente de ello. "
-    "Necesitas momentos reales de silencio, retirada y vaciado emocional para volver a sentirte bien. "
+    "Necesitas momentos reales de silencio, retirada y descarga emocional para volver a sentirte bien. "
     "Cuando no existen espacios para soltar lo acumulado, la fatiga empieza a crecer lentamente. "
     "Tu cuerpo suele necesitar descanso profundo con más frecuencia de la que imaginas. "
     "Te ayudan el silencio, el descanso, la suavidad y los espacios de retiro. En cambio, la saturación ambiental, el exceso de exposición o no disponer de momentos de descarga suele generar muchísima sobrecarga."
@@ -818,7 +818,7 @@ PLANETA_CASA4 = {
 ),
 
 "Júpiter": (
-    "Tu mundo interior vive las experiencias a gran escala. Cuando algo toca tu base emocional, todo puede expandirse muchísimo por dentro. "
+    "Tu mundo interior vive todo con gran intensidad. Cuando algo toca tu base emocional, todo puede expandirse muchísimo por dentro. "
     "Existe una necesidad muy profunda de encontrar un lugar que realmente se sienta hogar, y muchas veces ningún espacio externo parece cubrir completamente esa necesidad. "
     "Cuando aparece inseguridad emocional, la tendencia suele ser expandirte: buscar más sentido, más espacio o nuevas posibilidades donde sentir amplitud otra vez. "
     "Necesitas amplitud también dentro de tu vida íntima y emocional."
@@ -828,7 +828,7 @@ PLANETA_CASA4 = {
     "Aprendiste pronto a sostenerte emocionalmente sin depender demasiado de otras personas. Puede que en el entorno de origen no hubiera demasiado espacio para mostrar vulnerabilidad libremente. "
     "Eso generó fortaleza, pero también cierta dificultad para relajarte completamente o recibir apoyo sin medirlo antes. "
     "Muchas veces aparece la sensación de tener que merecer el descanso, el cuidado o incluso la ayuda. "
-    "Tu sensación de seguridad interna suele construirse lentamente, a través del tiempo, la experiencia y todo aquello que demuestra estabilidad real."
+    "Tu sensación de seguridad interna suele construirse lentamente, a través del tiempo, lo que vas viviendo y todo aquello que demuestra estabilidad real."
 ),
 
 "Urano": (
@@ -876,7 +876,7 @@ PLANETA_CASA4 = {
     "Existe una parte de ti que conoce muy bien el territorio del hogar, la raíz y la vida interior. Buscar refugio, volver a lo conocido o sostenerte en lo familiar puede surgir de manera muy automática. "
     "Eso aporta sensibilidad y profundidad hacia el mundo íntimo, pero también puede hacer que permanezcas demasiado tiempo en lugares, vínculos o dinámicas que ya no ayudan a crecer. "
     "Tu base interna es importante, pero no puede convertirse en el único lugar desde donde vivir. "
-    "Necesitas honrar lo que fue hogar sin quedarte atrapado ahí."
+    "Necesitas honrar lo que fue hogar sin quedarte ahí."
 ),
 
 }
@@ -889,14 +889,14 @@ PLANETA_CASA6 = {
     "Necesitas sentir que lo que haces cada día tiene sentido. Cuando la vida cotidiana se convierte únicamente en obligación o rutina vacía, la energía empieza a apagarse lentamente. "
     "Puedes seguir funcionando durante bastante tiempo, pero el cuerpo termina notando cuándo estás viviendo sin conexión real con lo que haces. "
     "Tu vitalidad está profundamente ligada a la sensación de propósito y coherencia. "
-    "Cuando existe alineación entre lo que haces y lo que sientes importante, la energía cambia completamente."
+    "Cuando existe coherencia entre lo que haces y lo que consideras importante, la energía cambia completamente."
 ),
 
 "Luna": (
     "Tu cuerpo y tu estado emocional funcionan profundamente unidos. Cuando algo se mueve emocionalmente, el cuerpo suele reaccionar antes incluso de que puedas explicarlo con claridad. "
     "El cansancio, la digestión, el descanso o la energía diaria cambian mucho según cómo estés por dentro y según el clima emocional que te rodea. "
     "Necesitas cierta estabilidad emocional para sentir también estabilidad física. "
-    "Cuando llevas demasiado tiempo sosteniendo tensión emocional, el cuerpo termina hablándolo por ti."
+    "Cuando llevas demasiado tiempo sosteniendo tensión emocional, el cuerpo termina expresándolo por ti."
 ),
 
 "Mercurio": (
@@ -909,7 +909,7 @@ PLANETA_CASA6 = {
 "Venus": (
     "Necesitas cierto bienestar real dentro de la vida cotidiana para sentirte bien físicamente. No suele ayudarte vivir únicamente desde la obligación. "
     "La belleza, el disfrute sencillo, la armonía o sentir comodidad en el entorno tienen muchísimo impacto sobre tu energía. "
-    "Cuando el día a día se vuelve demasiado frío, mecánico o puramente productivo, el cuerpo empieza a vaciarse lentamente. "
+    "Cuando el día a día se vuelve demasiado frío, mecánico o puramente productivo, la energía empieza a disminuir lentamente. "
     "Necesitas que exista algo agradable, humano y habitable dentro de la rutina para poder sostenerla de verdad."
 ),
 
@@ -946,8 +946,8 @@ PLANETA_CASA6 = {
 
 "Neptuno": (
     "Muchas veces te cuesta notar claramente dónde termina el esfuerzo y dónde empieza el agotamiento. Puedes absorber la carga emocional del entorno sin darte cuenta enseguida y seguir funcionando mientras el cuerpo se va saturando lentamente. "
-    "Necesitas espacios reales de descanso, silencio y cierre emocional para vaciar todo lo que vas acumulando. "
-    "Cuando no existe ese vaciado, la fatiga empieza a crecer aunque no haya una causa física evidente. "
+    "Necesitas espacios reales de descanso, silencio y cierre emocional para soltar lo que vas acumulando. "
+    "Cuando no puedes liberar esa carga, la fatiga empieza a crecer aunque no haya una causa física evidente. "
     "Tu cuerpo necesita mucha más recuperación emocional de la que suele parecer desde fuera."
 ),
 
@@ -976,12 +976,12 @@ PLANETA_CASA6 = {
     "Una parte importante de tu crecimiento pasa por aprender a construir estabilidad dentro de la vida cotidiana. No basta con entender las cosas internamente o esperar a sentir una base suficiente. "
     "Aquí el aprendizaje necesita bajar al cuerpo, a los hábitos y a la realidad concreta de cada día. "
     "Desarrollar rutinas sostenibles, cuidar tu energía y aprender a escuchar las necesidades reales del cuerpo forma parte directa de tu evolución. "
-    "Muchas veces el crecimiento aparece en cosas muy pequeñas: repetir algo simple, sostener procesos lentamente o aprender a escucharte antes de llegar al límite. "
+    "Muchas veces el crecimiento aparece en cosas muy pequeñas: repetir algo simple, dar continuidad a un proceso de forma gradual o aprender a escucharte antes de llegar al límite. "
     "Tu dirección no apunta hacia hacer más, sino hacia construir una vida que el cuerpo realmente pueda sostener."
 ),
 
 "Nodo Sur": (
-    "Existe tendencia a vivir con más conexión con lo interno, lo emocional o lo simbólico que con las necesidades concretas del cuerpo y de la vida cotidiana. "
+    "Existe una tendencia a mantener más conexión con lo interno, lo emocional o lo simbólico que con las necesidades concretas del cuerpo y de la vida cotidiana. "
     "Puede resultar más natural refugiarte en estados internos amplios, en la imaginación o en lo emocionalmente conocido que sostener rutinas constantes y realistas. "
     "El problema es que, cuando el cuerpo queda demasiado tiempo en segundo plano, el desgaste termina apareciendo igualmente. "
     "Hay hábitos, ritmos y formas de cuidado que quizá parezcan demasiado simples o limitantes para una parte de ti. "
@@ -1025,7 +1025,7 @@ ASPECTOS_LUNA = {
 ("Luna","Sol","⚻"): (
     "Existe un ajuste constante entre lo que sientes y la dirección que intentas sostener. Hay momentos en los que emocionalmente necesitas una cosa mientras la vida parece pedir otra distinta. "
     "Eso rara vez se resuelve de una vez para siempre y suele requerir reajustes continuos. "
-    "La clave está en modificar el rumbo cuando hace falta sin vivirlo como una traición a ti mismo."
+    "La clave está en modificar el rumbo cuando hace falta sin vivirlo como una traición hacia quien eres."
 ),
 
 ("Luna","Mercurio","="): (
@@ -1388,7 +1388,7 @@ ASPECTOS_LUNA = {
 ),
 
 ("Luna","Lilith","✶"): (
-    "Existe una vía de contacto bastante accesible con una parte emocional más instintiva, libre y difícil de domesticar. Cuando le das un espacio consciente, esa fuerza puede ayudarte a recuperar autenticidad y conexión contigo mismo. "
+    "Existe una vía de contacto bastante accesible con una parte emocional más instintiva, libre y difícil de domesticar. Cuando le das un espacio consciente, esa fuerza puede ayudarte a recuperar autenticidad y conexión contigo. "
     "No necesitas expulsarla ni dejar que ocupe todo el espacio interno. "
     "Tu equilibrio aparece cuando puedes integrarla con presencia y sin miedo a lo que muestra."
 ),
@@ -1554,7 +1554,7 @@ REGENTE_CASA4_LUNA = {
 REGENTE_CASA4_CASA = {
 
 1: (
-    "Además, el regente de tu Casa 4 se encuentra en la Casa 1. Esto indica que una parte importante de tu sensación de seguridad nace de la relación contigo mismo. "
+    "Además, el regente de tu Casa 4 se encuentra en la Casa 1. Esto indica que una parte importante de tu sensación de seguridad nace de la relación contigo. "
     "Antes de buscar refugio fuera, necesitas sentir que puedes habitar tu propio cuerpo, reconocer tus necesidades y mostrarte con autenticidad. "
     "Cuando esa conexión contigo se fortalece, resulta mucho más fácil sentir estabilidad también en el resto de tu vida."
 ),
@@ -1579,7 +1579,7 @@ REGENTE_CASA4_CASA = {
 
 5: (
     "El regente de tu Casa 4 se encuentra en la Casa 5. Una parte importante de tu seguridad aparece cuando puedes expresar quién eres con libertad. "
-    "La creatividad, el disfrute, el juego y los espacios donde puedes mostrarte sin sentirte juzgado ayudan a fortalecer tu mundo interno. "
+    "La creatividad, el disfrute, el juego y los espacios donde puedes mostrarte sin sentir que te juzgan ayudan a fortalecer tu mundo interno. "
     "Cuando la vida pierde esa capacidad de expresión, también puede debilitarse la sensación de refugio."
 ),
 
@@ -1616,12 +1616,12 @@ REGENTE_CASA4_CASA = {
 11: (
     "El regente de tu Casa 4 se encuentra en la Casa 11. La sensación de pertenencia desempeña un papel importante en tu estabilidad emocional. "
     "Los grupos, las amistades y los proyectos compartidos pueden convertirse en espacios donde sentir apoyo y refugio. "
-    "Cuando encuentras una comunidad con la que puedes ser tú mismo, también se fortalece tu sensación de hogar."
+    "Cuando encuentras una comunidad con la que puedes ser tú, también se fortalece tu sensación de hogar."
 ),
 
 12: (
     "El regente de tu Casa 4 se encuentra en la Casa 12. Una parte importante de tu seguridad se construye en la relación con tu mundo interior. "
-    "Los momentos de silencio, retiro, descanso y conexión profunda contigo mismo permiten que el sistema emocional recupere equilibrio. "
+    "Los momentos de silencio, retiro, descanso y conexión profunda contigo permiten que el sistema emocional recupere equilibrio. "
     "No todo el refugio se encuentra fuera. En tu caso, una parte importante necesita aprender a construirse desde dentro."
 ),
 
@@ -1707,7 +1707,7 @@ REGENTE_CASA6_LUNA = {
 REGENTE_CASA6_CASA = {
 
 1: (
-    "Además, el regente de tu Casa 6 se encuentra en la Casa 1. Esto indica que una parte importante de tu regulación cotidiana depende de la relación que mantienes contigo mismo. "
+    "Además, el regente de tu Casa 6 se encuentra en la Casa 1. Esto indica que una parte importante de tu regulación cotidiana depende de la relación que mantienes contigo. "
     "Cuanto mejor conoces tus ritmos, tus límites y tus necesidades, más fácil resulta cuidar tu energía. "
     "Escucharte antes de llegar al agotamiento suele ser una de las herramientas más importantes para sostenerte."
 ),
@@ -2051,7 +2051,7 @@ def texto_integracion(planetas, cuspides, aspectos_luna):
             f"Eso significa que lo que sientes y lo que necesitas para sentir base interna "
             f"tienen un lenguaje parecido. "
             f"Cuando emocionalmente algo se activa, una parte profunda de ti reconoce bastante rápido "
-            f"qué necesita para sentirse más segura. "
+            f"qué necesita para recuperar seguridad. "
             f"La Casa 6, en cambio, está en {elem_c6}. "
             f"Tu cuerpo y tus hábitos funcionan con otra lógica. "
             f"Puede que entiendas emocionalmente lo que necesitas, "
@@ -2104,7 +2104,7 @@ def texto_integracion(planetas, cuspides, aspectos_luna):
             f"Cuando buscas seguridad, refugio o estabilidad emocional profunda, "
             f"esa energía ya está presente ahí. "
             f"Por eso tu forma de sentir hogar, intimidad y raíz no depende solo del signo de la Casa 4. "
-            f"También está marcada por lo que esos planetas activan dentro de ti."
+            f"También está marcada por la forma en que esos planetas activan tu mundo interno."
         )
 
     if planetas_c6:
@@ -2122,7 +2122,7 @@ def texto_integracion(planetas, cuspides, aspectos_luna):
             f"Los aspectos de tensión con {lista_y(nombres_t)} hacen que el mundo emocional tenga menos margen en ciertos momentos. "
             f"Cuando algo te activa, puede haber menos tiempo entre sentir y reaccionar. "
             f"La emoción puede llegar más intensa, más mezclada o más difícil de ordenar. "
-            f"Esto no significa que sí o sí vayas a desregularte. "
+            f"Esto no significa que necesariamente vayas a desregularte. "
             f"Significa que necesitas reconocer antes las señales iniciales, "
             f"porque cuando la activación ya ha subido mucho, cuesta más volver al centro."
         )
@@ -2160,10 +2160,10 @@ def texto_integracion(planetas, cuspides, aspectos_luna):
         f"emocionalmente hay activación, internamente falta suelo "
         f"y el cuerpo empieza a mostrar cansancio, tensión o pérdida de ritmo.\n\n"
 
-        f"El trabajo no consiste en resolverlo todo a la vez. "
+        f"La clave no consiste en resolverlo todo a la vez. "
         f"Consiste en encontrar la primera capa disponible: "
         f"una emoción que pueda expresarse, un entorno que pueda darte más seguridad, "
-        f"o una acción corporal sencilla que te ayude a volver poco a poco a la estabilidad."
+        f"o una acción corporal sencilla que te ayude a recuperar poco a poco la estabilidad."
     )
 
     partes.append(cierre)
@@ -3382,8 +3382,8 @@ def bloque_invitacion(subtitulo, cuerpo):
 
     texto_3 = (
         "No siempre encontrarás una respuesta inmediata, y está bien. Construir una "
-        "nueva relación contigo no consiste en hacerlo perfecto. Consiste en aprender "
-        "a escucharte un poco mejor cada día."
+        "nueva relación contigo no consiste en hacerlo todo perfecto. Consiste en aprender "
+        "a escucharte un poco más cada día."
     )
 
     elementos.append(Paragraph(texto_1, cuerpo))
