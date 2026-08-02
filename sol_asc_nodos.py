@@ -97,7 +97,7 @@ SOL_SIGNO = {
     "Puedes empezar muchas cosas con fuerza y perder conexión con ellas a mitad de camino.\n\n"
     
     "Te desgasta sentir que no puedes avanzar, depender constantemente del ritmo de otras personas o tener que esperar demasiado para actuar. "
-    "Cuando no encuentras una dirección clara, es fácil acabar moviéndote por tensión más que por verdadera decisión."
+    "Cuando no encuentras una dirección clara, es fácil acabar reaccionando desde la tensión más que desde una decisión auténtica."
 ),
 
 "Tauro": (
@@ -109,7 +109,7 @@ SOL_SIGNO = {
     "Cuando todo cambia demasiado rápido o el entorno exige respuestas inmediatas, puedes cerrarte, resistirte o quedarte parado más tiempo del que desearías.\n\n"
     
     "Te afecta mucho perder aquello que habías construido, sentir que no hay suelo firme o vivir cambios constantes sin preparación. "
-    "La dirección aparece cuando puedes echar raíces en lo que haces."
+    "La dirección aparece cuando puedes echar raíces en aquello que haces."
 ),
 
 "Géminis": (
@@ -120,12 +120,12 @@ SOL_SIGNO = {
     "Puedes interesarte por muchas cosas a la vez y terminar dispersándote si no encuentras un eje claro que organice toda esa información.\n\n"
     
     "Cuando no puedes expresarte, aprender o compartir lo que piensas, aparece inquietud interna. "
-    "Te cuesta sostener direcciones demasiado rígidas o cerradas. Necesitas movimiento, pero también algo que dé coherencia a todo lo que vas abriendo."
+    "Te cuesta sostener direcciones demasiado rígidas o cerradas. Necesitas movimiento, pero también algo que dé coherencia a todo lo que vas explorando."
 ),
 
 "Cáncer": (
     "Tu dirección nace desde dentro. "
-    "Necesitas sentir cierta seguridad emocional y cierta conexión con tu espacio interno para poder avanzar hacia afuera. "
+    "Necesitas sentir seguridad emocional y conexión con tu espacio interno para poder avanzar hacia afuera. "
     "Cuando eso no existe, gran parte de tu energía se va en protegerte, adaptarte o intentar sostener el entorno.\n\n"
     
     "No siempre muestras rápidamente hacia dónde quieres ir. "
@@ -144,7 +144,7 @@ SOL_SIGNO = {
     "Cuando ocupas lugares donde eres completamente intercambiable o invisible, la motivación suele apagarse.\n\n"
     
     "Te afecta mucho sentir que lo que aportas no importa, compararte constantemente o depender demasiado de la validación externa. "
-    "Cuando pierdes conexión con tu propia expresión, puedes acabar actuando para ser visto en lugar de actuar desde algo real."
+    "Cuando pierdes conexión con tu propia expresión, puedes acabar actuando para recibir reconocimiento en lugar de actuar desde algo real."
 ),
 
 "Virgo": (
@@ -166,12 +166,12 @@ SOL_SIGNO = {
     "Muchas veces simplemente piensas mejor, decides mejor o entiendes mejor tu posición cuando puedes verla reflejada en otra persona o en un vínculo.\n\n"
     
     "Te desgasta vivir demasiado tiempo en conflicto, en desequilibrios sostenidos o teniendo que decidir todo completamente solo. "
-    "Cuando no hay referencias relacionales claras, puedes quedarte dudando mucho tiempo antes de moverte."
+    "Cuando no hay referencias relacionales claras, puedes pasar mucho tiempo dudando antes de dar un paso."
 ),
 
 "Escorpio": (
     "Tu dirección se activa cuando sientes que hay algo verdadero en juego. "
-    "Necesitas profundidad, intensidad y contacto con lo que transforma de verdad.\n\n"
+    "Necesitas profundidad, intensidad y contacto con aquello que realmente transforma.\n\n"
     
     "Las dinámicas superficiales o vacías suelen agotarte rápidamente. "
     "Cuando no encuentras profundidad en lo que haces, puedes acabar controlándolo todo, desconfiando o acumulando tensión por dentro.\n\n"
@@ -189,7 +189,7 @@ SOL_SIGNO = {
     
     "Puedes entusiasmarte con muchas posibilidades al mismo tiempo y perder fuerza intentando abarcar demasiado. "
     "También te afecta vivir en contextos demasiado cerrados, repetitivos o limitados. "
-    "Cuando pierdes sentido, aparece desorientación antes que tristeza."
+    "Cuando pierdes la sensación de propósito, aparece desorientación antes que tristeza."
 ),
 
 "Capricornio": (
@@ -217,7 +217,7 @@ SOL_SIGNO = {
     "Tu dirección se activa cuando puedes conectar con algo que va más allá de lo inmediato y lo puramente práctico. "
     "Necesitas sensibilidad, imaginación, inspiración o espacios donde puedas sentir sin tener que definirlo todo constantemente.\n\n"
     
-    "Cuando no existe un canal para expresar eso que percibes, es fácil dispersarte, adaptarte demasiado al entorno o perder claridad sobre lo que realmente quieres.\n\n"
+    "Cuando no existe un canal para expresar eso que percibes, es fácil dispersarte, adaptarte demasiado al entorno o perder claridad sobre la dirección que realmente deseas seguir.\n\n"
     
     "Te desgastan mucho los entornos excesivamente rígidos, saturados de exigencias o sin espacio para parar y respirar. "
     "A veces puedes seguir funcionando hacia afuera mientras por dentro ya has perdido completamente la conexión con tu dirección real."
@@ -258,7 +258,7 @@ SOL_CASA = {
 
 4: (
     "Tu dirección nace desde la base interna y el espacio privado. "
-    "Necesitas sentir cierta seguridad emocional y cierta estabilidad íntima para poder avanzar hacia afuera.\n\n"
+    "Necesitas sentir seguridad emocional y cierta estabilidad íntima para poder avanzar hacia afuera.\n\n"
     
     "Cuando no tienes un lugar donde descansar de verdad o sientes que debes estar constantemente disponible para el exterior, es fácil perder fuerza y replegarte.\n\n"
     
@@ -291,7 +291,7 @@ SOL_CASA = {
     "Necesitas intercambio, diálogo y vínculos que te ayuden a verte con más claridad.\n\n"
     
     "Muchas veces entiendes mejor lo que quieres cuando puedes contrastarlo con alguien más. "
-    "Sin referencias relacionales, puedes quedarte dudando o perder orientación.\n\n"
+    "Sin referencias relacionales, puedes pasar mucho tiempo dudando o perder orientación.\n\n"
     
     "El reto aparece cuando acabas dependiendo demasiado de la mirada o las decisiones de otras personas para sostener tu propia dirección."
 ),
@@ -303,12 +303,12 @@ SOL_CASA = {
     "Las dinámicas superficiales o demasiado controladas suelen dejarte vacío rápidamente. "
     "También te afecta mucho acumular emociones, tensión o situaciones no resueltas durante demasiado tiempo.\n\n"
     
-    "Cuando puedes entrar en profundidad y transformar lo que ya no sirve, recuperas fuerza y claridad."
+    "Cuando puedes profundizar y transformar lo que ya no sirve, recuperas fuerza y claridad."
 ),
 
 9: (
     "Tu dirección se activa cuando sientes que estás creciendo, aprendiendo o ampliando tu mirada sobre la vida. "
-    "Necesitas horizonte, sentido y la sensación de que hay algo más allá de lo inmediato.\n\n"
+    "Necesitas horizonte, propósito y la sensación de que hay algo más allá de lo inmediato.\n\n"
     
     "La rutina sin propósito suele agotarte profundamente. "
     "También puedes perder fuerza cuando dejas de creer en aquello que antes daba sentido a tu camino.\n\n"
@@ -354,7 +354,7 @@ ASC_SIGNO = {
     "La inmovilidad suele generar más incomodidad que el riesgo de equivocarte.\n\n"
 
     "Te resulta más fácil desenvolverte cuando sientes que tienes margen para decidir, experimentar y comprobar por ti "
-    "misma qué funciona. Esperar demasiado o depender constantemente del ritmo de otras personas puede hacer que aparezca "
+    "qué funciona. Esperar demasiado o depender constantemente del ritmo de otras personas puede hacer que aparezca "
     "frustración o impaciencia.\n\n"
 
     "Cuando algo te desborda, la tendencia suele ser acelerar. Puedes responder antes de haber comprendido del todo lo "
@@ -472,8 +472,8 @@ ASC_SIGNO = {
     "lo que construyes.\n\n"
 
     "Cuando algo te desborda, puedes intentar recuperar seguridad anticipándote a todo lo que podría ocurrir o manteniendo "
-    "un mayor control sobre lo que sucede a tu alrededor. A veces esa vigilancia nace del deseo de evitar volver a sentirte "
-    "vulnerable o desprotegida.\n\n"
+    "un mayor control sobre lo que sucede a tu alrededor. A veces esa vigilancia nace del deseo de evitar volver a sentir "
+    "vulnerabilidad o desprotección.\n\n"
 
     "Cuando esta energía madura, tu capacidad de percibir lo esencial se convierte en una gran fortaleza. Puedes atravesar "
     "los cambios con profundidad, acompañar procesos difíciles y sostener una enorme intensidad emocional sin necesidad "
@@ -499,7 +499,7 @@ ASC_SIGNO = {
 "Capricornio": (
     "Con Ascendente en Capricornio, necesitas comprender cuál es la mejor forma de afrontar una situación antes de dar un paso. "
     "Tu primera reacción suele ser valorar las consecuencias, medir los recursos disponibles y buscar una manera sólida de avanzar. "
-    "Rara vez te sientes cómoda actuando sin una dirección clara.\n\n"
+    "Rara vez te resulta fácil actuar sin una dirección clara.\n\n"
 
     "Te resulta más fácil desenvolverte cuando existe estructura, cuando sabes qué depende de ti y cuando puedes construir "
     "las cosas poco a poco. La sensación de estar haciendo algo con sentido y de manera consistente suele darte mucha seguridad.\n\n"
@@ -560,7 +560,7 @@ REGENTE_ASC_CASA = {
     1: (
         "Tu manera de afrontar la vida encuentra uno de sus principales apoyos en la capacidad "
         "de actuar desde ti. Necesitas sentir que puedes tomar decisiones propias, comprobar por "
-        "ti misma lo que funciona y mantener contacto con tu criterio personal.\n\n"
+        "ti lo que funciona y mantener contacto con tu criterio personal.\n\n"
 
         "Cuando te alejas demasiado de lo que realmente quieres o delegas continuamente tu "
         "dirección en otras personas, es fácil perder claridad. Recuperas estabilidad cuando "
@@ -672,7 +672,7 @@ REGENTE_ASC_CASA = {
         "madurar fuera de la mirada de otras personas.\n\n"
 
         "Cuando vives demasiado tiempo sin descanso o sin espacio para escuchar lo que ocurre por dentro, puedes "
-        "sentirte desorientada o desconectada. Recuperas estabilidad cuando paras, reduces el ruido y permites que "
+        "sentir desorientación o desconexión. Recuperas estabilidad cuando paras, reduces el ruido y permites que "
         "la claridad aparezca sin forzarla."
     ),
 }
@@ -683,7 +683,7 @@ REGENTE_ASC_CASA = {
 REGENTE_ASC_SIGNO = {
 
     "Aries": (
-        "Buscas esa estabilidad tomando la iniciativa. Necesitas comprobar por ti misma lo que funciona, "
+        "Buscas esa estabilidad tomando la iniciativa. Necesitas comprobar por ti lo que funciona, "
         "actuar cuando algo es importante y sentir que puedes abrir camino sin depender constantemente del "
         "ritmo de otras personas.\n\n"
 
@@ -725,7 +725,7 @@ REGENTE_ASC_SIGNO = {
 
         "Cuando no encuentras espacio para mostrarte o dependes demasiado de la aprobación externa, puede "
         "debilitarse tu confianza. Recuperas seguridad cuando vuelves a lo que te inspira y actúas desde una "
-        "convicción interna, no únicamente desde la necesidad de ser reconocida."
+        "convicción interna, no únicamente desde la necesidad de recibir reconocimiento."
     ),
 
     "Virgo": (
@@ -828,7 +828,7 @@ NODO_NORTE_SIGNO = {
 
 "Leo": (
     "Tu dirección pide ocupar espacio de una forma más personal y visible. Necesitas expresarte más desde lo que eres y menos desde la adaptación constante al grupo, al entorno o a lo que otras personas esperan. "
-    "Lo conocido suele llevarte hacia cierta distancia emocional, observación o tendencia a diluir tu individualidad dentro de lo colectivo. "
+    "Lo conocido suele llevarte hacia cierta distancia emocional, una actitud observadora o la tendencia a diluir tu individualidad dentro de lo colectivo. "
     "El reto está en permitirte destacar sin sentir que tienes que justificar continuamente tu presencia o minimizar lo que eres. "
     "Crecer hacia este Nodo Norte implica asumir que también tienes derecho a ocupar el centro de tu propia vida."
 ),
@@ -877,7 +877,7 @@ NODO_NORTE_SIGNO = {
 
 "Piscis": (
     "Tu dirección pide aprender a soltar más el control y tolerar mejor la incertidumbre. Necesitas abrirte a espacios donde no todo pueda entenderse, corregirse o resolverse inmediatamente. "
-    "Lo conocido suele llevarte hacia la autoexigencia, el análisis constante o la necesidad de que todo permanezca ordenado y bajo control. "
+    "Lo conocido suele llevarte hacia la autoexigencia, el análisis constante o la necesidad de mantener todo ordenado y bajo control. "
     "El reto está en aceptar que no todo puede organizarse perfectamente ni sostenerse desde la vigilancia continua. "
     "Crecer hacia este Nodo Norte implica permitir más descanso, más confianza y menos necesidad de supervisar constantemente todo lo que ocurre."
 ),
@@ -952,7 +952,7 @@ NODO_NORTE_CASA = {
 11: (
     "Tu dirección pide conectar más con proyectos colectivos, redes y espacios compartidos. Necesitas aprender a colaborar, aportar visión y sentir que formas parte de algo más amplio que tu experiencia individual. "
     "El crecimiento aparece cuando puedes construir junto a otras personas sin vivirlo como una pérdida de identidad personal. "
-    "El reto suele estar en no quedar atrapado únicamente en la necesidad de reconocimiento individual o en una expresión demasiado centrada en ti."
+    "El reto suele estar en no quedarte solo en la necesidad de reconocimiento individual o en una expresión demasiado centrada en ti."
 ),
 
 12: (
@@ -963,7 +963,7 @@ NODO_NORTE_CASA = {
 
 }
 
-# ─── TEXTOS: SUR POR SIGNO ─────────────────────────────────────────────
+# ─── TEXTOS: NODO SUR POR SIGNO ─────────────────────────────────────────────
 NODO_SUR_SIGNO = {
 
 "Aries": (
@@ -993,8 +993,8 @@ NODO_SUR_SIGNO = {
 
 "Leo": (
     "Tiendes a buscar reconocimiento, centralidad o validación a través de lo que expresas y haces visible. Hay facilidad para crear, destacar y dejar una huella personal en lo que haces, pero también riesgo de depender demasiado de la mirada externa para sostener el propio valor. "
-    "Puede aparecer necesidad constante de sentirte visto, importante o reconocido para confirmar que lo que haces tiene sentido. "
-    "El problema surge cuando toda la experiencia empieza a girar alrededor de la validación externa o del lugar que ocupas frente a otras personas."
+    "Puede aparecer una necesidad constante de validación externa para confirmar que lo que haces tiene sentido. "
+    "El problema surge cuando tu vida empieza a girar alrededor de la validación externa o del lugar que ocupas frente a otras personas."
 ),
 
 "Virgo": (
@@ -1058,7 +1058,7 @@ NODO_SUR_CASA = {
 ),
 
 3: (
-    "Tiendes a moverte constantemente entre ideas, conversaciones, información y estímulos cercanos. Hay facilidad para adaptarte, aprender rápido y mantener varias posibilidades abiertas al mismo tiempo, pero también riesgo de dispersarte o quedar atrapado únicamente en lo inmediato. "
+    "Tiendes a moverte constantemente entre ideas, conversaciones, información y estímulos cercanos. Hay facilidad para adaptarte, aprender rápido y mantener varias posibilidades abiertas al mismo tiempo, pero también riesgo de dispersarte o de centrarte demasiado en lo inmediato. "
     "La mente puede seguir acumulando información incluso cuando internamente ya sería necesario simplificar, profundizar o construir una dirección más clara. "
     "El problema aparece cuando el movimiento mental constante sustituye la posibilidad de verdadero compromiso o enfoque."
 ),
@@ -1072,7 +1072,7 @@ NODO_SUR_CASA = {
 5: (
     "Tiendes a orientarte mucho desde la necesidad de expresión personal, reconocimiento o validación sobre lo que haces y muestras. Hay facilidad para crear, destacar y ocupar espacio visible, pero también riesgo de depender demasiado de la mirada externa para sostener el propio valor. "
     "Puede aparecer necesidad constante de sentirte importante, especial o reconocido para confirmar que lo que haces tiene sentido. "
-    "El problema surge cuando toda experiencia empieza a girar alrededor de la necesidad de ser visto."
+    "El problema surge cuando tu vida empieza a girar alrededor de la necesidad de recibir reconocimiento."
 ),
 
 6: (
@@ -1083,7 +1083,7 @@ NODO_SUR_CASA = {
 
 7: (
     "Tiendes a orientarte mucho a través de las relaciones y de la reacción de otras personas. Hay facilidad para negociar, adaptarte y construir vínculos, pero también riesgo de perder claridad sobre lo que realmente quieres cuando el entorno tiene demasiado peso emocional. "
-    "Muchas veces sostener el vínculo puede volverse más importante que sostenerte a ti mismo o expresar con claridad lo que necesitas. "
+    "Muchas veces sostener el vínculo puede volverse más importante que sostenerte a ti o expresar con claridad lo que necesitas. "
     "El problema aparece cuando la adaptación constante termina alejándote de tu propio centro."
 ),
 
@@ -1096,7 +1096,7 @@ NODO_SUR_CASA = {
 9: (
     "Tiendes a buscar rápidamente sentido, dirección o respuestas amplias sobre la vida. Hay facilidad para construir visión, conectar experiencias y moverte dentro de marcos más grandes de comprensión, pero también riesgo de alejarte demasiado de lo inmediato y concreto. "
     "Muchas veces aparece necesidad de entender el significado completo de las cosas antes incluso de habitar plenamente lo que está ocurriendo aquí y ahora. "
-    "El problema aparece cuando la búsqueda de grandes respuestas dificulta la presencia en la experiencia cotidiana."
+    "El problema aparece cuando la búsqueda de grandes respuestas dificulta la presencia en la vida cotidiana."
 ),
 
 10: (
@@ -1138,12 +1138,12 @@ ASPECTOS_SOL_NODOS = {
     "El Sol y los Nodos forman una tensión importante. Muchas veces aparece sensación de contradicción entre lo que haces naturalmente, lo que ya conoces y la dirección hacia la que necesitas crecer. "
     "Puede haber momentos de bloqueo, dudas constantes o dificultad para sentir que alguna dirección termina de encajar completamente. "
     "A veces parece que cualquier decisión deja algo importante fuera. "
-    "El reto está en no quedarte paralizado intentando resolver toda la contradicción antes de avanzar. Aquí el crecimiento suele aparecer precisamente mientras atraviesas la tensión."
+    "El reto está en no paralizarte intentando resolver toda la contradicción antes de avanzar. Aquí el crecimiento suele aparecer precisamente mientras atraviesas la tensión."
 ),
 
 ("Sol", "Nodo Norte", "△"): (
     "El Sol y el Nodo Norte se relacionan de forma fluida. La dirección de crecimiento suele sentirse más accesible o más integrada en tu forma natural de moverte por la vida. "
-    "Muchas veces puedes avanzar hacia experiencias importantes sin sentir que estás forzando continuamente las cosas ni luchando contra ti mismo. "
+    "Muchas veces puedes avanzar hacia experiencias importantes sin sentir que estás forzando continuamente las cosas ni luchando contra ti. "
     "Existe sensación de coherencia entre identidad y dirección de desarrollo. "
     "El reto está en no acomodarte únicamente en lo que resulta fácil. Aunque exista fluidez, sigue siendo necesario desarrollar consciencia y profundidad en esa dirección."
 ),
@@ -1163,8 +1163,8 @@ ASPECTOS_SOL_NODOS = {
 
 ("Sol", "Nodo Sur", "="): (
     "El Sol y el Nodo Sur coinciden en el mismo lugar. Lo conocido, lo automático y aquello que ya sabes hacer tiene muchísima fuerza dentro de tu identidad y de tu manera natural de moverte por la vida. "
-    "Muchas veces puedes sentirte muy cómodo funcionando desde patrones antiguos o desde dinámicas que ya controlas bien porque ahí existe sensación de dominio y familiaridad. "
-    "El reto está en no quedarte atrapado únicamente en aquello que ya sabes sostener. "
+    "Muchas veces puedes sentir mucha comodidad funcionando desde patrones antiguos o desde dinámicas que ya controlas bien porque ahí existe sensación de dominio y familiaridad. "
+    "El reto está en no quedarte únicamente en aquello que ya sabes sostener. "
     "Moverte hacia el Nodo Norte requiere salir conscientemente de zonas muy conocidas incluso cuando parecen seguras."
 ),
 
@@ -1176,7 +1176,7 @@ ASPECTOS_SOL_NODOS = {
 ),
 
 ("Sol", "Nodo Sur", "□"): (
-    "El Sol y los Nodos forman una tensión importante. Muchas veces aparece sensación de estar dividido entre distintas direcciones internas sin encontrar un lugar completamente estable donde apoyarte. "
+    "El Sol y los Nodos forman una tensión importante. Muchas veces aparece la sensación de encontrarte entre distintas direcciones internas sin encontrar un lugar completamente estable donde apoyarte. "
     "Puede haber dificultad para salir de patrones conocidos, pero también incomodidad al permanecer demasiado tiempo dentro de ellos. "
     "Existe sensación de contradicción entre lo que resulta familiar y aquello que intenta abrirse como crecimiento. "
     "El reto está en desarrollar una orientación más consciente sin esperar que toda la contradicción desaparezca primero."
@@ -1228,7 +1228,7 @@ ASPECTOS_SOL_ASC = {
 ),
 
 ("Sol", "Ascendente", "△"): (
-    "El Sol y el Ascendente se relacionan de forma fluida. Suele existir facilidad para expresar hacia afuera aquello que sientes auténtico, importante o coherente contigo. "
+    "El Sol y el Ascendente se relacionan de forma fluida. Suele existir facilidad para expresar hacia afuera aquello que sientes como auténtico, importante o coherente contigo. "
     "La manera de actuar y la dirección vital tienden a apoyarse mutuamente y eso puede generar sensación de continuidad interna bastante natural. "
     "Muchas veces las personas perciben con claridad algo de tu identidad real a través de tu presencia o forma de moverte. "
     "El reto está en no acomodarte únicamente en lo que resulta fácil, conocido o espontáneamente accesible."
@@ -1308,7 +1308,7 @@ ASPECTOS_NODO_SUR_ASC = {
 ),
 
 ("Nodo Sur", "Ascendente", "☍"): (
-    "Los patrones conocidos aparecen en tensión con la manera en que necesitas posicionarte actualmente. Muchas veces puedes sentir distancia entre lo que te sale automáticamente y la persona que estás intentando construir o desarrollar en esta etapa de tu vida. "
+    "Los patrones conocidos aparecen en tensión con la manera en que necesitas posicionarte actualmente. Muchas veces puedes sentir distancia entre lo que te sale automáticamente y la identidad que estás intentando construir o desarrollar en esta etapa de tu vida. "
     "Lo antiguo sigue teniendo fuerza y puede reaparecer especialmente en momentos de cansancio, inseguridad o exceso de presión. "
     "Existe sensación de ir hacia adelante mientras otra parte vuelve constantemente hacia formas anteriores de reaccionar. "
     "El reto está en no regresar automáticamente a dinámicas antiguas solo porque resultan más familiares o previsibles."
@@ -1317,7 +1317,7 @@ ASPECTOS_NODO_SUR_ASC = {
 ("Nodo Sur", "Ascendente", "□"): (
     "Los patrones automáticos generan una fricción importante con tu forma de actuar en el presente. Puede haber sensación de repetición, bloqueo o dificultad para salir de dinámicas conocidas incluso cuando ya no funcionan realmente para tu vida actual. "
     "Muchas veces una parte de ti intenta avanzar mientras otra responde desde hábitos profundamente incorporados que siguen apareciendo de forma automática. "
-    "Eso puede generar cansancio, contradicción o sensación de estar atrapado en respuestas que ya no representan completamente quién eres. "
+    "Eso puede generar cansancio, contradicción o la sensación de que esas respuestas ya no representan completamente quién eres. "
     "El reto está en desarrollar mayor consciencia sobre esas reacciones automáticas para no vivirlas como algo inevitable."
 ),
 
@@ -1331,7 +1331,7 @@ ASPECTOS_NODO_SUR_ASC = {
 ("Nodo Sur", "Ascendente", "✶"): (
     "Los recursos desarrollados previamente pueden ayudarte a sostenerte y orientarte con relativa facilidad en distintas etapas de la vida. Hay capacidades conocidas que funcionan como apoyo importante y que pueden darte sensación de confianza o estabilidad cuando las utilizas conscientemente. "
     "Muchas veces puedes apoyarte en experiencias anteriores para construir nuevas formas de avanzar sin necesidad de empezar completamente desde cero. "
-    "Existe apertura para integrar lo aprendido sin quedar completamente atrapado en ello. "
+    "Existe apertura para integrar lo aprendido sin identificarte completamente con ello. "
     "El reto está en utilizar esos recursos como base de apoyo y no permanecer únicamente dentro de ellos."
 ),
 
@@ -1918,7 +1918,7 @@ def texto_direccion_general(carta, aspectos):
         rel_nodos_asc += (
             f"\n\nEl Nodo Norte hace {asp_nn_asc['tipo'].lower()} con el Ascendente "
             f"(orbe {asp_nn_asc['orbe']}°). "
-            f"Esto indica que la dirección de crecimiento también toca directamente tu manera de entrar en la vida y posicionarte."
+            f"Esto indica que la dirección de crecimiento también toca directamente tu manera de posicionarte ante la vida."
         )
 
     if asp_ns_asc:
@@ -2111,7 +2111,7 @@ ASPECTOS_ASC_PLANETAS = {
     "Tu manera de afrontar la vida posee una gran intensidad. Sueles percibir rápidamente aquello que necesita cambiar "
     "y rara vez permaneces indiferente ante los procesos de transformación.\n\n"
 
-    "Cuando esta energía madura, aporta una enorme capacidad para atravesar cambios profundos sin perder el contacto contigo misma."
+    "Cuando esta energía madura, aporta una enorme capacidad para atravesar cambios profundos sin perder el contacto contigo."
 ),
 
 
@@ -2248,8 +2248,8 @@ ASPECTOS_ASC_PLANETAS = {
     "el entorno.\n\n"
 
     "Este recurso necesita ser utilizado conscientemente. Cuando escuchas esa incomodidad y la traduces en "
-    "límites, decisiones o cambios concretos, puede ayudarte a vivir con mayor autenticidad sin quedar "
-    "atrapada únicamente en la oposición."
+    "límites, decisiones o cambios concretos, puede ayudarte a vivir con mayor autenticidad sin "
+    "convertir esa diferencia en una oposición constante."
 ),
 
 # ───────────────────────────────────────────────────────────────
@@ -2344,7 +2344,7 @@ ASPECTOS_ASC_PLANETAS = {
     "Esta tensión también puede desarrollar una gran capacidad para comprender a quienes atraviesan "
     "dificultades parecidas. El trabajo consiste en no construir toda tu forma de afrontar la vida "
     "alrededor de evitar esa herida, sino permitir que la experiencia vaya creando una posición más "
-    "propia y menos condicionada por el miedo a no ser comprendida."
+    "propia y menos condicionada por el miedo a no encontrar comprensión."
 ),
 
 ("Ascendente", "Lilith", "□"): (
@@ -2556,7 +2556,7 @@ ASPECTOS_ASC_PLANETAS = {
 ("Ascendente", "Quirón", "☍"): (
     "La oposición entre el Ascendente y Quirón puede hacer que determinadas heridas o inseguridades "
     "aparezcan reflejadas con especial intensidad a través de otras personas. Algunos vínculos pueden "
-    "activar la sensación de no encajar, no ser comprendida o quedar expuesta en aspectos que preferirías "
+    "activar la sensación de no encajar, no encontrar comprensión o de sentirte vulnerable en aspectos que preferirías "
     "mantener protegidos.\n\n"
 
     "La relación con el entorno puede convertirse así en un territorio de gran sensibilidad, pero también "
@@ -2666,7 +2666,7 @@ ASPECTOS_ASC_PLANETAS = {
     "El quincuncio entre el Ascendente y Quirón puede exigir reajustes continuos entre tu manera habitual "
     "de afrontar la vida y una zona interna especialmente sensible. En algunos momentos puedes reaccionar "
     "intentando protegerte demasiado; en otros, exponerte antes de disponer de los recursos necesarios "
-    "para sostener lo que se activa.\n\n"
+    "para sostener esa experiencia.\n\n"
 
     "No existe una respuesta única que resuelva esta relación para siempre. El proceso consiste en ajustar "
     "gradualmente la forma de mostrarte, poner límites y reconocer tu vulnerabilidad, evitando tanto ocultarla "
@@ -2843,8 +2843,8 @@ ASPECTOS_NODO_SUR_LUNA = {
     "una parte importante de lo que realmente necesitas.\n\n"
 
     "Esta relación pide ajustes progresivos en la forma de cuidarte, vincularte y recuperar seguridad. "
-    "No se trata de abandonar por completo tus recursos emocionales anteriores, sino de revisar su medida "
-    "y su función para que puedan seguir siendo útiles sin obligarte a responder siempre desde estructuras "
+    "No se trata de abandonar por completo tus recursos emocionales anteriores, sino de revisar cómo los utilizas "
+    "y qué función están cumpliento para que puedan seguir siendo útiles sin obligarte a responder siempre desde estructuras "
     "que pertenecen a otra etapa de tu vida."
 ),
 }
@@ -3506,7 +3506,7 @@ def texto_integracion(carta, aspectos):
         "el Nodo Sur conserva recursos que forman parte de tu historia, y el "
         "Nodo Norte introduce cualidades que necesitan más espacio para crecer. "
         "La transformación comienza cuando esta comprensión deja de ser una idea "
-        "y empieza a participar en la manera en la que eliges, estableces límites, "
+        "y empieza a reflejarse en la manera en la que eliges, estableces límites, "
         "sostienes procesos y respondes a lo que la vida va poniendo delante. No "
         "se trata de convertirte en otra persona, sino de construir una vida "
         "capaz de sostener de una forma cada vez más consciente todo aquello que "
@@ -3636,7 +3636,7 @@ def texto_orientacion(carta, aspectos):
 
     evitar = (
         f"El Nodo Sur en {ns_signo}, Casa {ns_casa}, contiene recursos que conoces bien y que pueden "
-        "seguir siendo valiosos. Obsérvalos especialmente cuando aparecen cansancio, inseguridad o presión, "
+        "seguir siendo valiosos. Presta especial atención a esos recursos cuando aparecen cansancio, inseguridad o presión, "
         "porque en esos momentos es más fácil convertir una capacidad conocida en la única respuesta disponible. "
         f"El Nodo Norte en {nn_signo}, Casa {nn_casa}, no te pide rechazar lo anterior, sino ampliar tu manera "
         "de vivir incorporando una cualidad menos automática. Pregúntate qué decisión pequeña podría acercarte "
@@ -4064,8 +4064,8 @@ def bloque_bienvenida_sol(estilos):
 
     elementos += _parrafos_reportlab(
         "No necesitas que todo encaje desde la primera página. Léelo despacio, "
-        "subraya aquello que te haga pensar y vuelve a él cuando la experiencia "
-        "te permita comprenderlo desde otro lugar.",
+        "subraya aquello que te haga pensar y vuelve a él cuando algunas vivencias "
+        "te permitan comprenderlo desde otro lugar.",
         estilos["cuerpo"],
     )
 
@@ -4242,7 +4242,7 @@ def generar_pdf_sol_asc_nodos(
     contenido += bloque_texto("Cuando todas las piezas empiezan a unirse", t_integ, estilos)
 
     contenido.append(Spacer(1, 0.35*cm))
-    contenido.append(Paragraph("Una orientación práctica", estilos["subtitulo"]))
+    contenido.append(Paragraph("Cómo empezar a integrar esta arquitectura en la vida cotidiana", estilos["subtitulo"]))
     for titulo, clave in [
         ("Desde dónde empezar", "desde_donde"),
         ("Qué conviene sostener", "sostener"),
@@ -4255,6 +4255,7 @@ def generar_pdf_sol_asc_nodos(
     contenido.append(KeepTogether([
         Paragraph("Cierre", estilos["subtitulo"]),
         Paragraph("Comprender tu carta puede cambiar la forma en la que te miras.", estilos["cuerpo"]),
+        Paragraph("Pero la comprensión solo se convierte en transformación cuando empieza a reflejarse en la forma en la que eliges vivir.", estilos["cuerpo"]),
         Paragraph(
             "Lo que transforme tu vida dependerá de cómo decidas habitarla a partir de ahora.",
             estilos["cuerpo"],
