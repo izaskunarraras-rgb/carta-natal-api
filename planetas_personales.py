@@ -2802,6 +2802,7 @@ def bloque_aspectos_planeta(
     planeta,
     aspectos,
     combinaciones,
+    textos_tipo_aspecto,
     estilos,
 ):
     """
@@ -2835,25 +2836,28 @@ def bloque_aspectos_planeta(
     for aspecto in aspectos_planeta:
         otro_punto = aspecto["otro_punto"]
         tipo = aspecto["tipo"]
-        orbe = aspecto["orbe"]
 
-        # Evita repetir aspectos entre Mercurio, Venus y Marte.
+        # Los aspectos entre planetas personales se interpretan una sola vez.
         #
-        # Orden de interpretación:
-        # Mercurio interpreta sus aspectos con Venus y Marte.
-        # Venus interpreta su aspecto con Marte.
-        # Marte no vuelve a interpretar esos vínculos.
-
-    if (
-        planeta in PLANETAS_PERSONALES
-        and otro_punto in PLANETAS_PERSONALES
-        and ORDEN_PLANETAS_PERSONALES[planeta]
-           > ORDEN_PLANETAS_PERSONALES[otro_punto]
-    ):
-        continue
+        # Mercurio interpreta:
+        #   Mercurio–Venus
+        #   Mercurio–Marte
+        #
+        # Venus interpreta:
+        #   Venus–Marte
+        #
+        # Marte no repite esos aspectos.
+        if (
+            planeta in PLANETAS_PERSONALES
+            and otro_punto in PLANETAS_PERSONALES
+            and ORDEN_PLANETAS_PERSONALES[planeta]
+            > ORDEN_PLANETAS_PERSONALES[otro_punto]
+        ):
+            continue
 
         texto = obtener_texto_aspecto(
             combinaciones,
+            textos_tipo_aspecto,
             otro_punto,
             tipo,
         )
@@ -2890,7 +2894,6 @@ def bloque_aspectos_planeta(
         )
 
     return elementos
-
 
 def bloque_integracion_planeta(
     planeta,
