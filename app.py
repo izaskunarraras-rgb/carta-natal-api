@@ -264,12 +264,17 @@ def obtener_tipo_pedido(opciones):
     """
     Determina el tipo de pedido a partir de las opciones.
 
-    La Carta Base no cuenta como informe individual para
-    decidir el tipo de correo o redirección.
+    La Carta Base, combinada con cualquier cuaderno,
+    se considera una selección de varios informes.
     """
 
-    if "opMapaCompleto" in opciones:
-        return "mapa_completo"
+    incluye_mapa_completo = (
+        "opMapaCompleto" in opciones
+    )
+
+    incluye_carta_base = (
+        "opCartaBase" in opciones
+    )
 
     individuales_seleccionados = [
         opcion
@@ -277,17 +282,25 @@ def obtener_tipo_pedido(opciones):
         if opcion in INDIVIDUALES
     ]
 
+    if incluye_mapa_completo:
+        return "mapa_completo"
+
+    if (
+        incluye_carta_base
+        and len(individuales_seleccionados) >= 1
+    ):
+        return "varios_informes"
+
     if len(individuales_seleccionados) >= 2:
         return "varios_informes"
 
     if len(individuales_seleccionados) == 1:
         return "informe_individual"
 
-    if "opCartaBase" in opciones:
+    if incluye_carta_base:
         return "carta_base"
 
     return "desconocido"
-
 
 def obtener_opciones_a_generar(
     opciones,
