@@ -1,25 +1,17 @@
-from flask import Flask, request, jsonify, send_from_directory
-
-from carta_natal_base import generar_carta_api
-from luna_casa4_casa6 import generar_carta_api as generar_luna_api
-from sol_asc_nodos import generar_carta_api as generar_sol_asc_nodos_api
-from planetas_personales import (
-    generar_carta_api as generar_planetas_personales_api
-)
-from planetas_sociales import (
-    generar_carta_api as generar_planetas_sociales_api
-)
-from planetas_transpersonales import (
-    generar_carta_api as generar_planetas_transpersonales_api
-)
-from casas_por_signo import (
-    generar_carta_api as generar_casas_por_signo_api
+from flask import (
+    Flask,
+    jsonify,
+    request,
+    send_from_directory,
 )
 
 from pypdf import PdfWriter
 
+import json
 import os
 import re
+import subprocess
+import sys
 import time
 import unicodedata
 
@@ -39,14 +31,14 @@ INDIVIDUALES = [
     "opPersonales",
     "opSociales",
     "opTranspersonales",
-    "opCasas"
+    "opCasas",
 ]
 
 
 OPCIONES_VALIDAS = [
     "opCartaBase",
     "opMapaCompleto",
-    *INDIVIDUALES
+    *INDIVIDUALES,
 ]
 
 
@@ -54,51 +46,62 @@ TIPOS_PEDIDO_VALIDOS = [
     "carta_base",
     "informe_individual",
     "varios_informes",
-    "mapa_completo"
+    "mapa_completo",
 ]
 
 
-# Orden editorial de los documentos.
+# Orden editorial y módulo Python de cada informe.
 GENERADORES = {
     "opCartaBase": {
         "nombre": "Carta Base",
-        "generador": generar_carta_api
+        "modulo": "carta_natal_base",
     },
 
     "opLuna": {
         "nombre": "Luna · Casa 4 · Casa 6",
-        "generador": generar_luna_api
+        "modulo": "luna_casa4_casa6",
     },
 
     "opSolAscNodos": {
         "nombre": "Sol · Ascendente · Nodos",
-        "generador": generar_sol_asc_nodos_api
+        "modulo": "sol_asc_nodos",
     },
 
     "opPersonales": {
         "nombre": "Planetas Personales",
-        "generador": generar_planetas_personales_api
+        "modulo": "planetas_personales",
     },
 
     "opSociales": {
         "nombre": "Planetas Sociales",
-        "generador": generar_planetas_sociales_api
+        "modulo": "planetas_sociales",
     },
 
     "opTranspersonales": {
         "nombre": "Planetas Transpersonales",
-        "generador": generar_planetas_transpersonales_api
+        "modulo": "planetas_transpersonales",
     },
 
     "opCasas": {
         "nombre": "Casas por Signo",
-        "generador": generar_casas_por_signo_api
-    }
+        "modulo": "casas_por_signo",
+    },
 }
 
 
+ORDEN_EDITORIAL = [
+    "opCartaBase",
+    "opLuna",
+    "opSolAscNodos",
+    "opPersonales",
+    "opSociales",
+    "opTranspersonales",
+    "opCasas",
+]
+
+
 # El Mapa Completo es un producto independiente.
-# Internamente reúne la Carta Base y los seis cuadernos.
+# Internamente contiene la Carta Base y los seis cuadernos.
 OPCIONES_MAPA_COMPLETO = [
     "opCartaBase",
     "opLuna",
@@ -106,8 +109,17 @@ OPCIONES_MAPA_COMPLETO = [
     "opPersonales",
     "opSociales",
     "opTranspersonales",
-    "opCasas"
+    "opCasas",
 ]
+
+
+# Marcador utilizado para localizar la respuesta JSON
+# entre los mensajes impresos por cada generador.
+MARCADOR_RESULTADO = "__RESULTADO_GENERADOR__"
+
+
+# Tiempo máximo para generar un único cuaderno.
+TIMEOUT_GENERADOR_SEGUNDOS = 360
 
 
 # ───────────────────── RUTAS ─────────────────────
@@ -122,7 +134,7 @@ def descargar_pdf(nombre_archivo):
     return send_from_directory(
         BASE_DIR,
         nombre_archivo,
-        as_attachment=True
+        as_attachment=True,
     )
 
 
@@ -133,16 +145,18 @@ def limpiar_nombre_archivo(texto):
     Convierte un nombre en una cadena segura para archivos.
     """
 
-    texto = str(texto or "arquitectura_interna")
+    texto = str(
+        texto or "arquitectura_interna"
+    )
 
     texto = unicodedata.normalize(
         "NFKD",
-        texto
+        texto,
     )
 
     texto = texto.encode(
         "ascii",
-        "ignore"
+        "ignore",
     ).decode("ascii")
 
     texto = texto.lower()
@@ -150,31 +164,33 @@ def limpiar_nombre_archivo(texto):
     texto = re.sub(
         r"[^a-z0-9]+",
         "_",
-        texto
+        texto,
     )
 
     texto = texto.strip("_")
 
-    return texto or "arquitectura_interna"
+    return (
+        texto
+        or "arquitectura_interna"
+    )
 
 
 def obtener_tipo_pedido(opciones):
     """
     Determina el tipo de pedido a partir de las opciones.
+
+    La Carta Base no cuenta como informe individual para
+    decidir el tipo de correo o redirección.
     """
 
-    incluye_mapa_completo = (
-        "opMapaCompleto" in opciones
-    )
+    if "opMapaCompleto" in opciones:
+        return "mapa_completo"
 
     individuales_seleccionados = [
         opcion
         for opcion in opciones
         if opcion in INDIVIDUALES
     ]
-
-    if incluye_mapa_completo:
-        return "mapa_completo"
 
     if len(individuales_seleccionados) >= 2:
         return "varios_informes"
@@ -188,12 +204,30 @@ def obtener_tipo_pedido(opciones):
     return "desconocido"
 
 
+def obtener_opciones_a_generar(
+    opciones,
+    tipo_pedido,
+):
+    """
+    Devuelve los documentos que deben generarse,
+    respetando el orden editorial.
+    """
+
+    if tipo_pedido == "mapa_completo":
+        return list(
+            OPCIONES_MAPA_COMPLETO
+        )
+
+    return [
+        opcion
+        for opcion in ORDEN_EDITORIAL
+        if opcion in opciones
+    ]
+
+
 def obtener_ruta_pdf(resultado):
     """
-    Extrae la ruta del PDF devuelta por cualquiera
-    de los generadores actuales.
-
-    Admite rutas locales o URL de descarga.
+    Extrae la ruta local del PDF devuelta por un generador.
     """
 
     if not isinstance(resultado, dict):
@@ -201,10 +235,10 @@ def obtener_ruta_pdf(resultado):
             "El generador no ha devuelto un resultado válido."
         )
 
-    if resultado.get("ok") is False:
+    if resultado.get("ok") is not True:
         raise ValueError(
-            resultado.get("error") or
-            "El generador ha devuelto un error."
+            resultado.get("error")
+            or "El generador ha devuelto un error."
         )
 
     posibles_claves = [
@@ -213,7 +247,7 @@ def obtener_ruta_pdf(resultado):
         "archivo",
         "pdf",
         "pdf_url",
-        "url"
+        "url",
     ]
 
     valor_pdf = None
@@ -228,11 +262,11 @@ def obtener_ruta_pdf(resultado):
             "El generador no ha devuelto la ruta del PDF."
         )
 
-    valor_pdf = str(valor_pdf)
+    valor_pdf = str(
+        valor_pdf
+    )
 
 
-    # Si devuelve una URL o una ruta /descargas/archivo.pdf,
-    # utilizamos únicamente el nombre del archivo.
     if "/descargas/" in valor_pdf:
         nombre_archivo = valor_pdf.split(
             "/descargas/"
@@ -240,17 +274,19 @@ def obtener_ruta_pdf(resultado):
 
         ruta_pdf = os.path.join(
             BASE_DIR,
-            nombre_archivo
+            nombre_archivo,
         )
 
-    elif valor_pdf.startswith("http"):
+    elif valor_pdf.startswith(
+        ("http://", "https://")
+    ):
         nombre_archivo = valor_pdf.rstrip(
             "/"
         ).split("/")[-1]
 
         ruta_pdf = os.path.join(
             BASE_DIR,
-            nombre_archivo
+            nombre_archivo,
         )
 
     elif os.path.isabs(valor_pdf):
@@ -259,7 +295,7 @@ def obtener_ruta_pdf(resultado):
     else:
         ruta_pdf = os.path.join(
             BASE_DIR,
-            valor_pdf
+            valor_pdf,
         )
 
 
@@ -270,13 +306,14 @@ def obtener_ruta_pdf(resultado):
 
     if not os.path.isfile(ruta_pdf):
         raise FileNotFoundError(
-            f"No se ha encontrado el PDF generado: {ruta_pdf}"
+            "No se ha encontrado el PDF generado: "
+            f"{ruta_pdf}"
         )
 
     return ruta_pdf
 
 
-def generar_documento(
+def generar_documento_en_proceso(
     opcion,
     nombre,
     fecha,
@@ -284,11 +321,20 @@ def generar_documento(
     lugar,
     lat,
     lon,
-    tz_name
+    tz_name,
 ):
     """
-    Ejecuta el generador correspondiente a una opción
-    y devuelve la ruta local del PDF.
+    Genera un informe en un proceso Python independiente.
+
+    De esta forma, al terminar cada documento, el sistema
+    operativo libera completamente la memoria utilizada por:
+
+    - Matplotlib;
+    - ReportLab;
+    - los textos del módulo;
+    - la carta calculada;
+    - las imágenes;
+    - las fuentes.
     """
 
     configuracion = GENERADORES.get(
@@ -297,31 +343,170 @@ def generar_documento(
 
     if not configuracion:
         raise ValueError(
-            f"No existe un generador para la opción {opcion}."
+            f"No existe generador para la opción {opcion}."
         )
 
-    print(
-        f"Generando: {configuracion['nombre']}"
-    )
-
-    generador = configuracion[
-        "generador"
+    nombre_informe = configuracion[
+        "nombre"
     ]
 
-    resultado = generador(
-        nombre,
-        fecha,
-        hora,
-        lugar,
-        lat=lat,
-        lon=lon,
-        tz_name=tz_name
+    modulo = configuracion[
+        "modulo"
+    ]
+
+    print(
+        f"Generando en proceso aislado: {nombre_informe}",
+        flush=True,
     )
+
+
+    datos_generador = {
+        "nombre": nombre,
+        "fecha": fecha,
+        "hora": hora,
+        "lugar": lugar,
+        "lat": lat,
+        "lon": lon,
+        "tz_name": tz_name,
+    }
+
+
+    codigo_hijo = f"""
+import importlib
+import json
+import traceback
+
+MARCADOR = {MARCADOR_RESULTADO!r}
+
+try:
+    datos = json.loads(input())
+
+    modulo = importlib.import_module(
+        {modulo!r}
+    )
+
+    generador = getattr(
+        modulo,
+        "generar_carta_api"
+    )
+
+    resultado = generador(
+        datos.get("nombre"),
+        datos.get("fecha"),
+        datos.get("hora"),
+        datos.get("lugar"),
+        lat=datos.get("lat"),
+        lon=datos.get("lon"),
+        tz_name=datos.get("tz_name"),
+    )
+
+except Exception as error:
+    traceback.print_exc()
+
+    resultado = {{
+        "ok": False,
+        "error": str(error),
+    }}
+
+print(
+    MARCADOR + json.dumps(
+        resultado,
+        ensure_ascii=False,
+    ),
+    flush=True,
+)
+"""
+
+
+    try:
+        proceso = subprocess.run(
+            [
+                sys.executable,
+                "-c",
+                codigo_hijo,
+            ],
+            input=json.dumps(
+                datos_generador,
+                ensure_ascii=False,
+            ) + "\n",
+            text=True,
+            capture_output=True,
+            cwd=BASE_DIR,
+            timeout=TIMEOUT_GENERADOR_SEGUNDOS,
+            env={
+                **os.environ,
+                "MPLBACKEND": "Agg",
+            },
+        )
+
+    except subprocess.TimeoutExpired as error:
+        raise TimeoutError(
+            f"La generación de {nombre_informe} "
+            "ha superado el tiempo máximo permitido."
+        ) from error
+
+
+    if proceso.stdout:
+        print(
+            proceso.stdout,
+            end="",
+            flush=True,
+        )
+
+    if proceso.stderr:
+        print(
+            proceso.stderr,
+            end="",
+            flush=True,
+        )
+
+
+    if proceso.returncode != 0:
+        raise RuntimeError(
+            f"El proceso de {nombre_informe} "
+            f"ha terminado con código {proceso.returncode}."
+        )
+
+
+    linea_resultado = None
+
+    for linea in reversed(
+        proceso.stdout.splitlines()
+    ):
+        if linea.startswith(
+            MARCADOR_RESULTADO
+        ):
+            linea_resultado = linea[
+                len(MARCADOR_RESULTADO):
+            ]
+
+            break
+
+
+    if not linea_resultado:
+        raise RuntimeError(
+            f"No se ha recibido el resultado de {nombre_informe}."
+        )
+
+
+    try:
+        resultado = json.loads(
+            linea_resultado
+        )
+
+    except json.JSONDecodeError as error:
+        raise RuntimeError(
+            f"La respuesta de {nombre_informe} "
+            "no contiene un JSON válido."
+        ) from error
+
 
     print(
         f"Resultado de {opcion}:",
-        resultado
+        resultado,
+        flush=True,
     )
+
 
     return obtener_ruta_pdf(
         resultado
@@ -330,10 +515,10 @@ def generar_documento(
 
 def unir_pdfs(
     rutas_pdf,
-    nombre_archivo
+    nombre_archivo,
 ):
     """
-    Une varios PDFs en un único archivo.
+    Une varios PDFs en un único documento.
     """
 
     if not rutas_pdf:
@@ -343,7 +528,7 @@ def unir_pdfs(
 
     ruta_salida = os.path.join(
         BASE_DIR,
-        nombre_archivo
+        nombre_archivo,
     )
 
     writer = PdfWriter()
@@ -356,7 +541,7 @@ def unir_pdfs(
 
         with open(
             ruta_salida,
-            "wb"
+            "wb",
         ) as archivo_salida:
             writer.write(
                 archivo_salida
@@ -365,7 +550,10 @@ def unir_pdfs(
     finally:
         writer.close()
 
-    if not os.path.isfile(ruta_salida):
+
+    if not os.path.isfile(
+        ruta_salida
+    ):
         raise FileNotFoundError(
             "No se ha creado el PDF conjunto."
         )
@@ -376,10 +564,10 @@ def unir_pdfs(
 def crear_respuesta_pdf(
     ruta_pdf,
     tipo_pedido,
-    opciones_generadas
+    opciones_generadas,
 ):
     """
-    Crea la respuesta común para Wix.
+    Crea la respuesta común que recibe Wix.
     """
 
     nombre_archivo = os.path.basename(
@@ -396,7 +584,7 @@ def crear_respuesta_pdf(
         "pdf_url": url_pdf,
         "url": url_pdf,
         "tipoPedido": tipo_pedido,
-        "opcionesGeneradas": opciones_generadas
+        "opcionesGeneradas": opciones_generadas,
     }
 
 
@@ -404,7 +592,7 @@ def crear_respuesta_pdf(
 
 @app.route(
     "/generar-carta",
-    methods=["POST"]
+    methods=["POST"],
 )
 def generar_carta():
     try:
@@ -447,7 +635,7 @@ def generar_carta():
 
         tipo_pedido_recibido = datos.get(
             "tipoPedido",
-            ""
+            "",
         )
 
 
@@ -456,51 +644,57 @@ def generar_carta():
         if not nombre:
             return jsonify({
                 "ok": False,
-                "error": "Falta el nombre."
+                "error": "Falta el nombre.",
             }), 400
 
         if not fecha:
             return jsonify({
                 "ok": False,
-                "error": "Falta la fecha de nacimiento."
+                "error":
+                    "Falta la fecha de nacimiento.",
             }), 400
 
         if not hora:
             return jsonify({
                 "ok": False,
-                "error": "Falta la hora de nacimiento."
+                "error":
+                    "Falta la hora de nacimiento.",
             }), 400
 
         if not lugar:
             return jsonify({
                 "ok": False,
-                "error": "Falta el lugar de nacimiento."
+                "error":
+                    "Falta el lugar de nacimiento.",
             }), 400
 
         if lat is None or lon is None:
             return jsonify({
                 "ok": False,
                 "error":
-                    "Faltan las coordenadas del lugar de nacimiento."
+                    "Faltan las coordenadas "
+                    "del lugar de nacimiento.",
             }), 400
 
         if not isinstance(
             opciones_recibidas,
-            list
+            list,
         ):
             return jsonify({
                 "ok": False,
                 "error":
-                    "El formato de las opciones no es válido."
+                    "El formato de las opciones "
+                    "no es válido.",
             }), 400
 
 
+        # Elimina opciones inválidas y duplicadas.
         opciones = []
 
         for opcion in opciones_recibidas:
             if (
-                opcion in OPCIONES_VALIDAS and
-                opcion not in opciones
+                opcion in OPCIONES_VALIDAS
+                and opcion not in opciones
             ):
                 opciones.append(
                     opcion
@@ -511,31 +705,22 @@ def generar_carta():
             return jsonify({
                 "ok": False,
                 "error":
-                    "No se ha seleccionado ningún informe."
+                    "No se ha seleccionado ningún informe.",
             }), 400
 
 
-        # ───── VALIDAR MAPA COMPLETO ───────────────────
-
-        incluye_mapa_completo = (
-            "opMapaCompleto" in opciones
-        )
-
-        individuales_seleccionados = [
-            opcion
-            for opcion in opciones
-            if opcion in INDIVIDUALES
-        ]
-
+        # ───── MAPA COMPLETO INDEPENDIENTE ─────────────
 
         if (
-            incluye_mapa_completo and
-            individuales_seleccionados
+            "opMapaCompleto" in opciones
+            and len(opciones) > 1
         ):
             return jsonify({
                 "ok": False,
                 "error":
-                    "El Mapa Completo no puede combinarse con informes individuales."
+                    "El Mapa Completo es un producto "
+                    "independiente y no puede combinarse "
+                    "con otros informes.",
             }), 400
 
 
@@ -552,6 +737,7 @@ def generar_carta():
             tipo_pedido = (
                 tipo_pedido_recibido
             )
+
         else:
             tipo_pedido = (
                 tipo_calculado
@@ -562,17 +748,38 @@ def generar_carta():
             print(
                 "Tipo recibido distinto del calculado:",
                 tipo_pedido_recibido,
-                tipo_calculado
+                tipo_calculado,
+                flush=True,
             )
 
-            tipo_pedido = tipo_calculado
+            tipo_pedido = (
+                tipo_calculado
+            )
 
 
         if tipo_pedido == "desconocido":
             return jsonify({
                 "ok": False,
                 "error":
-                    "No se ha podido identificar el tipo de pedido."
+                    "No se ha podido identificar "
+                    "el tipo de pedido.",
+            }), 400
+
+
+        opciones_a_generar = (
+            obtener_opciones_a_generar(
+                opciones,
+                tipo_pedido,
+            )
+        )
+
+
+        if not opciones_a_generar:
+            return jsonify({
+                "ok": False,
+                "error":
+                    "No hay documentos válidos "
+                    "para generar.",
             }), 400
 
 
@@ -587,61 +794,20 @@ def generar_carta():
                 "lon": lon,
                 "tz_name": tz_name,
                 "opciones": opciones,
-                "tipo_pedido": tipo_pedido
-            }
+                "tipo_pedido": tipo_pedido,
+                "opciones_a_generar":
+                    opciones_a_generar,
+            },
+            flush=True,
         )
 
 
-        # ───── MAPA COMPLETO ───────────────────────────
-
-        if tipo_pedido == "mapa_completo":
-            opciones_a_generar = (
-                OPCIONES_MAPA_COMPLETO
-            )
-
-
-        # ───── VARIOS INFORMES ─────────────────────────
-
-        elif tipo_pedido == "varios_informes":
-            opciones_a_generar = [
-                opcion
-                for opcion in GENERADORES
-                if opcion in opciones
-            ]
-
-
-        # ───── INFORME INDIVIDUAL ──────────────────────
-
-        elif tipo_pedido == "informe_individual":
-            opciones_a_generar = [
-                opcion
-                for opcion in INDIVIDUALES
-                if opcion in opciones
-            ]
-
-
-        # ───── CARTA BASE ──────────────────────────────
-
-        else:
-            opciones_a_generar = [
-                "opCartaBase"
-            ]
-
-
-        if not opciones_a_generar:
-            return jsonify({
-                "ok": False,
-                "error":
-                    "No hay documentos válidos para generar."
-            }), 400
-
-
-        # ───── GENERAR DOCUMENTOS ──────────────────────
+        # ───── GENERAR DOCUMENTOS AISLADOS ─────────────
 
         rutas_generadas = []
 
         for opcion in opciones_a_generar:
-            ruta_pdf = generar_documento(
+            ruta_pdf = generar_documento_en_proceso(
                 opcion=opcion,
                 nombre=nombre,
                 fecha=fecha,
@@ -649,7 +815,7 @@ def generar_carta():
                 lugar=lugar,
                 lat=lat,
                 lon=lon,
-                tz_name=tz_name
+                tz_name=tz_name,
             )
 
             rutas_generadas.append(
@@ -664,7 +830,8 @@ def generar_carta():
                 crear_respuesta_pdf(
                     ruta_pdf=rutas_generadas[0],
                     tipo_pedido=tipo_pedido,
-                    opciones_generadas=opciones_a_generar
+                    opciones_generadas=
+                        opciones_a_generar,
                 )
             )
 
@@ -697,7 +864,7 @@ def generar_carta():
 
         ruta_unida = unir_pdfs(
             rutas_pdf=rutas_generadas,
-            nombre_archivo=nombre_archivo
+            nombre_archivo=nombre_archivo,
         )
 
 
@@ -705,7 +872,8 @@ def generar_carta():
             crear_respuesta_pdf(
                 ruta_pdf=ruta_unida,
                 tipo_pedido=tipo_pedido,
-                opciones_generadas=opciones_a_generar
+                opciones_generadas=
+                    opciones_a_generar,
             )
         )
 
@@ -713,12 +881,13 @@ def generar_carta():
     except Exception as error:
         print(
             "Error generando la carta:",
-            repr(error)
+            repr(error),
+            flush=True,
         )
 
         return jsonify({
             "ok": False,
-            "error": str(error)
+            "error": str(error),
         }), 500
 
 
