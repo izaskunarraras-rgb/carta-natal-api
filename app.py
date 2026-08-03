@@ -10,16 +10,101 @@ from pypdf import PdfWriter
 import json
 import os
 import re
+import requests
 import subprocess
 import sys
 import time
 import unicodedata
+import uuid
+import threading
+
+from concurrent.futures import ThreadPoolExecutor
 
 
 app = Flask(__name__)
 
 BASE_DIR = os.path.dirname(
     os.path.abspath(__file__)
+)
+
+def notificar_wix(datos):
+    """
+    Notifica a Wix el resultado final de la generación.
+
+    Devuelve True si Wix confirma la recepción
+    y False si no ha sido posible notificar.
+    """
+
+    url_callback = os.environ.get(
+        "WIX_CALLBACK_URL"
+    )
+
+    secreto_callback = os.environ.get(
+        "RENDER_CALLBACK_SECRET"
+    )
+
+    if not url_callback:
+        print(
+            "Falta la variable WIX_CALLBACK_URL.",
+            flush=True,
+        )
+
+        return False
+
+    if not secreto_callback:
+        print(
+            "Falta la variable RENDER_CALLBACK_SECRET.",
+            flush=True,
+        )
+
+        return False
+
+    try:
+        respuesta = requests.post(
+            url_callback,
+            headers={
+                "Content-Type": "application/json",
+                "x-render-secret": secreto_callback,
+            },
+            json=datos,
+            timeout=60,
+        )
+
+        print(
+            "Respuesta del callback de Wix:",
+            respuesta.status_code,
+            respuesta.text,
+            flush=True,
+        )
+
+        if not respuesta.ok:
+            return False
+
+        try:
+            contenido = respuesta.json()
+
+            return contenido.get("ok") is True
+
+        except ValueError:
+            return False
+
+    except Exception as error:
+        print(
+            "Error notificando a Wix:",
+            repr(error),
+            flush=True,
+        )
+
+        return False
+
+# ───────────────────── TRABAJOS EN SEGUNDO PLANO ─────────────────────
+
+TRABAJOS = {}
+
+BLOQUEO_TRABAJOS = threading.Lock()
+
+EJECUTOR = ThreadPoolExecutor(
+    max_workers=1
 )
 
 
@@ -586,6 +671,462 @@ def crear_respuesta_pdf(
         "tipoPedido": tipo_pedido,
         "opcionesGeneradas": opciones_generadas,
     }
+
+
+def ejecutar_trabajo_generacion(
+    trabajo_id,
+    pedido_id,
+    nombre,
+    email,
+    fecha,
+    hora,
+    lugar,
+    lat,
+    lon,
+    tz_name,
+    opciones,
+    productos,
+    tipo_pedido,
+):
+    """
+    Genera los documentos en segundo plano.
+
+    Cuando termina:
+    - guarda el resultado en memoria;
+    - notifica a Wix;
+    - Wix actualiza el pedido y envía el correo.
+
+    Si falla:
+    - guarda el error;
+    - notifica a Wix.
+    """
+
+    try:
+        with BLOQUEO_TRABAJOS:
+            TRABAJOS[trabajo_id]["estado"] = "procesando"
+            TRABAJOS[trabajo_id]["actualizado"] = time.time()
+
+        opciones_a_generar = obtener_opciones_a_generar(
+            opciones,
+            tipo_pedido,
+        )
+
+        if not opciones_a_generar:
+            raise ValueError(
+                "No hay documentos válidos para generar."
+            )
+
+        rutas_generadas = []
+
+        for indice, opcion in enumerate(
+            opciones_a_generar,
+            start=1,
+        ):
+            with BLOQUEO_TRABAJOS:
+                TRABAJOS[trabajo_id]["progreso"] = {
+                    "actual": indice,
+                    "total": len(opciones_a_generar),
+                    "opcion": opcion,
+                }
+
+                TRABAJOS[trabajo_id]["actualizado"] = (
+                    time.time()
+                )
+
+            ruta_pdf = generar_documento_en_proceso(
+                opcion=opcion,
+                nombre=nombre,
+                fecha=fecha,
+                hora=hora,
+                lugar=lugar,
+                lat=lat,
+                lon=lon,
+                tz_name=tz_name,
+            )
+
+            rutas_generadas.append(
+                ruta_pdf
+            )
+
+        if len(rutas_generadas) == 1:
+            ruta_final = rutas_generadas[0]
+
+        else:
+            nombre_seguro = limpiar_nombre_archivo(
+                nombre
+            )
+
+            marca_tiempo = int(
+                time.time()
+            )
+
+            if tipo_pedido == "mapa_completo":
+                nombre_archivo = (
+                    f"mapa_completo_"
+                    f"{nombre_seguro}_"
+                    f"{marca_tiempo}.pdf"
+                )
+
+            else:
+                nombre_archivo = (
+                    f"arquitectura_interna_"
+                    f"{nombre_seguro}_"
+                    f"{marca_tiempo}.pdf"
+                )
+
+            ruta_final = unir_pdfs(
+                rutas_pdf=rutas_generadas,
+                nombre_archivo=nombre_archivo,
+            )
+
+        resultado = crear_respuesta_pdf(
+            ruta_pdf=ruta_final,
+            tipo_pedido=tipo_pedido,
+            opciones_generadas=opciones_a_generar,
+        )
+
+        with BLOQUEO_TRABAJOS:
+            TRABAJOS[trabajo_id]["estado"] = "completado"
+            TRABAJOS[trabajo_id]["resultado"] = resultado
+            TRABAJOS[trabajo_id]["error"] = None
+            TRABAJOS[trabajo_id]["progreso"] = {
+                "actual": len(opciones_a_generar),
+                "total": len(opciones_a_generar),
+                "opcion": None,
+            }
+            TRABAJOS[trabajo_id]["actualizado"] = time.time()
+
+        print(
+            f"Trabajo {trabajo_id} completado.",
+            flush=True,
+        )
+
+        base_url = os.environ.get(
+            "PUBLIC_BASE_URL",
+            "https://carta-natal-api-fhh0.onrender.com",
+        ).rstrip("/")
+
+        ruta_pdf_publica = (
+            resultado.get("pdf_url")
+            or resultado.get("pdf")
+            or resultado.get("url")
+        )
+
+        if not ruta_pdf_publica:
+            raise ValueError(
+                "No se ha obtenido la URL del PDF generado."
+            )
+
+        if ruta_pdf_publica.startswith(
+            ("http://", "https://")
+        ):
+            url_pdf_completa = ruta_pdf_publica
+
+        else:
+            url_pdf_completa = (
+                f"{base_url}{ruta_pdf_publica}"
+            )
+
+        callback_correcto = notificar_wix({
+            "pedidoId": pedido_id,
+            "estado": "Generado",
+            "pdfUrl": url_pdf_completa,
+            "nombre": nombre,
+            "email": email,
+            "opciones": opciones,
+            "productos": productos,
+            "tipoPedido": tipo_pedido,
+        })
+
+        if not callback_correcto:
+            print(
+                f"El trabajo {trabajo_id} terminó, "
+                "pero Wix no confirmó el callback.",
+                flush=True,
+            )
+
+    except Exception as error:
+        print(
+            f"Error en el trabajo {trabajo_id}:",
+            repr(error),
+            flush=True,
+        )
+
+        with BLOQUEO_TRABAJOS:
+            if trabajo_id in TRABAJOS:
+                TRABAJOS[trabajo_id]["estado"] = "error"
+                TRABAJOS[trabajo_id]["error"] = str(error)
+                TRABAJOS[trabajo_id]["actualizado"] = time.time()
+
+        callback_correcto = notificar_wix({
+            "pedidoId": pedido_id,
+            "estado": "Error de generación",
+            "errorGeneracion": str(error),
+        })
+
+        if not callback_correcto:
+            print(
+                f"No se ha podido notificar a Wix "
+                f"el error del trabajo {trabajo_id}.",
+                flush=True,
+            )
+@app.route(
+    "/iniciar-generacion",
+    methods=["POST"],
+)
+def iniciar_generacion():
+    try:
+        datos = request.get_json(
+            silent=True
+        ) or {}
+
+        pedido_id = datos.get("pedidoId")
+        nombre = datos.get("nombre")
+        email = datos.get("email")
+        fecha = datos.get("fecha")
+        hora = datos.get("hora")
+        lugar = datos.get("lugar")
+        lat = datos.get("latitud")
+        lon = datos.get("longitud")
+        tz_name = datos.get("tz_name")
+
+        opciones_recibidas = datos.get(
+            "opciones",
+            [],
+        )
+
+        productos = datos.get(
+            "productos",
+            [],
+        )
+
+        # ───── VALIDACIONES ─────────────────────────────
+        if not pedido_id:
+            return jsonify({
+                "ok": False,
+                "error":
+                    "Falta el identificador del pedido.",
+            }), 400
+
+
+        if not nombre:
+            return jsonify({
+                "ok": False,
+                "error": "Falta el nombre.",
+            }), 400
+
+        if not email:
+            return jsonify({
+                "ok": False,
+                "error":
+                    "Falta el correo electrónico.",
+            }), 400
+
+        if not fecha:
+            return jsonify({
+                "ok": False,
+                "error":
+                    "Falta la fecha de nacimiento.",
+            }), 400
+
+        if not hora:
+            return jsonify({
+                "ok": False,
+                "error":
+                    "Falta la hora de nacimiento.",
+            }), 400
+
+        if not lugar:
+            return jsonify({
+                "ok": False,
+                "error":
+                    "Falta el lugar de nacimiento.",
+            }), 400
+
+        if lat is None or lon is None:
+            return jsonify({
+                "ok": False,
+                "error":
+                    "Faltan las coordenadas "
+                    "del lugar de nacimiento.",
+            }), 400
+
+        if not isinstance(
+            opciones_recibidas,
+            list,
+        ):
+            return jsonify({
+                "ok": False,
+                "error":
+                    "El formato de las opciones "
+                    "no es válido.",
+            }), 400
+
+        if not isinstance(
+            productos,
+            list,
+        ):
+            return jsonify({
+                "ok": False,
+                "error":
+                    "El formato de los productos no es válido.",
+            }), 400
+
+        opciones = []
+
+        for opcion in opciones_recibidas:
+            if (
+                opcion in OPCIONES_VALIDAS
+                and opcion not in opciones
+            ):
+                opciones.append(
+                    opcion
+                )
+
+        if not opciones:
+            return jsonify({
+                "ok": False,
+                "error":
+                    "No se ha seleccionado ningún informe.",
+            }), 400
+
+        if (
+            "opMapaCompleto" in opciones
+            and len(opciones) > 1
+        ):
+            return jsonify({
+                "ok": False,
+                "error":
+                    "El Mapa Completo es un producto "
+                    "independiente y no puede combinarse "
+                    "con otros informes.",
+            }), 400
+
+        tipo_pedido = obtener_tipo_pedido(
+            opciones
+        )
+
+        if tipo_pedido == "desconocido":
+            return jsonify({
+                "ok": False,
+                "error":
+                    "No se ha podido identificar "
+                    "el tipo de pedido.",
+            }), 400
+
+        # ───── CREAR TRABAJO ────────────────────────────
+
+        trabajo_id = str(
+            uuid.uuid4()
+        )
+
+        ahora = time.time()
+
+        with BLOQUEO_TRABAJOS:
+            TRABAJOS[trabajo_id] = {
+                "pedidoId": pedido_id,
+                "estado": "pendiente",
+                "creado": ahora,
+                "actualizado": ahora,
+                "resultado": None,
+                "error": None,
+                "progreso": {
+                    "actual": 0,
+                    "total": 0,
+                    "opcion": None,
+                },
+            }
+
+        EJECUTOR.submit(
+            ejecutar_trabajo_generacion,
+            trabajo_id,
+            pedido_id,
+            nombre,
+            email,
+            fecha,
+            hora,
+            lugar,
+            lat,
+            lon,
+            tz_name,
+            opciones,
+            productos,
+            tipo_pedido,
+        )
+
+        return jsonify({
+            "ok": True,
+            "trabajoId": trabajo_id,
+            "estado": "pendiente",
+        }), 202
+
+    except Exception as error:
+        print(
+            "Error iniciando generación:",
+            repr(error),
+            flush=True,
+        )
+
+        return jsonify({
+            "ok": False,
+            "error": str(error),
+        }), 500
+
+
+@app.route(
+    "/estado-generacion/<trabajo_id>",
+    methods=["GET"],
+)
+def estado_generacion(trabajo_id):
+    try:
+        with BLOQUEO_TRABAJOS:
+            trabajo = TRABAJOS.get(
+                trabajo_id
+            )
+
+            if trabajo is None:
+                return jsonify({
+                    "ok": False,
+                    "error":
+                        "No se ha encontrado el trabajo solicitado.",
+                }), 404
+
+            respuesta = {
+                "ok": True,
+                "trabajoId": trabajo_id,
+                "estado": trabajo.get(
+                    "estado"
+                ),
+                "progreso": trabajo.get(
+                    "progreso"
+                ),
+            }
+
+            if trabajo.get("estado") == "completado":
+                respuesta["resultado"] = trabajo.get(
+                    "resultado"
+                )
+
+            elif trabajo.get("estado") == "error":
+                respuesta["error"] = trabajo.get(
+                    "error"
+                )
+
+        return jsonify(
+            respuesta
+        )
+
+    except Exception as error:
+        print(
+            "Error consultando trabajo:",
+            repr(error),
+            flush=True,
+        )
+
+        return jsonify({
+            "ok": False,
+            "error": str(error),
+        }), 500
 
 
 # ───────────────────── GENERAR CARTA ─────────────────────
