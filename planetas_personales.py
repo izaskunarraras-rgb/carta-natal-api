@@ -8,6 +8,7 @@ y la capacidad de actuar y afirmarte (Marte)
 dentro de la carta natal.
 """
 
+import gc
 import math
 import os
 import subprocess
@@ -3534,6 +3535,9 @@ def generar_carta_api(
             "error": str(error),
         }
 
+    finally:
+        plt.close("all")
+        gc.collect()
 
 if __name__ == "__main__":
     main()

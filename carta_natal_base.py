@@ -19,7 +19,7 @@ from reportlab.lib import colors
 
 
 
-import sys, os, math
+import sys, os, math, gc
 from datetime import datetime
 import swisseph as swe
 from geopy.geocoders import Nominatim
@@ -2472,6 +2472,11 @@ def generar_carta_api(nombre, fecha, hora, lugar, lat=None, lon=None, tz_name=No
             "ok": False,
             "error": str(e)
         }
+
+    finally:
+
+        plt.close("all")
+        gc.collect()
 
 
 def main():

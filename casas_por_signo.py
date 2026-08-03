@@ -15,6 +15,7 @@ arquitectura general de las casas y la presencia de signos
 interceptados, integrando toda esta información para mostrar cómo se articula la estructura interna de tu carta.
 """
 
+import gc
 import math
 import os
 import subprocess
@@ -10654,10 +10655,16 @@ def generar_carta_api(
             error,
         )
 
+        traceback.print_exc()
+
         return {
             "ok": False,
             "error": str(error),
         }
+
+    finally:
+        plt.close("all")
+        gc.collect()
 
 
 

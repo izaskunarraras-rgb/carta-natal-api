@@ -5,7 +5,7 @@ Interpreta la dirección (Sol), el punto de entrada al sistema (Ascendente)
 y la tensión evolutiva (Nodos) de la carta natal.
 """
 
-import sys, os, math, subprocess
+import sys, os, math, subprocess, gc
 from datetime import datetime
 import swisseph as swe
 from geopy.geocoders import Nominatim
@@ -4443,6 +4443,10 @@ def generar_carta_api(
             "ok": False,
             "error": str(error)
         }
+
+    finally:
+        plt.close("all")
+        gc.collect()
 
 
 if __name__ == "__main__":

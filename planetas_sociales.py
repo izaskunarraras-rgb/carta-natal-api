@@ -9,6 +9,7 @@ y sostener tus procesos en el tiempo (Saturno)
 dentro de la carta natal.
 """
 
+import gc
 import math
 import os
 import subprocess
@@ -3235,6 +3236,10 @@ def generar_carta_api(
             "ok": False,
             "error": str(error),
         }
+
+    finally:
+        plt.close("all")
+        gc.collect()
 
 
 if __name__ == "__main__":
