@@ -4354,14 +4354,26 @@ def generar_carta_api(
 
         # ── GEOLOCALIZACIÓN ───────────────────────────────────
         if lat is not None and lon is not None:
+
             lat = float(lat)
             lon = float(lon)
 
             if not tz_name:
-                tz_name = obtener_timezone(lat, lon)
+                tz_name = obtener_timezone(
+                    lat,
+                    lon
+                )
+
         else:
-            lat, lon = geocodificar(lugar)
-            tz_name = obtener_timezone(lat, lon)
+
+            lat, lon = geocodificar(
+                lugar
+            )
+
+            tz_name = obtener_timezone(
+                lat,
+                lon
+            )
 
         # ── CÁLCULO ───────────────────────────────────────────
         carta = calcular_carta(
