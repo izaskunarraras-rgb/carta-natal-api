@@ -83,12 +83,26 @@ LILITH_ID = swe.MEAN_APOG
 
 ASPECTOS_DEF = [
     ("Conjunción", 0,   10.0, "="),
-    ("Sextil",     60,  6.0, "✶"),
+    ("Sextil",     60,  7.0, "✶"),
     ("Cuadratura", 90,  8.0, "□"),
-    ("Trígono",    120, 8.0, "△"),
+    ("Trígono",    120, 9.0, "△"),
     ("Oposición",  180, 10.0, "☍"),
     ("Quincuncio", 150, 4.0, "⚻"),
 ]
+
+# Quirón y Lilith se tratan como puntos sensibles.
+# Cuando cualquiera de los dos participa en un aspecto,
+# estos orbes sustituyen a los orbes generales.
+ORBES_PUNTOS_SENSIBLES = {
+    "=": 5.0,
+    "☍": 5.0,
+    "□": 4.0,
+    "△": 4.0,
+    "✶": 4.0,
+    "⚻": 4.0,
+}
+
+PUNTOS_SENSIBLES = {"Quirón", "Lilith"}
 
 SIMBOLOS_SIGNOS = ["♈","♉","♊","♋","♌","♍","♎","♏","♐","♑","♒","♓"]
 COLORES_ELEMENTO = {"Fuego":"#CC2200","Tierra":"#2E7D32","Aire":"#E67E00","Agua":"#1A5FA8"}
@@ -1758,7 +1772,17 @@ def calcular_aspectos_modulo(planetas, asc, planetas_focales):
         for tipo, angulo, orbe_maximo, simbolo in ASPECTOS_DEF:
             orbe = abs(diferencia - angulo)
 
-            if orbe <= orbe_maximo:
+            # Quirón y Lilith usan siempre su propio orbe reducido.
+            # No pueden heredar el orbe más amplio del otro cuerpo.
+            if (
+                par["p1"] in PUNTOS_SENSIBLES
+                or par["p2"] in PUNTOS_SENSIBLES
+            ):
+                orbe_maximo_efectivo = ORBES_PUNTOS_SENSIBLES[simbolo]
+            else:
+                orbe_maximo_efectivo = orbe_maximo
+
+            if orbe <= orbe_maximo_efectivo:
                 orbe_redondeado = round(orbe, 2)
 
                 aspectos.append({
@@ -3081,6 +3105,130 @@ def bloque_marte(
         estilos=estilos,
     )
 
+def preparar_contenido_ia_personales(carta, aspectos):
+    """
+    Prepara el contenido interpretativo de
+    Mercurio · Venus · Marte para reutilizarlo en la capa de IA.
+
+    No genera nuevas interpretaciones.
+    Reutiliza los mismos textos de Cimientos.
+    """
+
+    planetas = carta["planetas"]
+
+    configuracion = {
+        "Mercurio": {
+            "textos_signo": MERCURIO_SIGNO,
+            "textos_casa": MERCURIO_CASA,
+            "combinaciones": MERCURIO_COMBINACIONES,
+            "integracion": MERCURIO_INTEGRACION,
+        },
+
+        "Venus": {
+            "textos_signo": VENUS_SIGNO,
+            "textos_casa": VENUS_CASA,
+            "combinaciones": VENUS_COMBINACIONES,
+            "integracion": VENUS_INTEGRACION,
+        },
+
+        "Marte": {
+            "textos_signo": MARTE_SIGNO,
+            "textos_casa": MARTE_CASA,
+            "combinaciones": MARTE_COMBINACIONES,
+            "integracion": MARTE_INTEGRACION,
+        },
+    }
+
+    resultado = {}
+
+    for planeta, config in configuracion.items():
+
+        datos_planeta = planetas.get(
+            planeta,
+            {}
+        )
+
+        signo = datos_planeta.get(
+            "signo",
+            ""
+        )
+
+        casa = datos_planeta.get(
+            "casa"
+        )
+
+        aspectos_planeta = []
+
+        for aspecto in aspectos:
+
+            p1 = aspecto.get("p1")
+            p2 = aspecto.get("p2")
+
+            if planeta not in (p1, p2):
+                continue
+
+            otro = (
+                p2
+                if p1 == planeta
+                else p1
+            )
+
+            tipo = aspecto.get("tipo")
+
+            texto = obtener_texto_aspecto(
+                config["combinaciones"],
+                PLANETAS_PERSONALES_TEXTOS_TIPO_ASPECTO,
+                otro,
+                tipo,
+            )
+
+            if not texto:
+                continue
+
+            aspectos_planeta.append({
+                "planeta": otro,
+                "tipo": tipo,
+                "simbolo": aspecto.get("simbolo"),
+                "orbe": aspecto.get("orbe"),
+                "relevancia": aspecto.get("relevancia"),
+                "texto": texto,
+            })
+
+        resultado[planeta.lower()] = {
+            "signo": signo,
+            "casa": casa,
+            "grado": round(
+                datos_planeta.get("grado", 0),
+                2
+            ),
+
+            "retrogrado": datos_planeta.get(
+                "retrogrado",
+                False
+            ),
+
+            "texto_signo": config[
+                "textos_signo"
+            ].get(
+                signo,
+                ""
+            ),
+
+            "texto_casa": config[
+                "textos_casa"
+            ].get(
+                casa,
+                ""
+            ),
+
+            "aspectos": aspectos_planeta,
+
+            "integracion": config[
+                "integracion"
+            ],
+        }
+
+    return resultado
 
 def generar_pdf_planetas_personales(
     ruta_pdf,
@@ -3468,6 +3616,11 @@ def generar_carta_api(
             carta["asc"],
         )
 
+        contenido_ia = preparar_contenido_ia_personales(
+            carta,
+            aspectos
+        )
+
         # ── ARCHIVOS ──────────────────────────────────────────
 
         nombre_f = (
@@ -3526,6 +3679,7 @@ def generar_carta_api(
             "ok": True,
             "pdf": f"/descargas/{nombre_archivo}",
             "pdf_url": f"/descargas/{nombre_archivo}",
+            "contenido_ia": contenido_ia,
         }
 
     except Exception as error:

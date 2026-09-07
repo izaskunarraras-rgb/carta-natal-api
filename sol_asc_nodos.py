@@ -67,12 +67,26 @@ LILITH_ID = swe.MEAN_APOG
 
 ASPECTOS_DEF = [
     ("Conjunción", 0,   10.0, "="),
-    ("Sextil",     60,  6.0, "✶"),
+    ("Sextil",     60,  7.0, "✶"),
     ("Cuadratura", 90,  8.0, "□"),
-    ("Trígono",    120, 8.0, "△"),
+    ("Trígono",    120, 9.0, "△"),
     ("Oposición",  180, 10.0, "☍"),
     ("Quincuncio", 150, 4.0, "⚻"),
 ]
+
+# Quirón y Lilith se tratan como puntos sensibles.
+# Cuando cualquiera de los dos participa en un aspecto,
+# estos orbes sustituyen a los orbes generales.
+ORBES_PUNTOS_SENSIBLES = {
+    "=": 5.0,
+    "☍": 5.0,
+    "□": 4.0,
+    "△": 4.0,
+    "✶": 4.0,
+    "⚻": 4.0,
+}
+
+PUNTOS_SENSIBLES = {"Quirón", "Lilith"}
 
 SIMBOLOS_SIGNOS = ["♈","♉","♊","♋","♌","♍","♎","♏","♐","♑","♒","♓"]
 COLORES_ELEMENTO = {"Fuego":"#CC2200","Tierra":"#2E7D32","Aire":"#E67E00","Agua":"#1A5FA8"}
@@ -1649,7 +1663,17 @@ def calcular_aspectos_sol_asc_nodos(planetas, asc):
         for tipo, angulo, orbe_maximo, simbolo in ASPECTOS_DEF:
             orbe = abs(diferencia - angulo)
 
-            if orbe <= orbe_maximo:
+            # Quirón y Lilith usan siempre su propio orbe reducido.
+            # No pueden heredar el orbe más amplio del otro cuerpo.
+            if (
+                nombre1 in PUNTOS_SENSIBLES
+                or nombre2 in PUNTOS_SENSIBLES
+            ):
+                orbe_maximo_efectivo = ORBES_PUNTOS_SENSIBLES[simbolo]
+            else:
+                orbe_maximo_efectivo = orbe_maximo
+
+            if orbe <= orbe_maximo_efectivo:
                 orbe_redondeado = round(orbe, 2)
 
                 aspectos.append({
@@ -4188,6 +4212,94 @@ def bloque_texto(titulo, texto, estilos, subtitulo_interno=None):
     elementos += _parrafos_reportlab(texto, estilos["cuerpo"])
     return elementos
 
+def preparar_contenido_ia_sol_asc_nodos(carta, aspectos):
+    """
+    Prepara el contenido interpretativo de
+    Sol · Ascendente · Nodos para reutilizarlo en la capa de IA.
+
+    No genera nuevas interpretaciones.
+    Reutiliza exactamente los textos de Cimientos.
+    """
+
+    planetas = carta["planetas"]
+    asc = carta["asc"]
+
+    sol = planetas.get("Sol", {})
+    nn = planetas.get("Nodo Norte", {})
+    ns = planetas.get("Nodo Sur", {})
+
+    regente_asc = REGENTE_SIGNO.get(
+        asc.get("signo", ""),
+        ""
+    )
+
+    return {
+        "direccion_general": texto_direccion_general(
+            carta,
+            aspectos
+        ),
+
+        "sol": {
+            "signo": sol.get("signo"),
+            "casa": sol.get("casa"),
+            "grado": round(sol.get("grado", 0), 2),
+
+            "texto": texto_sol(
+                carta,
+                aspectos
+            ),
+        },
+
+        "ascendente": {
+            "signo": asc.get("signo"),
+            "grado": round(asc.get("grado", 0), 2),
+            "regente": regente_asc,
+
+            "texto": texto_ascendente(
+                carta,
+                aspectos
+            ),
+        },
+
+        "nodos": {
+            "nodo_norte": {
+                "signo": nn.get("signo"),
+                "casa": nn.get("casa"),
+                "grado": round(nn.get("grado", 0), 2),
+            },
+
+            "nodo_sur": {
+                "signo": ns.get("signo"),
+                "casa": ns.get("casa"),
+                "grado": round(ns.get("grado", 0), 2),
+            },
+
+            "texto": texto_nodos(
+                carta,
+                aspectos
+            ),
+        },
+
+        "integracion": texto_integracion(
+            carta,
+            aspectos
+        ),
+
+        "orientacion": texto_orientacion(
+            carta,
+            aspectos
+        ),
+
+        "interceptaciones": texto_interceptaciones(
+            carta
+        ),
+
+        "grados_sensibles": texto_grados_anareticos(
+            carta
+        ),
+
+        "aspectos": aspectos,
+    }
 
 def generar_pdf_sol_asc_nodos(
     ruta_pdf, carta, nombre, anio, mes, dia, hora, minuto,
@@ -4392,6 +4504,11 @@ def generar_carta_api(
             carta["asc"]
         )
 
+        contenido_ia = preparar_contenido_ia_sol_asc_nodos(
+            carta,
+            aspectos
+        )
+
         # ── ARCHIVOS ──────────────────────────────────────────
         nombre_f = (
             nombre
@@ -4442,7 +4559,8 @@ def generar_carta_api(
         return {
             "ok": True,
             "pdf": f"/descargas/{nombre_archivo}",
-            "pdf_url": f"/descargas/{nombre_archivo}"
+            "pdf_url": f"/descargas/{nombre_archivo}",
+            "contenido_ia": contenido_ia,
         }
 
     except Exception as error:
