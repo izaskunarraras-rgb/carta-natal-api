@@ -143,9 +143,9 @@ SOL_SIGNO = {
     "Cuando eso no existe, gran parte de tu energía se va en protegerte, adaptarte o intentar sostener el entorno.\n\n"
     
     "No siempre muestras rápidamente hacia dónde quieres ir. "
-    "A menudo necesitas tiempo para sentirte cómodo antes de exponerte o tomar decisiones importantes.\n\n"
+    "A menudo necesitas tiempo antes de exponerte o tomar decisiones importantes.\n\n"
     
-    "Te desgasta mucho no tener intimidad, sentirte emocionalmente invadido o vivir demasiado tiempo en entornos donde no puedes descansar de verdad. "
+    "Te desgasta mucho no tener intimidad, sentir que invaden emocionalmente tu espacio o vivir demasiado tiempo en entornos donde no puedes descansar de verdad. "
     "Cuando no encuentras un lugar interno desde el que sostenerte, es fácil replegarte y perder claridad sobre tu dirección."
 ),
 

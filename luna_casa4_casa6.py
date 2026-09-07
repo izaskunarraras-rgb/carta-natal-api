@@ -537,7 +537,7 @@ LUNA_CASA = {
 ),
 
 5: (
-    "Necesitas expresar lo que sientes para mantenerte vivo por dentro. La creatividad, el juego, el disfrute o la posibilidad de actuar con espontaneidad no son algo superficial para ti: forman parte de lo que te ayuda a sentirte bien emocionalmente. "
+    "Necesitas expresar lo que sientes para mantener viva tu energía interior. La creatividad, el juego, el disfrute o la posibilidad de actuar con espontaneidad no son algo superficial para ti: forman parte de lo que te ayuda a sentirte bien emocionalmente. "
     "Cuando pasas demasiado tiempo reprimiendo esa parte de ti, la energía empieza a acumularse y pueden aparecer irritabilidad, vacío o sensación de desconexión contigo. "
     "Tu cuerpo suele apagarse cuando la vida pierde espacio para el disfrute auténtico o para la expresión personal. "
     "Te ayuda crear, disfrutar y sentir que puedes expresarte libremente. En cambio, la exigencia constante, la represión emocional o sentir que no tienes espacio para ser quien eres suele desgastarte profundamente."
@@ -725,7 +725,7 @@ CASA6_SIGNO = {
     "Tu energía cotidiana necesita algo que sientas verdaderamente propio. Cuando tu vida se reduce a obligación, rutina o gestión, algo dentro empieza a apagarse poco a poco. "
     "Puedes seguir funcionando durante mucho tiempo, pero sin sensación real de vitalidad. "
     "Necesitas espacios donde puedas expresarte, crear o sentir conexión auténtica contigo. "
-    "Cuando pasas demasiado tiempo lejos de esa parte de ti, la energía empieza a disminuir antes incluso de que puedas ponerle nombre a lo que te ocurre. "
+    "CCuando pasas demasiado tiempo lejos de esa parte de ti, la energía empieza a disminuir antes incluso de que puedas ponerle nombre a lo que te ocurre. "
     "Te ayudan la creatividad, la expresión auténtica y sentir conexión personal con lo que haces. En cambio, la rutina mecánica, el exceso de obligación o no tener espacio propio suele apagar progresivamente la energía."
 ),
 
@@ -1243,7 +1243,7 @@ ASPECTOS_LUNA = {
 ),
 
 ("Luna","Urano","△"): (
-    "Tienes facilidad para soltar emocionalmente aquello que ya terminó. Eso no significa ausencia de dolor, sino cierta capacidad para no quedarte atrapado indefinidamente dentro de lo que ya no tiene vida o movimiento. "
+    "Tienes facilidad para soltar emocionalmente aquello que ya terminó. Eso no significa ausencia de dolor, sino cierta capacidad para no permanecer indefinidamente dentro de lo que ya no tiene vida o movimiento. "
     "Cuando algo deja de sostenerse, normalmente aparece impulso hacia el cambio, la renovación o la apertura hacia otra etapa. "
     "La libertad emocional puede convertirse en un recurso importante para volver a moverte y recuperar energía."
 ),
