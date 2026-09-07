@@ -83,7 +83,7 @@ SOL_SIGNO = {
 
 "Géminis": (
     "Con el Sol en Géminis, necesitas movimiento mental, estímulos y sensación de conexión con lo que ocurre alrededor. "
-    "Sueles adaptarte bien a situaciones cambiantes y aprender con rápidez cuando algo despierta tu curiosidad. "
+    "Sueles adaptarte bien a situaciones cambiantes y aprender con rapidez cuando algo despierta tu curiosidad. "
     "Las ideas, las conversaciones y la variedad suelen ser importantes para ti."
 ),
 
