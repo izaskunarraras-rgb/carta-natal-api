@@ -725,7 +725,7 @@ CASA6_SIGNO = {
     "Tu energía cotidiana necesita algo que sientas verdaderamente propio. Cuando tu vida se reduce a obligación, rutina o gestión, algo dentro empieza a apagarse poco a poco. "
     "Puedes seguir funcionando durante mucho tiempo, pero sin sensación real de vitalidad. "
     "Necesitas espacios donde puedas expresarte, crear o sentir conexión auténtica contigo. "
-    "CCuando pasas demasiado tiempo lejos de esa parte de ti, la energía empieza a disminuir antes incluso de que puedas ponerle nombre a lo que te ocurre. "
+    "Cuando pasas demasiado tiempo lejos de esa parte de ti, la energía empieza a disminuir antes incluso de que puedas ponerle nombre a lo que te ocurre. "
     "Te ayudan la creatividad, la expresión auténtica y sentir conexión personal con lo que haces. En cambio, la rutina mecánica, el exceso de obligación o no tener espacio propio suele apagar progresivamente la energía."
 ),
 
