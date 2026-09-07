@@ -2121,7 +2121,7 @@ def texto_integracion_elementos(conteo_elem):
             f"<br/><br/>{menor} aparece con menor presencia. "
             f"Esto no significa que te falten {funciones[menor]}. "
             "Significa que estas cualidades quizá necesiten desarrollarse de una forma "
-            "mmás consciente para poder sostener el conjunto de tu energía."
+            "más consciente para poder sostener el conjunto de tu energía."
         )
 
     texto += (
@@ -2219,7 +2219,97 @@ def bloque_cierre(
 
     return elementos
 
+def preparar_contenido_ia_base(carta):
+    """
+    Prepara el contenido interpretativo de Carta Base
+    para reutilizarlo posteriormente en la capa de IA.
 
+    No genera nuevas interpretaciones:
+    reutiliza los mismos cálculos y textos de Cimientos.
+    """
+
+    planetas = carta["planetas"]
+    asc = carta["asc"]
+    mc = carta["mc"]
+
+    conteo_elem = analizar_elementos(
+        planetas,
+        asc["signo"],
+        hora_conocida=True
+    )
+
+    conteo_modal = analizar_modalidades(
+        planetas
+    )
+
+    vision = texto_vision_general(
+        carta,
+        conteo_elem,
+        conteo_modal
+    )
+
+    ejes = texto_ejes_principales(
+        carta
+    )
+
+    elementos = {}
+
+    for elemento in [
+        "Fuego",
+        "Tierra",
+        "Aire",
+        "Agua",
+    ]:
+        valor = conteo_elem.get(
+            elemento,
+            0
+        )
+
+        nivel = nivel_elemento(
+            valor
+        )
+
+        elementos[elemento] = {
+            "valor": valor,
+            "nivel": nivel,
+            "texto": TEXTOS_ELEMENTOS_PDF[elemento][nivel],
+        }
+
+    return {
+        "vision_general": vision,
+
+        "elementos": elementos,
+
+        "modalidades": conteo_modal,
+
+        "integracion_elementos":
+            texto_integracion_elementos(
+                conteo_elem
+            ),
+
+        "pilares": {
+            "sol": {
+                "signo": planetas["Sol"]["signo"],
+                "casa": planetas["Sol"]["casa"],
+                "texto": ejes["sol"],
+            },
+
+            "luna": {
+                "signo": planetas["Luna"]["signo"],
+                "casa": planetas["Luna"]["casa"],
+                "texto": ejes["luna"],
+            },
+
+            "ascendente": {
+                "signo": asc["signo"],
+                "texto": ejes["asc"],
+            },
+
+            "medio_cielo": {
+                "signo": mc["signo"],
+            },
+        },
+    }
 
 def generar_pdf_reportlab_base(
     ruta_pdf, carta, nombre, año, mes, dia, hora, minuto,
@@ -2428,6 +2518,10 @@ def generar_carta_api(nombre, fecha, hora, lugar, lat=None, lon=None, tz_name=No
             tz_name
         )
 
+        contenido_ia = preparar_contenido_ia_base(
+            carta
+        )
+
 
         # ── RUTAS ────────────────────────────────────────────
 
@@ -2467,7 +2561,8 @@ def generar_carta_api(nombre, fecha, hora, lugar, lat=None, lon=None, tz_name=No
 
             return {
                 "ok": True,
-                "pdf": f"/descargas/{os.path.basename(ruta_pdf)}"
+                "pdf": f"/descargas/{os.path.basename(ruta_pdf)}",
+                "contenido_ia": contenido_ia,
             }
 
         else:

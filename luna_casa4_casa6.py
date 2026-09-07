@@ -146,12 +146,23 @@ REGENTE_SIGNO = {
 
 ASPECTOS_DEF = [
     ("Conjunción", 0, 10.0, "="),
-    ("Sextil", 60, 6.0, "✶"),
+    ("Sextil", 60, 7.0, "✶"),
     ("Cuadratura", 90, 8.0, "□"),
-    ("Trígono", 120, 8.0, "△"),
+    ("Trígono", 120, 9.0, "△"),
     ("Oposición", 180, 10.0, "☍"),
     ("Quincuncio", 150, 4.0, "⚻"),
 ]
+
+# Quirón y Lilith se tratan como puntos sensibles y mantienen
+# los orbes reducidos utilizados en el resto del motor.
+ORBES_PUNTOS_SENSIBLES = {
+    "=": 5.0,
+    "☍": 5.0,
+    "□": 4.0,
+    "△": 4.0,
+    "✶": 4.0,
+    "⚻": 4.0,
+}
 
 
 # ─── TEXTOS NARRATIVOS DEL CUADERNO ───────────────────────────────────────────
@@ -2100,17 +2111,20 @@ def texto_integracion(planetas, cuspides, aspectos_luna):
     partes = [apertura, elem_coherencia]
 
     if planetas_c4:
+        verbo_c4 = "influyen" if len(planetas_c4) > 1 else "influye"
+        demostrativo_c4 = "esas energías" if len(planetas_c4) > 1 else "esa energía"
         partes.append(
-            f"Además, {lista_y(planetas_c4)} en la Casa 4 influye directamente en tu sensación de base interna. "
+            f"Además, {lista_y(planetas_c4)} en la Casa 4 {verbo_c4} directamente en tu sensación de base interna. "
             f"Cuando buscas seguridad, refugio o estabilidad emocional profunda, "
-            f"esa energía ya está presente ahí. "
+            f"{demostrativo_c4} ya {'están' if len(planetas_c4) > 1 else 'está'} presente{'s' if len(planetas_c4) > 1 else ''} ahí. "
             f"Por eso tu forma de sentir hogar, intimidad y raíz no depende solo del signo de la Casa 4. "
             f"También está marcada por la forma en que esos planetas activan tu mundo interno."
         )
 
     if planetas_c6:
+        verbo_c6 = "influyen" if len(planetas_c6) > 1 else "influye"
         partes.append(
-            f"Además, {lista_y(planetas_c6)} en la Casa 6 influye en cómo tu cuerpo sostiene la vida cotidiana. "
+            f"Además, {lista_y(planetas_c6)} en la Casa 6 {verbo_c6} en cómo tu cuerpo sostiene la vida cotidiana. "
             f"No se trata solo de hábitos o rutina. "
             f"Se trata de cómo organizas tu energía, cómo respondes al cansancio "
             f"y qué ocurre cuando el cuerpo empieza a pedir ajuste. "
@@ -2428,7 +2442,17 @@ def calcular_aspectos_luna(planetas):
         for tipo, angulo, orbe_maximo, simbolo in ASPECTOS_DEF:
             orbe = abs(diferencia - angulo)
 
-            if orbe <= orbe_maximo:
+            # Quirón y Lilith tienen un orbe propio y vinculante.
+            # Aunque la Luna admita un margen mayor para ese aspecto,
+            # el punto sensible debe quedar dentro de su límite reducido.
+            limite_orbe = orbe_maximo
+            if nombre in ("Quirón", "Lilith"):
+                limite_orbe = min(
+                    limite_orbe,
+                    ORBES_PUNTOS_SENSIBLES.get(simbolo, limite_orbe),
+                )
+
+            if orbe <= limite_orbe:
                 orbe = round(orbe, 2)
 
                 aspectos.append({
@@ -2461,9 +2485,9 @@ def dibujar_rueda_luna(carta, aspectos_luna, archivo_salida):
     """Rueda filtrada: Luna, regentes C4/C6 y planetas en aspecto con Luna."""
     ORBES_ESTRICTOS = {
         "=": 10.0,
-        "✶": 6.0,
+        "✶": 7.0,
         "□": 8.0,
-        "△": 8.0,
+        "△": 9.0,
         "⚻": 4.0,
         "☍": 10.0,
     }
@@ -3390,6 +3414,109 @@ def bloque_invitacion(subtitulo, cuerpo):
 
     return elementos
 
+def preparar_contenido_ia_luna(carta, aspectos_luna):
+    """
+    Prepara el contenido interpretativo de Luna · Casa 4 · Casa 6
+    para reutilizarlo posteriormente en la capa de IA.
+
+    No genera nuevas interpretaciones:
+    reutiliza exactamente los mismos textos de Cimientos.
+    """
+
+    planetas = carta["planetas"]
+    cuspides = carta["cuspides"]
+
+    luna = planetas.get("Luna", {})
+
+    signo_luna = luna.get("signo", "")
+    casa_luna = luna.get("casa")
+
+    signo_c4 = signo_cuspide_casa(
+        cuspides,
+        4
+    )
+
+    signo_c6 = signo_cuspide_casa(
+        cuspides,
+        6
+    )
+
+    regente_c4 = REGENTE_SIGNO.get(
+        signo_c4,
+        ""
+    )
+
+    regente_c6 = REGENTE_SIGNO.get(
+        signo_c6,
+        ""
+    )
+
+
+    aspectos_interpretados = textos_aspectos_luna(
+        aspectos_luna
+    )
+
+    return {
+
+        "luna": {
+            "signo": signo_luna,
+            "casa": casa_luna,
+
+            "texto_signo": texto_luna_signo(
+                planetas
+            ),
+
+            "texto_casa": texto_luna_casa(
+                planetas
+            ),
+
+            "aspectos": aspectos_interpretados,
+        },
+
+        "casa_4": {
+            "signo": signo_c4,
+            "regente": regente_c4,
+
+            "casa_regente": (
+                planetas.get(
+                    regente_c4,
+                    {}
+                ).get("casa")
+                if regente_c4
+                else None
+            ),
+
+            "texto": texto_casa4(
+                planetas,
+                cuspides
+            ),
+        },
+
+        "casa_6": {
+            "signo": signo_c6,
+            "regente": regente_c6,
+
+            "casa_regente": (
+                planetas.get(
+                    regente_c6,
+                    {}
+                ).get("casa")
+                if regente_c6
+                else None
+            ),
+
+            "texto": texto_casa6(
+                planetas,
+                cuspides
+            ),
+        },
+
+        "integracion": texto_integracion(
+            planetas,
+            cuspides,
+            aspectos_luna
+        ),
+    }
 
 def generar_pdf_luna_casa4_casa6(
     ruta_pdf, carta, nombre, año, mes, dia, hora, minuto,
@@ -3597,6 +3724,15 @@ def generar_carta_api(nombre, fecha, hora, lugar, lat=None, lon=None, tz_name=No
             tz_name
         )
 
+        aspectos_luna = calcular_aspectos_luna(
+            carta["planetas"]
+        )
+
+        contenido_ia = preparar_contenido_ia_luna(
+            carta,
+            aspectos_luna
+        )
+
 
         # ── RUTAS ────────────────────────────────────────────
 
@@ -3616,7 +3752,6 @@ def generar_carta_api(nombre, fecha, hora, lugar, lat=None, lon=None, tz_name=No
 
         # ── RUEDA ────────────────────────────────────────────
 
-        aspectos_luna = calcular_aspectos_luna(carta["planetas"])
         dibujar_rueda_luna(carta, aspectos_luna, ruta_png)
 
 
@@ -3637,7 +3772,8 @@ def generar_carta_api(nombre, fecha, hora, lugar, lat=None, lon=None, tz_name=No
 
             return {
                 "ok": True,
-                "pdf": f"/descargas/{os.path.basename(ruta_pdf)}"
+                "pdf": f"/descargas/{os.path.basename(ruta_pdf)}",
+                "contenido_ia": contenido_ia,
             }
 
         else:
