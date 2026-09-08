@@ -176,7 +176,7 @@ SOL_CASA = {
 ),
 
 6: (
-    "Con el Sol en Casa 6, el trabajo cotidiano, los hábitos y la necesidad de sentir que lo que haces es útil suelen ser importantes para ti "
+    "Con el Sol en Casa 6, el trabajo cotidiano, los hábitos y la necesidad de sentir que lo que haces es útil suelen ser importantes para ti. "
     "Tu energía normalmente se organiza mejor cuando hay cierta estructura o algo concreto de lo que ocuparte. "
     "Muchas veces cuidar tus ritmos y el día a día influye directamente en cómo te sientes."
 ),
@@ -569,7 +569,7 @@ TEXTOS_ELEMENTOS_PDF = {
         "Indica que los ritmos, los hábitos y las referencias concretas suelen funcionar mejor "
         "cuando los eliges y los adaptas a tu forma real de vivir.<br/><br/>"
         "<b>Observa:</b><br/>"
-        "• qué te ayuda a mantener continuidad sin sentirte limitada<br/>"
+        "• qué te ayuda a mantener continuidad sin sentir que pierdes libertad<br/>"
         "• cuándo una idea necesita convertirse en un paso concreto<br/>"
         "• qué estructuras te sostienen sin volverse rígidas"
     ),
@@ -586,7 +586,7 @@ TEXTOS_ELEMENTOS_PDF = {
         "<b>Observa:</b><br/>"
         "• qué emociones son realmente tuyas y cuáles pueden venir del entorno<br/>"
         "• cuándo necesitas retirarte para recuperar claridad<br/>"
-        "• qué te ayuda a sentir sin quedarte atrapada en lo que sientes"
+        "• qué te ayuda a sentir sin quedarte dentro de lo que sientes"
     ),
 
     "equilibrado": (
@@ -1458,7 +1458,7 @@ def texto_vision_general(carta, conteo_elem, conteo_modal):
 
         parrafos.append(
             f"El elemento con mayor presencia es <b>{elemento}</b>. "
-            f"Esto señala que {_desc_elemento(elemento)} tiende a aparecer "
+            f"Esto señala que {_desc_elemento(elemento)} tienden a aparecer "
             "con bastante facilidad en tu forma de funcionar."
         )
 

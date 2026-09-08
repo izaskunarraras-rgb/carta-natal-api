@@ -434,7 +434,7 @@ LUNA_SIGNO = {
     "Tu cuerpo suele registrar esa acumulación como tensión constante o dificultad para relajarse del todo.\n\n"
 
     "La regulación mejora cuando existe intimidad real, confianza profunda y sensación de seguridad emocional. "
-    "En cambio, la manipulación, la traición o sentirte expuesto sin protección "
+    "En cambio, la manipulación, la traición o sentir que quedas sin protección "
     "tienden a activar rápidamente mecanismos de defensa."
 ),
 
@@ -587,7 +587,7 @@ LUNA_CASA = {
 
 12: (
     "Muchas de tus emociones se mueven dentro de ti antes incluso de que consigas entenderlas del todo. A veces aparece cansancio, saturación o tristeza sin una causa completamente clara. "
-    "Necesitas períodos reales de silencio y retirada para dar espacio a todo lo que se va acumulando dentro. Cuando pasas demasiado tiempo expuesto a ruido, demandas o estímulos externos, tu mundo interior empieza a saturarse aunque desde fuera parezca que sigues funcionando. "
+    "Necesitas períodos reales de silencio y retirada para dar espacio a todo lo que se va acumulando dentro. Cuando pasas demasiado tiempo entre ruido, demandas o estímulos externos, tu mundo interior empieza a saturarse aunque desde fuera parezca que sigues funcionando. "
     "Tu cuerpo suele necesitar descanso profundo con más frecuencia de la que imaginas. "
     "Te ayuda tener momentos de soledad elegida, silencio y suficiente espacio interior. En cambio, el exceso de exposición, el ruido constante o no disponer de tiempo para desconectar suele generar mucha saturación emocional."
 ),
@@ -1309,7 +1309,7 @@ ASPECTOS_LUNA = {
 ("Luna","Plutón","□"): (
     "Cuando una emoción aparece, otra parte de ti intenta controlarla o contenerla casi al mismo tiempo. Puedes sentir intensidad profunda y, a la vez, necesidad de cerrarla, esconderla o empujarla hacia abajo. "
     "Muchas veces esa lucha interna termina agotando más que la emoción en sí. "
-    "Existe miedo a perder el control, a quedar demasiado expuesto o a que la intensidad te desborde completamente. "
+    "Existe miedo a perder el control, a quedar demasiado vulnerable o a que la intensidad te desborde completamente. "
     "Tu regulación empieza cuando dejas de pelearte con lo que sientes y aprendes a sostenerlo con recursos y espacio suficiente."
 ),
 
@@ -1494,7 +1494,7 @@ REGENTE_CASA4_LUNA = {
     "En tu caso, la búsqueda de seguridad adquiere además un matiz importante. "
     "Necesitas sentir que puedes ser tú sin tener que esconder partes esenciales de quien eres. "
     "No basta con que exista estabilidad alrededor. También necesitas reconocer que ocupas un lugar coherente con tu identidad. "
-    "Cuando tienes que adaptarte continuamente para sentirte aceptado, la sensación de refugio termina debilitándose. "
+    "Cuando tienes que adaptarte continuamente para sentir aceptación, la sensación de refugio termina debilitándose. "
     "En cambio, cuando puedes expresarte con autenticidad, la seguridad deja de depender tanto del exterior y empieza a construirse desde dentro."
 ),
 
