@@ -2863,8 +2863,10 @@ def dibujar_rueda_luna(carta, aspectos_luna, archivo_salida):
         ax.plot([math.cos(ang) * R_CASA_IN, math.cos(ang) * R_CASA_OUT],
                 [math.sin(ang) * R_CASA_IN, math.sin(ang) * R_CASA_OUT],
                 color=col, linewidth=lw, zorder=3)
-        ang_num = lon_a_angulo(cusp + 4.0)
-        r_num   = (R_CASA_IN + 0.25) / 2 + 0.12
+        # Número de casa dentro del anillo planetario,
+        # cerca del círculo interior y junto a la cúspide.
+        ang_num = lon_a_angulo(cusp + 2.5)
+        r_num   = R_CASA_IN + 0.055
         ax.text(math.cos(ang_num) * r_num, math.sin(ang_num) * r_num, str(i + 1),
                 ha='center', va='center', fontsize=7, color='#666', zorder=4)
 

@@ -2285,27 +2285,22 @@ def dibujar_rueda_planetas_transpersonales(
             zorder=3,
         )
 
-        if i in (0, 3, 6, 9):
-            ang_num = lon_a_angulo(
-                cusp + 4.0
-            )
+        # Número de todas las casas dentro del anillo planetario,
+        # cerca del círculo interior y ligeramente al lado de la cúspide.
+        ang_num = lon_a_angulo(cusp + 2.5)
+        r_num = R_CASA_IN + 0.055
 
-            r_num = (
-                R_CASA_IN + 0.25
-            ) / 2 + 0.12
-
-            ax.text(
-                math.cos(ang_num) * r_num,
-                math.sin(ang_num) * r_num,
-                str(i + 1),
-                ha="center",
-                va="center",
-                fontsize=8,
-                color="#444",
-                fontweight="bold",
-                zorder=4,
-            )
-
+        ax.text(
+            math.cos(ang_num) * r_num,
+            math.sin(ang_num) * r_num,
+            str(i + 1),
+            ha="center",
+            va="center",
+            fontsize=8,
+            color="#444",
+            fontweight="bold" if i in (0, 3, 6, 9) else "normal",
+            zorder=4,
+        )
     # Colores de los aspectos
     _ASP_COL = {
         "□": "#CC2200",
