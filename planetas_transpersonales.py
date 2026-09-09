@@ -26,6 +26,8 @@ import swisseph as swe
 from geopy.geocoders import Nominatim
 from timezonefinder import TimezoneFinder
 
+from nucleos_globales import detectar_nucleos_globales
+
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY, TA_LEFT
 from reportlab.lib.pagesizes import A4
@@ -63,8 +65,8 @@ ELEMENTO_SIGNO = {
 }
 
 REGENTE_SIGNO = {
-    "Aries":"Marte","Tauro":"Venus","Géminis":"Mercurio","Cáncer":"la Luna",
-    "Leo":"el Sol","Virgo":"Mercurio","Libra":"Venus","Escorpio":"Plutón",
+    "Aries":"Marte","Tauro":"Venus","Géminis":"Mercurio","Cáncer":"Luna",
+    "Leo":"Sol","Virgo":"Mercurio","Libra":"Venus","Escorpio":"Plutón",
     "Sagitario":"Júpiter","Capricornio":"Saturno","Acuario":"Urano","Piscis":"Neptuno"
 }
 
@@ -379,7 +381,7 @@ URANO_COMBINACIONES = {
 "Sol": (
     "Tu necesidad de libertad está profundamente unida a la construcción de tu identidad. Necesitas sentir que puedes vivir de acuerdo con quien realmente eres, aunque eso implique apartarte de expectativas, modelos o caminos que otras personas consideran adecuados.\n\n"
 
-    "Cuando ambas partes colaboran, desarrollas una gran capacidad para actuar con autenticidad, impulsar cambios y abrir nuevas posibilidades tanto para ti como para quienes te rodean. Tu individualidad encuentra una forma natural de expresarse sin necesidad de buscar constantemente la diferencia.\n\n"
+    "Cuando encuentras una manera de integrar ambas partes, desarrollas una gran capacidad para actuar con autenticidad, impulsar cambios y abrir nuevas posibilidades tanto para ti como para quienes te rodean. Tu individualidad encuentra una forma natural de expresarse sin necesidad de buscar constantemente la diferencia.\n\n"
 
     "Esta combinación te invita a distinguir entre serte fiel y rechazar cualquier límite por el simple hecho de existir. La verdadera libertad no consiste en oponerse a todo, sino en elegir conscientemente aquello que realmente representa quién eres."
 ),
@@ -387,7 +389,7 @@ URANO_COMBINACIONES = {
 "Luna": (
     "Tu necesidad de libertad también alcanza tu mundo emocional. Necesitas sentir que puedes experimentar, expresar y comprender tus emociones sin engancharte en viejos patrones afectivos o formas heredadas de vivir los vínculos.\n\n"
 
-    "Cuando ambas partes colaboran, desarrollas una gran capacidad para adaptarte a los cambios, responder con flexibilidad y construir una relación más libre y consciente con tu mundo interior. Tu sensibilidad puede convertirse en una fuente de renovación tanto para ti como para las personas que te rodean.\n\n"
+    "Cuando encuentras una manera de integrar ambas partes, desarrollas una gran capacidad para adaptarte a los cambios, responder con flexibilidad y construir una relación más libre y consciente con tu mundo interior. Tu sensibilidad puede convertirse en una fuente de renovación tanto para ti como para las personas que te rodean.\n\n"
 
     "Esta combinación te invita a observar cuándo proteger tu independencia emocional favorece tu bienestar y cuándo se convierte en una forma de evitar la intimidad o la vulnerabilidad. La libertad emocional también puede construirse compartiendo lo que sientes."
 ),
@@ -395,7 +397,7 @@ URANO_COMBINACIONES = {
 "Mercurio": (
     "Tu manera de pensar necesita espacio para cuestionar, experimentar y descubrir nuevas perspectivas. Rara vez aceptas una idea únicamente porque siempre haya sido así; necesitas comprenderla antes de hacerla propia.\n\n"
 
-    "Cuando ambas partes colaboran, desarrollas una mente original, rápida y especialmente capaz de establecer conexiones que otras personas no perciben. Sueles aportar ideas innovadoras y encontrar soluciones diferentes a problemas conocidos.\n\n"
+    "Cuando encuentras una manera de integrar ambas partes, desarrollas una mente original, rápida y especialmente capaz de establecer conexiones que otras personas no perciben. Sueles aportar ideas innovadoras y encontrar soluciones diferentes a problemas conocidos.\n\n"
 
     "Esta combinación te invita a distinguir entre pensar de forma independiente y cuestionarlo todo de manera automática. La originalidad gana profundidad cuando también puede dialogar con la experiencia, el conocimiento y la realidad."
 ),
@@ -404,7 +406,7 @@ URANO_COMBINACIONES = {
 "Venus": (
     "Tu necesidad de libertad influye directamente en la forma en que construyes tus relaciones, expresas el afecto y descubres aquello que realmente valoras. Necesitas sentir que los vínculos respetan tu individualidad y te permiten seguir creciendo como persona.\n\n"
 
-    "Cuando ambas partes colaboran, desarrollas una forma auténtica de relacionarte, abierta a nuevas maneras de compartir, disfrutar y construir cercanía. Sueles valorar la honestidad, la espontaneidad y el respeto mutuo por encima de las convenciones.\n\n"
+    "Cuando encuentras una manera de integrar ambas partes, desarrollas una forma auténtica de relacionarte, abierta a nuevas maneras de compartir, disfrutar y construir cercanía. Sueles valorar la honestidad, la espontaneidad y el respeto mutuo por encima de las convenciones.\n\n"
 
     "Esta combinación te invita a distinguir entre una relación que limita tu libertad y el miedo a permanecer en un vínculo cuando aparecen la rutina, el compromiso o las diferencias. La autenticidad también puede construirse dentro de una relación estable."
 ),
@@ -412,7 +414,7 @@ URANO_COMBINACIONES = {
 "Marte": (
     "Tu impulso de actuar necesita libertad para elegir su propio camino. Te resulta más fácil movilizar energía cuando sientes que las decisiones nacen de ti y no únicamente de expectativas o imposiciones externas.\n\n"
 
-    "Cuando ambas partes colaboran, actúas con iniciativa, rapidez y una gran capacidad para responder a situaciones nuevas. Sueles encontrar soluciones originales y desenvolverte con soltura allí donde es necesario improvisar o abrir caminos diferentes.\n\n"
+    "Cuando encuentras una manera de integrar ambas partes, actúas con iniciativa, rapidez y una gran capacidad para responder a situaciones nuevas. Sueles encontrar soluciones originales y desenvolverte con soltura allí donde es necesario improvisar o abrir caminos diferentes.\n\n"
 
     "Esta combinación te invita a observar cuándo la necesidad de actuar con independencia favorece tu desarrollo y cuándo puede convertirse en impulsividad, impaciencia o dificultad para sostener el esfuerzo a largo plazo. La libertad también necesita dirección."
 ),
@@ -420,16 +422,27 @@ URANO_COMBINACIONES = {
 "Saturno": (
     "Urano y Saturno representan dos necesidades igualmente importantes: una busca abrir nuevos caminos y la otra construir una base sólida sobre la que sostenerlos. Una impulsa el cambio; la otra aporta continuidad, estructura y experiencia.\n\n"
 
-    "Cuando ambas partes colaboran, puedes transformar aquello que ha quedado obsoleto sin perder de vista lo que merece conservarse. Tienes la capacidad de introducir cambios profundos de forma responsable, convirtiendo las ideas innovadoras en proyectos capaces de mantenerse en el tiempo.\n\n"
+    "Cuando encuentras una manera de integrar ambas partes, puedes transformar aquello que ha quedado obsoleto sin perder de vista lo que merece conservarse. Tienes la capacidad de introducir cambios profundos de forma responsable, convirtiendo las ideas innovadoras en proyectos capaces de mantenerse en el tiempo.\n\n"
 
     "Esta combinación te invita a evitar dos extremos: aferrarte a estructuras que ya no favorecen tu desarrollo o romperlas antes de haber construido unas nuevas. La verdadera innovación no consiste únicamente en cambiar, sino en crear algo que también pueda sostenerse."
+),
+
+"Júpiter": (
+    "La necesidad de libertad y renovación de Urano se encuentra con la búsqueda de sentido, expansión y confianza de Júpiter. "
+    "Esta relación puede ampliar tu forma de comprender la vida y empujarte a cuestionar creencias, perspectivas o caminos que se han quedado demasiado estrechos para ti.\n\n"
+
+    "Cuando encuentras una manera de integrar ambas partes, puedes abrirte a nuevas ideas, explorar posibilidades poco convencionales y convertir una visión amplia en una fuente de crecimiento real. "
+    "La curiosidad y la capacidad de cuestionar pueden ayudarte a ampliar horizontes sin perder contacto con lo que verdaderamente tiene sentido para ti.\n\n"
+
+    "Esta combinación te invita a distinguir entre ampliar tu mirada y buscar constantemente algo nuevo solo por necesidad de escapar de los límites. "
+    "La libertad gana profundidad cuando las nuevas posibilidades pueden integrarse en una visión coherente de la vida."
 ),
 
 
 "Neptuno": (
     "La necesidad de libertad de Urano se encuentra con la sensibilidad y la capacidad de trascender los límites de Neptuno. Una parte de ti busca despertar nuevas posibilidades; la otra percibe aquello que todavía no puede explicarse con claridad.\n\n"
 
-    "Cuando ambas partes colaboran, desarrollas una gran capacidad para intuir cambios, inspirar nuevas formas de comprender la realidad y abrir espacios donde la creatividad y la innovación pueden convivir. La imaginación encuentra caminos originales para tomar forma.\n\n"
+    "Cuando encuentras una manera de integrar ambas partes, desarrollas una gran capacidad para intuir cambios, inspirar nuevas formas de comprender la realidad y abrir espacios donde la creatividad y la innovación pueden convivir. La imaginación encuentra caminos originales para tomar forma.\n\n"
 
     "Esta combinación te invita a distinguir entre una intuición que amplía tu consciencia y la tendencia a perder contacto con la realidad. La inspiración se vuelve más valiosa cuando también puede encontrar una expresión concreta."
 ),
@@ -437,7 +450,7 @@ URANO_COMBINACIONES = {
 "Plutón": (
     "Urano y Plutón comparten la necesidad de transformar aquello que ha dejado de tener sentido, aunque cada uno lo hace de una manera diferente. Urano impulsa el cambio abriendo nuevas posibilidades; Plutón lo hace atravesando procesos profundos de transformación.\n\n"
 
-    "Cuando ambas partes colaboran, desarrollas una gran capacidad para impulsar cambios significativos, comprender el momento en que una etapa ha terminado y participar activamente en procesos de renovación tanto personales como colectivos.\n\n"
+    "Cuando encuentras una manera de integrar ambas partes, desarrollas una gran capacidad para impulsar cambios significativos, comprender el momento en que una etapa ha terminado y participar activamente en procesos de renovación tanto personales como colectivos.\n\n"
 
     "Esta combinación te invita a observar si el deseo de transformar puede llevarte a vivir en un cambio permanente. No toda evolución exige romper continuamente con el pasado; muchas veces también consiste en integrar profundamente aquello que ya ha cambiado."
 ),
@@ -451,7 +464,7 @@ URANO_COMBINACIONES = {
 ),
 
 "Nodo Norte": (
-    "Cuando Urano y el Nodo Norte se relacionan, aprender a vivir con mayor autenticidad forma parte importante de tu proceso evolutivo. La vida suele invitarte a cuestionar patrones conocidos para descubrir una manera más libre y consciente de expresar quién eres.\n\n"
+    "Cuando Urano y el Nodo Norte se relacionan, aprender a vivir con mayor autenticidad forma parte importante de tu proceso de desarrollo. La vida suele invitarte a cuestionar patrones conocidos para descubrir una manera más libre y consciente de expresar quién eres.\n\n"
 
     "Esta combinación favorece aquellas experiencias que amplían tu perspectiva, despiertan nuevas posibilidades y te animan a construir un camino propio, incluso cuando eso implique alejarte de lo esperado.\n\n"
 
@@ -463,7 +476,7 @@ URANO_COMBINACIONES = {
 
     "Esta combinación invita a reconocer todo lo que ya sabes sobre la libertad sin engancharte en la necesidad de demostrar continuamente tu autonomía o de romper con cualquier estructura.\n\n"
 
-    "La evolución consiste en conservar tu capacidad para pensar con independencia mientras desarrollas también nuevas formas de construir estabilidad y cooperación."
+    "El desarrollo consiste en conservar tu capacidad para pensar con independencia mientras desarrollas también nuevas formas de construir estabilidad y cooperación."
 ),
 
 "Quirón": (
@@ -477,7 +490,7 @@ URANO_COMBINACIONES = {
 "Lilith": (
     "Cuando Urano y Lilith interactúan, existe una fuerte necesidad de cuestionar normas, límites o expectativas que no representan tu experiencia. Resulta difícil aceptar una autoridad únicamente porque siempre haya estado ahí; necesitas comprobar qué tiene sentido conservar y qué necesita cambiar.\n\n"
 
-    "Cuando ambas partes colaboran, desarrollas una gran capacidad para abrir conversaciones que otras personas evitan, defender la libertad de ser quien eres y dar espacio a formas de vivir que no siempre encuentran reconocimiento.\n\n"
+    "Cuando encuentras una manera de integrar ambas partes, desarrollas una gran capacidad para abrir conversaciones que otras personas evitan, defender la libertad de ser quien eres y dar espacio a formas de vivir que no siempre encuentran reconocimiento.\n\n"
 
     "Esta combinación te invita a recordar que cuestionar una norma no exige rechazar todas las demás. La libertad gana profundidad cuando nace de la consciencia y no únicamente de la oposición."
 ),
@@ -485,70 +498,12 @@ URANO_COMBINACIONES = {
 
 
 URANO_TEXTOS_TIPO_ASPECTO = {
-
-    "Conjunción": (
-        "Urano se encuentra muy unido a esta parte de ti, de modo que la necesidad de libertad, autenticidad y cambio se expresa directamente a través de ella. "
-        "Ambas funciones actúan de forma inseparable y participan conjuntamente en muchas de tus decisiones.\n\n"
-
-        "Esta unión aporta una gran capacidad para cuestionar inercias, abrir nuevas posibilidades y responder con creatividad cuando una situación necesita renovarse. "
-        "También puede hacer que los cambios aparezcan con intensidad o que resulte difícil aceptar aquello que limita tu necesidad de independencia.\n\n"
-
-        "La integración aparece cuando permites que la libertad impulse tu evolución sin convertir el cambio en una necesidad permanente. "
-        "No todo necesita transformarse; algunas estructuras también pueden sostener aquello que deseas construir."
-    ),
-
-    "Sextil": (
-        "Urano mantiene con esta parte de ti una relación que facilita la innovación y la apertura a nuevas posibilidades. "
-        "Existe una colaboración natural que suele activarse cuando decides explorar caminos diferentes o cuestionar aquello que ha dejado de tener sentido.\n\n"
-
-        "Cuando aprovechas conscientemente esta conexión, puedes introducir cambios de forma flexible, encontrar soluciones originales y adaptarte con rapidez a situaciones nuevas. "
-        "La creatividad encuentra un espacio práctico para desarrollarse.\n\n"
-
-        "El aprendizaje consiste en no dejar esta capacidad únicamente como una posibilidad. "
-        "Cuanto más incorporas la innovación a tu vida cotidiana, más natural resulta evolucionar sin necesidad de esperar a que las circunstancias te obliguen a cambiar."
-    ),
-
-    "Trígono": (
-        "Urano y esta parte de ti colaboran con naturalidad. "
-        "La autenticidad, la creatividad y la capacidad de adaptación suelen surgir de forma espontánea cuando ambas funciones trabajan juntas.\n\n"
-
-        "Esta facilidad favorece una actitud abierta ante los cambios y una notable capacidad para descubrir soluciones que otras personas quizá no contemplan. "
-        "También puede hacer que des por sentada una cualidad que constituye uno de tus recursos más valiosos.\n\n"
-
-        "El equilibrio consiste en utilizar conscientemente esa capacidad innovadora. "
-        "La originalidad adquiere mayor valor cuando encuentra una dirección clara y una aplicación concreta."
-    ),
-
-    "Cuadratura": (
-        "Urano y esta parte de ti no siempre avanzan en la misma dirección. "
-        "La necesidad de libertad o de introducir cambios puede entrar en tensión con otras necesidades internas, generando inquietud, impulsividad o dificultad para encontrar estabilidad.\n\n"
-
-        "En algunos momentos puedes sentir que cualquier límite resulta excesivo; en otros, los cambios aparecen de forma brusca cuando una situación lleva demasiado tiempo sin evolucionar.\n\n"
-
-        "Esta tensión te invita a descubrir una forma más consciente de transformar tu vida. "
-        "La libertad gana profundidad cuando no necesita surgir únicamente como reacción frente a aquello que limita."
-    ),
-
-    "Oposición": (
-        "Urano y esta parte de ti buscan un equilibrio que suele desarrollarse con el tiempo. "
-        "Es posible que inicialmente percibas la libertad, la originalidad o la capacidad de romper inercias reflejadas en otras personas o en situaciones externas.\n\n"
-
-        "También puedes alternar entre periodos de gran necesidad de independencia y otros en los que buscas estabilidad o referencias más conocidas. "
-        "Ambas experiencias forman parte del mismo proceso de integración.\n\n"
-
-        "El aprendizaje consiste en reconocer dentro de ti aquello que primero identificas fuera. "
-        "Cuando ambas funciones pueden dialogar, la libertad deja de depender de las circunstancias y se convierte en una forma consciente de vivir."
-    ),
-
-    "Quincuncio": (
-        "La relación entre Urano y esta parte de ti requiere ajustes frecuentes. "
-        "La necesidad de cambio no siempre encaja fácilmente con el ritmo de la otra función, por lo que es habitual atravesar periodos de adaptación antes de encontrar un equilibrio estable.\n\n"
-
-        "Es posible que algunas transformaciones necesiten más tiempo del que inicialmente desearías o que descubras nuevas posibilidades mientras todavía estás consolidando las anteriores.\n\n"
-
-        "El aprendizaje consiste en respetar los tiempos de cada proceso. "
-        "La innovación encuentra una base mucho más sólida cuando puede integrarse poco a poco en tu vida, en lugar de exigir una transformación inmediata."
-    ),
+    "Conjunción": "La conjunción une estrechamente ambas funciones y hace que la necesidad de libertad y cambio se exprese directamente a través de esta relación.",
+    "Sextil": "El sextil abre una vía de innovación y colaboración que se desarrolla especialmente cuando la utilizas de forma consciente.",
+    "Cuadratura": "La cuadratura introduce fricción entre la necesidad de cambio y la otra función, y pide encontrar una manera de sostener ambas sin reaccionar únicamente desde la ruptura.",
+    "Trígono": "El trígono facilita que la autenticidad, la innovación y la otra función colaboren de manera espontánea, aunque esa facilidad puede pasar desapercibida.",
+    "Oposición": "La oposición puede hacer que la libertad y la otra función se vivan por momentos como polos contrarios; la integración aparece al dejar de elegir una frente a la otra.",
+    "Quincuncio": "El quincuncio requiere ajustes continuos porque la necesidad de cambio y la otra función no encuentran de entrada una forma evidente de coordinarse.",
 }
 
 
@@ -954,7 +909,7 @@ NEPTUNO_COMBINACIONES = {
         "Tu identidad está profundamente vinculada a la sensibilidad, la imaginación y la necesidad de vivir de acuerdo con un ideal que dé sentido a lo que haces. "
         "No siempre te resulta fácil definirte mediante categorías cerradas, porque tu percepción de quién eres puede transformarse según las experiencias y los entornos que atraviesas.\n\n"
 
-        "Cuando ambas funciones colaboran, desarrollas una gran capacidad para inspirar, crear y expresar dimensiones de la experiencia que no siempre pueden explicarse racionalmente. "
+        "Cuando encuentras una manera de integrar ambas partes, desarrollas una gran capacidad para inspirar, crear y expresar dimensiones de la experiencia que no siempre pueden explicarse racionalmente. "
         "Tu identidad puede convertirse en un espacio flexible desde el que comprender diferentes realidades sin perder profundidad.\n\n"
 
         "Esta combinación te invita a distinguir entre adaptarte con sensibilidad y modificarte continuamente para responder a las expectativas ajenas. "
@@ -965,7 +920,7 @@ NEPTUNO_COMBINACIONES = {
         "Tu mundo emocional es especialmente receptivo a los ambientes, los vínculos y los estados internos de otras personas. "
         "Necesitas espacios donde poder sentir sin exigirte comprender o explicar inmediatamente todo lo que ocurre dentro de ti.\n\n"
 
-        "Cuando ambas funciones colaboran, desarrollas una gran empatía, una imaginación profunda y una capacidad natural para acompañar emociones complejas. "
+        "Cuando encuentras una manera de integrar ambas partes, desarrollas una gran empatía, una imaginación profunda y una capacidad natural para acompañar emociones complejas. "
         "Puedes percibir necesidades que apenas han sido expresadas y ofrecer una presencia especialmente delicada.\n\n"
 
         "Esta combinación te invita a diferenciar entre tus emociones y aquello que absorbes del entorno. "
@@ -976,7 +931,7 @@ NEPTUNO_COMBINACIONES = {
         "Tu forma de pensar combina intuición, imaginación y una percepción muy sensible de los matices. "
         "No siempre llegas a una comprensión siguiendo un razonamiento lineal; a menudo captas primero una imagen, una impresión o una sensación que después necesitas ordenar.\n\n"
 
-        "Cuando ambas funciones colaboran, puedes comunicar emociones complejas, desarrollar una gran riqueza simbólica y traducir lo intangible en palabras, imágenes o relatos que otras personas puedan comprender.\n\n"
+        "Cuando encuentras una manera de integrar ambas partes, puedes comunicar emociones complejas, desarrollar una gran riqueza simbólica y traducir lo intangible en palabras, imágenes o relatos que otras personas puedan comprender.\n\n"
 
         "Esta combinación te invita a distinguir entre percepción, interpretación y hecho. "
         "Contrastar la información, aclarar los mensajes y dar una estructura a tus ideas permite que la intuición se convierta en una fuente de comprensión y no de confusión."
@@ -986,7 +941,7 @@ NEPTUNO_COMBINACIONES = {
         "Tu manera de vincularte está profundamente influida por la sensibilidad, la imaginación y la búsqueda de una conexión que trascienda lo cotidiano. "
         "Necesitas sentir que existe belleza, comprensión y una dimensión emocional significativa dentro de tus relaciones.\n\n"
 
-        "Cuando ambas funciones colaboran, puedes amar con una gran delicadeza, percibir la belleza en formas poco evidentes y expresar el afecto a través del arte, la empatía o una presencia profundamente receptiva.\n\n"
+        "Cuando encuentras una manera de integrar ambas partes, puedes amar con una gran delicadeza, percibir la belleza en formas poco evidentes y expresar el afecto a través del arte, la empatía o una presencia profundamente receptiva.\n\n"
 
         "Esta combinación te invita a observar cuándo estás relacionándote con la persona real y cuándo con la posibilidad que imaginas en ella. "
         "La conexión gana profundidad cuando puede incluir límites, diferencias y aspectos cotidianos que quizá no coincidan con el ideal."
@@ -996,7 +951,7 @@ NEPTUNO_COMBINACIONES = {
         "Tu impulso de actuar está influido por la intuición, la sensibilidad y la necesidad de sentir que tus acciones responden a algo significativo. "
         "Puede resultarte difícil movilizarte cuando no encuentras una conexión emocional con aquello que haces.\n\n"
 
-        "Cuando ambas funciones colaboran, puedes actuar con empatía, creatividad y una gran capacidad para responder a necesidades que otras personas no perciben. "
+        "Cuando encuentras una manera de integrar ambas partes, puedes actuar con empatía, creatividad y una gran capacidad para responder a necesidades que otras personas no perciben. "
         "Tu energía encuentra fuerza cuando se dirige hacia una causa, una creación o una actividad que conecta con tus valores más profundos.\n\n"
 
         "Esta combinación te invita a reconocer cuándo estás siguiendo una intuición y cuándo evitas definir una dirección concreta. "
@@ -1007,7 +962,7 @@ NEPTUNO_COMBINACIONES = {
         "La búsqueda de sentido de Júpiter se encuentra con la sensibilidad y la amplitud imaginativa de Neptuno. "
         "Existe una necesidad profunda de comprender la vida desde una perspectiva que incluya aquello que no puede reducirse únicamente a hechos o explicaciones racionales.\n\n"
 
-        "Cuando ambas funciones colaboran, puedes desarrollar una gran confianza en la capacidad humana para aprender, crear y encontrar significado. "
+        "Cuando encuentras una manera de integrar ambas partes, puedes desarrollar una gran confianza en la capacidad humana para aprender, crear y encontrar significado. "
         "Tu visión puede inspirar a otras personas y abrir posibilidades que amplían la manera de interpretar la experiencia.\n\n"
 
         "Esta combinación te invita a diferenciar entre una esperanza que te ayuda a avanzar y una expectativa que evita reconocer la realidad. "
@@ -1018,7 +973,7 @@ NEPTUNO_COMBINACIONES = {
         "Neptuno y Saturno representan dos necesidades que pueden parecer opuestas, pero que se necesitan mutuamente. "
         "Neptuno percibe posibilidades, imágenes e ideales; Saturno busca darles forma, establecer límites y construir una estructura capaz de sostenerlos.\n\n"
 
-        "Cuando ambas funciones colaboran, puedes convertir una intuición en un proyecto, dar continuidad a una inspiración y construir espacios donde la sensibilidad tenga una expresión concreta. "
+        "Cuando encuentras una manera de integrar ambas partes, puedes convertir una intuición en un proyecto, dar continuidad a una inspiración y construir espacios donde la sensibilidad tenga una expresión concreta. "
         "La imaginación encuentra un cauce sin perder su profundidad.\n\n"
 
         "Esta combinación te invita a evitar dos extremos: intentar controlar todo aquello que no puede definirse por completo o mantener tus ideales en un terreno tan abstracto que nunca puedan realizarse. "
@@ -1029,7 +984,7 @@ NEPTUNO_COMBINACIONES = {
         "La capacidad de Urano para abrir nuevas posibilidades se encuentra con la sensibilidad y la imaginación de Neptuno. "
         "Una parte de ti cuestiona las formas conocidas; la otra intuye realidades que todavía no han encontrado una expresión clara.\n\n"
 
-        "Cuando ambas funciones colaboran, puedes percibir cambios antes de que resulten evidentes, imaginar alternativas originales e inspirar nuevas maneras de comprender la vida individual y colectiva.\n\n"
+        "Cuando encuentras una manera de integrar ambas partes, puedes percibir cambios antes de que resulten evidentes, imaginar alternativas originales e inspirar nuevas maneras de comprender la vida individual y colectiva.\n\n"
 
         "Esta combinación te invita a distinguir entre una visión que abre posibilidades y una idea que todavía no dispone de suficiente contacto con la realidad. "
         "Dar tiempo, estructura y aplicación concreta a lo que percibes permite que la inspiración se convierta en una transformación posible."
@@ -1039,7 +994,7 @@ NEPTUNO_COMBINACIONES = {
         "La sensibilidad de Neptuno se encuentra con la profundidad transformadora de Plutón. "
         "Existe una capacidad intensa para percibir emociones, dinámicas ocultas y procesos internos que no siempre pueden expresarse de forma inmediata.\n\n"
 
-        "Cuando ambas funciones colaboran, puedes acompañar experiencias de pérdida, crisis o transformación con una gran comprensión de su dimensión emocional. "
+        "Cuando encuentras una manera de integrar ambas partes, puedes acompañar experiencias de pérdida, crisis o transformación con una gran comprensión de su dimensión emocional. "
         "También puedes convertir vivencias profundas en creatividad, empatía y una percepción más amplia de la condición humana.\n\n"
 
         "Esta combinación te invita a diferenciar entre empatizar con el dolor y dejar que te absorba. "
@@ -1073,7 +1028,7 @@ NEPTUNO_COMBINACIONES = {
 
         "Esta combinación invita a conservar tu empatía sin recurrir automáticamente a la renuncia, la idealización o la tendencia a desaparecer dentro de una relación, una expectativa o una experiencia.\n\n"
 
-        "La evolución consiste en utilizar la sensibilidad como un recurso consciente mientras desarrollas mayor claridad, dirección y capacidad para establecer límites."
+        "El desarrollo consiste en utilizar la sensibilidad como un recurso consciente mientras desarrollas mayor claridad, dirección y capacidad para establecer límites."
     ),
 
     "Quirón": (
@@ -1090,7 +1045,7 @@ NEPTUNO_COMBINACIONES = {
         "Cuando Neptuno y Lilith interactúan, la sensibilidad se encuentra con aspectos de ti que quizá no encajan fácilmente en las expectativas externas. "
         "Puede existir una percepción intensa de deseos, emociones o realidades que otras personas prefieren mantener fuera de la conversación.\n\n"
 
-        "Cuando ambas funciones colaboran, puedes dar expresión a experiencias silenciadas, cuestionar imágenes idealizadas y reconocer la complejidad que existe detrás de aquello que suele presentarse de manera más aceptable o armoniosa.\n\n"
+        "Cuando encuentras una manera de integrar ambas partes, puedes dar expresión a experiencias silenciadas, cuestionar imágenes idealizadas y reconocer la complejidad que existe detrás de aquello que suele presentarse de manera más aceptable o armoniosa.\n\n"
 
         "Esta combinación te invita a distinguir entre escuchar una verdad profunda y dejar que las fantasías, los temores o las proyecciones difíciles de contrastar condicionen tu percepción. "
 
@@ -1100,68 +1055,12 @@ NEPTUNO_COMBINACIONES = {
 
 
 NEPTUNO_TEXTOS_TIPO_ASPECTO = {
-
-    "Conjunción": (
-        "Neptuno se encuentra muy unido a esta parte de ti, de modo que la sensibilidad, la imaginación y la percepción intuitiva se expresan directamente a través de ella. "
-        "Ambas funciones actúan de forma inseparable y pueden resultar difíciles de distinguir.\n\n"
-
-        "Esta unión amplifica la receptividad y concede una presencia importante a todo lo relacionado con esta combinación. "
-        "Puede aportar inspiración, empatía y una gran riqueza simbólica, aunque también favorecer la idealización, la confusión o la dificultad para reconocer con claridad qué pertenece a cada función.\n\n"
-
-        "La integración aparece cuando das espacio a la sensibilidad sin renunciar al discernimiento. "
-        "Reconocer qué estás percibiendo, qué estás imaginando y qué está ocurriendo realmente permite que la intuición se convierta en un recurso más consciente."
-    ),
-
-    "Sextil": (
-        "Neptuno mantiene con esta parte de ti una relación que facilita la sensibilidad, la imaginación y la comprensión de matices poco evidentes. "
-        "La posibilidad de colaboración está disponible, aunque necesita una expresión concreta para desplegarse plenamente.\n\n"
-
-        "Cuando activas esta conexión de forma consciente, puedes integrar intuición y realidad, encontrar cauces creativos para lo que percibes y responder con empatía sin perder claridad.\n\n"
-
-        "El aprendizaje consiste en no dejar esta facilidad únicamente como una posibilidad. "
-        "Cuanto más la incorporas a decisiones, vínculos o procesos creativos concretos, más puede convertirse en un recurso estable."
-    ),
-
-    "Trígono": (
-        "Neptuno y esta parte de ti tienden a colaborar de manera espontánea. "
-        "Existe una facilidad natural para percibir, imaginar, empatizar y conectar con dimensiones de la experiencia que no siempre se expresan de forma directa.\n\n"
-
-        "Esta fluidez puede favorecer una gran sensibilidad creativa y una comprensión intuitiva de personas y situaciones. "
-        "También puede hacer que des por sentada una capacidad que forma parte importante de tus recursos.\n\n"
-
-        "El equilibrio consiste en reconocer esta sensibilidad y darle una dirección consciente. "
-        "La intuición gana profundidad cuando puede encontrar límites, lenguaje y una forma concreta de expresión."
-    ),
-
-    "Cuadratura": (
-        "Neptuno y esta parte de ti no siempre encuentran con facilidad una forma común de funcionar. "
-        "La sensibilidad, la imaginación o la necesidad de conexión pueden entrar en tensión con otras necesidades internas, generando confusión, idealización o dificultad para actuar con claridad.\n\n"
-
-        "En algunos momentos puedes interpretar la realidad desde lo que esperas o deseas; en otros, la incertidumbre puede hacer que dudes de tus propias percepciones o evites tomar una posición definida.\n\n"
-
-        "Esta fricción te impulsa a desarrollar un discernimiento más preciso. "
-        "El aprendizaje consiste en escuchar lo que percibes sin convertir cada impresión en una certeza y en mantener contacto con los hechos sin negar tu sensibilidad."
-    ),
-
-    "Oposición": (
-        "Neptuno y esta parte de ti buscan un equilibrio que no siempre resulta inmediato. "
-        "Es posible que inicialmente reconozcas la sensibilidad, la idealización o la confusión a través de otras personas o de situaciones externas.\n\n"
-
-        "También puedes alternar entre una gran apertura emocional y la necesidad de protegerte, o entre confiar plenamente en una percepción y dudar después de ella.\n\n"
-
-        "El aprendizaje consiste en recuperar para ti aquello que primero identificas fuera. "
-        "Cuando ambas funciones pueden dialogar, la sensibilidad deja de depender de lo que ocurre alrededor y encuentra una forma más consciente de relacionarse con la realidad."
-    ),
-
-    "Quincuncio": (
-        "La relación entre Neptuno y esta parte de ti requiere ajustes frecuentes. "
-        "La sensibilidad y la imaginación no siempre encajan fácilmente con la manera en que funciona la otra energía, y puede costarte identificar de dónde procede la incomodidad.\n\n"
-
-        "Es posible que percibas más de lo que puedes ordenar en ese momento, o que una parte de ti necesite claridad mientras la otra todavía se mueve entre impresiones, emociones o posibilidades poco definidas.\n\n"
-
-        "El aprendizaje se construye mediante pequeñas correcciones y una observación precisa de lo que sientes, interpretas y necesitas. "
-        "Con el tiempo puedes desarrollar una forma muy personal de integrar intuición y realidad sin sacrificar ninguna de las dos."
-    ),
+    "Conjunción": "La conjunción une estrechamente ambas funciones y hace que la sensibilidad, la imaginación y la percepción intuitiva se expresen directamente a través de esta relación.",
+    "Sextil": "El sextil abre una vía de colaboración entre la sensibilidad y la otra función, que se desarrolla especialmente cuando la utilizas de forma consciente.",
+    "Cuadratura": "La cuadratura introduce fricción entre la sensibilidad y la otra función, y pide desarrollar discernimiento sin negar ninguna de las dos.",
+    "Trígono": "El trígono facilita que la sensibilidad y la otra función colaboren de manera espontánea, aunque esa facilidad puede pasar desapercibida.",
+    "Oposición": "La oposición puede hacer que la sensibilidad y la otra función se vivan por momentos como polos contrarios; la integración aparece al dejar de proyectar una de ellas fuera.",
+    "Quincuncio": "El quincuncio requiere ajustes continuos porque la sensibilidad y la otra función no encuentran de entrada una forma evidente de coordinarse.",
 }
 
 
@@ -1632,52 +1531,12 @@ PLUTON_COMBINACIONES = {
 
 
 PLUTON_TEXTOS_TIPO_ASPECTO = {
-
-    "Conjunción": (
-        "La conjunción concentra la energía de ambos símbolos y hace que sus procesos de transformación se vivan de manera especialmente intensa. "
-        "Existe una sensación de que ambas funciones evolucionan juntas y de que los cambios que afectan a una repercuten inmediatamente sobre la otra.\n\n"
-
-        "Cuando esta energía encuentra equilibrio, puede convertirse en una enorme capacidad para renovarte profundamente, integrar experiencias difíciles y construir formas de funcionamiento mucho más conscientes. "
-        "El reto consiste en permitir que la transformación ocurra sin intentar controlar constantemente el proceso."
-    ),
-
-    "Sextil": (
-        "El sextil crea oportunidades naturales para transformar esta parte de tu vida de una manera gradual y consciente. "
-        "Las circunstancias suelen ofrecer recursos, personas o experiencias que facilitan el cambio sin necesidad de grandes rupturas.\n\n"
-
-        "Cuando aprovechas esta energía, la transformación se integra de forma estable y puede convertirse en una fuente de crecimiento profundo que se desarrolla paso a paso."
-    ),
-
-    "Trígono": (
-        "El trígono permite que la capacidad de transformación fluya con relativa naturalidad. "
-        "Existe facilidad para comprender cuándo una etapa ha terminado y para construir otra nueva sin engancharte excesivamente al pasado.\n\n"
-
-        "Aunque esta energía suele resultar fluida, también conviene recordar que incluso los procesos más naturales necesitan participación consciente para desarrollar todo su potencial."
-    ),
-
-    "Cuadratura": (
-        "La cuadratura genera una tensión que impulsa cambios importantes. "
-        "Con frecuencia aparecen situaciones que cuestionan antiguos patrones y obligan a revisar formas de actuar que durante mucho tiempo parecían funcionar.\n\n"
-
-        "Aunque estos procesos puedan resultar exigentes, también suelen convertirse en algunos de los mayores motores de crecimiento. "
-        "Cada dificultad ofrece la posibilidad de construir una forma más consciente y sólida de relacionarte con esta parte de tu vida."
-    ),
-
-    "Oposición": (
-        "La oposición invita a encontrar equilibrio entre dos fuerzas que inicialmente parecen avanzar en direcciones diferentes. "
-        "Las transformaciones suelen producirse a través de relaciones, acontecimientos o experiencias que muestran perspectivas distintas a las propias.\n\n"
-
-        "Cuando esta energía se integra, deja de vivirse como un conflicto permanente y comienza a convertirse en una oportunidad para ampliar la mirada y construir soluciones más completas."
-    ),
-
-    "Quincuncio": (
-        "El quincuncio suele señalar ajustes profundos que no siempre resultan evidentes al principio. "
-        "Existe la sensación de que ambas funciones necesitan aprender a adaptarse mutuamente hasta encontrar una forma más coherente de trabajar juntas.\n\n"
-
-        "La transformación aparece poco a poco, a medida que realizas pequeños cambios sostenidos en el tiempo. "
-        "La flexibilidad y la disposición para revisar antiguos hábitos suelen ser las herramientas que permiten integrar mejor esta energía."
-    )
-
+    "Conjunción": "La conjunción une estrechamente ambas funciones y concentra la capacidad de transformación, de modo que los cambios en una repercuten con fuerza sobre la otra.",
+    "Sextil": "El sextil abre una vía de transformación gradual que puede convertirse en un recurso estable cuando se utiliza de forma consciente.",
+    "Cuadratura": "La cuadratura introduce una fricción que obliga a revisar patrones arraigados y a encontrar una manera más consciente de sostener ambas funciones.",
+    "Trígono": "El trígono facilita que la capacidad de transformación fluya de manera espontánea, aunque esa facilidad puede pasar desapercibida.",
+    "Oposición": "La oposición puede hacer que ambas funciones se vivan por momentos como polos contrarios; la integración aparece al dejar de resolver la tensión eligiendo solo uno de ellos.",
+    "Quincuncio": "El quincuncio requiere ajustes continuos porque ambas funciones no encuentran de entrada una forma evidente de coordinarse.",
 }
 
 
@@ -1937,7 +1796,7 @@ def calcular_carta(
         "lon": pos_nn[0],
         "signo": signo_nn,
         "grado": grado_nn,
-        "retrogrado": pos_nn[3] < 0,
+        "retrogrado": False,
     }
 
     planetas["Nodo Sur"] = {
@@ -1945,7 +1804,7 @@ def calcular_carta(
         "lon": lon_ns,
         "signo": signo_ns,
         "grado": grado_ns,
-        "retrogrado": pos_nn[3] < 0,
+        "retrogrado": False,
     }
 
     cuspides, ascmc = swe.houses(
@@ -1957,23 +1816,31 @@ def calcular_carta(
 
     asc_lon = ascmc[0]
     mc_lon = ascmc[1]
+    armc = ascmc[2]
 
     signo_asc, grado_asc = grados_a_signo(asc_lon)
     signo_mc, grado_mc = grados_a_signo(mc_lon)
 
+    eps_data, _ = swe.calc_ut(jd, swe.ECL_NUT)
+    eps = eps_data[0]
+
     def casa_de(p_lon):
-        for i in range(12):
-            c_ini = cuspides[i]
-            c_fin = cuspides[(i + 1) % 12]
+        hpos = swe.house_pos(
+            armc,
+            lat,
+            eps,
+            (p_lon, 0.0),
+            b"P",
+        )
 
-            if c_ini <= c_fin:
-                if c_ini <= p_lon < c_fin:
-                    return i + 1
+        numero_casa = int(hpos)
 
-            elif p_lon >= c_ini or p_lon < c_fin:
-                return i + 1
+        if numero_casa < 1:
+            return 1
+        if numero_casa > 12:
+            return 12
 
-        return 12
+        return numero_casa
 
     for objeto in planetas.values():
         objeto["casa"] = casa_de(objeto["lon"])
@@ -2219,6 +2086,42 @@ def dibujar_rueda_planetas_transpersonales(
         if aspecto.get("p1") in planetas_focales
         or aspecto.get("p2") in planetas_focales
     ]
+
+    # Si alguno de los transpersonales forma parte de un núcleo global,
+    # la rueda incorpora todos sus miembros y únicamente las conjunciones
+    # reales que construyen ese núcleo.
+    nucleos_relevantes = [
+        nucleo
+        for nucleo in detectar_nucleos_globales(carta)
+        if any(
+            planeta in nucleo.get("puntos", [])
+            for planeta in planetas_focales
+        )
+    ]
+
+    claves_aspecto = {
+        tuple(sorted((a.get("p1"), a.get("p2"))))
+        for a in aspectos_transpersonales
+    }
+
+    for nucleo in nucleos_relevantes:
+        for conjuncion in nucleo.get("conjunciones", []):
+            p1 = conjuncion.get("punto1")
+            p2 = conjuncion.get("punto2")
+            clave = tuple(sorted((p1, p2)))
+
+            if not p1 or not p2 or clave in claves_aspecto:
+                continue
+
+            aspectos_transpersonales.append({
+                "p1": p1,
+                "p2": p2,
+                "tipo": "Conjunción",
+                "simbolo": "=",
+                "orbe": conjuncion.get("orbe", 0),
+                "relevancia": "nucleo",
+            })
+            claves_aspecto.add(clave)
 
     def lon_a_angulo(lon):
         return math.radians(
@@ -2485,6 +2388,12 @@ def dibujar_rueda_planetas_transpersonales(
         "Neptuno",
         "Plutón",
     }
+
+    # Añadimos también todos los miembros de los núcleos relevantes.
+    for nucleo in nucleos_relevantes:
+        for nombre in nucleo.get("puntos", []):
+            if nombre in planetas:
+                nombres_visibles.add(nombre)
 
     # Añadimos todos los cuerpos que estén aspectados
     # con alguno de los tres planetas transpersonales.
@@ -3303,6 +3212,124 @@ ORDEN_PLANETAS_TRANSPERSONALES = {
 }
 
 
+def _con_articulo(punto):
+    articulos = {
+        "Sol": "el Sol",
+        "Luna": "la Luna",
+        "Nodo Norte": "el Nodo Norte",
+        "Nodo Sur": "el Nodo Sur",
+        "Ascendente": "el Ascendente",
+        "Medio Cielo": "el Medio Cielo",
+    }
+    return articulos.get(punto, punto)
+
+
+def _lista_y_puntos(items):
+    items = [_con_articulo(i) for i in items]
+    if not items:
+        return ""
+    if len(items) == 1:
+        return items[0]
+    if len(items) == 2:
+        return f"{items[0]} y {items[1]}"
+    return ", ".join(items[:-1]) + f" y {items[-1]}"
+
+
+def _descripcion_posiciones_nucleo(nucleo):
+    """Describe las posiciones reales sin atribuir un único signo o casa al núcleo."""
+    posiciones = nucleo.get("posiciones", {}) or {}
+    grupos = {}
+
+    for punto in nucleo.get("puntos", []):
+        datos = posiciones.get(punto, {}) or {}
+        clave = (datos.get("signo"), datos.get("casa"))
+        grupos.setdefault(clave, []).append(punto)
+
+    fragmentos = []
+    for (signo, casa), puntos in grupos.items():
+        nombres = _lista_y_puntos(puntos)
+        ubicacion = []
+        if signo:
+            ubicacion.append(str(signo))
+        if casa not in (None, ""):
+            ubicacion.append(f"Casa {casa}")
+
+        fragmentos.append(
+            f"{nombres} en {', '.join(ubicacion)}" if ubicacion else nombres
+        )
+
+    return "; ".join(fragmentos)
+
+
+def nucleos_de_planeta(carta, planeta):
+    return [
+        nucleo
+        for nucleo in detectar_nucleos_globales(carta)
+        if planeta in nucleo.get("puntos", [])
+    ]
+
+
+def texto_nucleos_transpersonal(carta, planeta):
+    """Contextualiza un planeta transpersonal dentro de sus núcleos globales."""
+    nucleos = nucleos_de_planeta(carta, planeta)
+    if not nucleos:
+        return ""
+
+    partes = []
+    for nucleo in nucleos:
+        otros = [p for p in nucleo.get("puntos", []) if p != planeta]
+        ubicaciones = _descripcion_posiciones_nucleo(nucleo)
+
+        partes.append(
+            f"{planeta} no funciona aquí de forma aislada. Forma parte de un stellium con "
+            f"{_lista_y_puntos(otros)}. Este núcleo reúne varias funciones que pueden activarse "
+            f"de manera conjunta, por lo que las relaciones de {planeta} con otros puntos de la carta "
+            f"también se expresan desde esa concentración. "
+            f"Su distribución real es: {ubicaciones}."
+        )
+
+    return "\n\n".join(partes)
+
+
+def texto_eje_nodal_transpersonal(planeta, aspectos_planeta):
+    """Integra Nodo Norte y Nodo Sur como dos polos inseparables de un mismo eje."""
+    por_nodo = {
+        a.get("otro_punto"): a
+        for a in aspectos_planeta
+        if a.get("otro_punto") in ("Nodo Norte", "Nodo Sur")
+    }
+
+    nn = por_nodo.get("Nodo Norte")
+    ns = por_nodo.get("Nodo Sur")
+
+    if not (nn and ns):
+        return ""
+
+    funcion = {
+        "Urano": (
+            "El Nodo Sur señala formas conocidas de buscar independencia, cuestionar lo establecido "
+            "o responder al cambio; el Nodo Norte muestra hacia dónde necesita desarrollarse una "
+            "manera más consciente de vivir la libertad y la autenticidad."
+        ),
+        "Neptuno": (
+            "El Nodo Sur señala formas conocidas de percibir, adaptarte o responder desde la sensibilidad; "
+            "el Nodo Norte muestra hacia dónde necesita desarrollarse una manera más consciente de "
+            "integrar intuición, empatía y discernimiento."
+        ),
+        "Plutón": (
+            "El Nodo Sur señala patrones profundos y mecanismos de transformación que resultan conocidos; "
+            "el Nodo Norte muestra hacia dónde necesita desarrollarse una relación más consciente con "
+            "el cambio, el poder personal y la capacidad de regeneración."
+        ),
+    }.get(planeta, "")
+
+    return (
+        f"La relación de {planeta} con el eje nodal se expresa a través de dos polos inseparables: "
+        f"{nn.get('tipo', '').lower()} con el Nodo Norte y {ns.get('tipo', '').lower()} con el Nodo Sur. "
+        f"{funcion} No son dos mensajes independientes, sino los dos extremos de un mismo eje."
+    )
+
+
 def obtener_aspectos_de_planeta(aspectos, planeta):
     """
     Devuelve todos los aspectos en los que participa el planeta indicado,
@@ -3400,6 +3427,7 @@ def bloque_posicion_planeta(
 
 def bloque_aspectos_planeta(
     planeta,
+    carta,
     aspectos,
     combinaciones,
     textos_tipo_aspecto,
@@ -3413,12 +3441,27 @@ def bloque_aspectos_planeta(
         planeta,
     )
 
-    elementos = [
+    elementos = []
+
+    texto_nucleo = texto_nucleos_transpersonal(carta, planeta)
+    if texto_nucleo:
+        elementos.append(
+            Paragraph(
+                "Núcleo compartido",
+                estilos["subtitulo"],
+            )
+        )
+        elementos += _parrafos_reportlab(
+            texto_nucleo,
+            estilos["cuerpo"],
+        )
+
+    elementos.append(
         Paragraph(
             f"Los aspectos de {planeta}",
             estilos["subtitulo"],
-        ),
-    ]
+        )
+    )
 
     if not aspectos_planeta:
         elementos.append(
@@ -3465,7 +3508,7 @@ def bloque_aspectos_planeta(
         aspectos_con_texto += 1
 
         titulo = (
-            f"{planeta} con {otro_punto} "
+            f"{planeta} con {_con_articulo(otro_punto)} "
             f"— {tipo}"
         )
 
@@ -3488,6 +3531,23 @@ def bloque_aspectos_planeta(
                 "de una interpretación asociada en este módulo.",
                 estilos["cuerpo"],
             )
+        )
+
+    texto_eje = texto_eje_nodal_transpersonal(
+        planeta,
+        aspectos_planeta,
+    )
+
+    if texto_eje:
+        elementos.append(
+            Paragraph(
+                "El eje nodal",
+                estilos["subtitulo2"],
+            )
+        )
+        elementos += _parrafos_reportlab(
+            texto_eje,
+            estilos["cuerpo"],
         )
 
     return elementos
@@ -3597,6 +3657,7 @@ def bloque_planeta_transpersonal(
 
     elementos += bloque_aspectos_planeta(
         planeta=planeta,
+        carta=carta,
         aspectos=aspectos,
         combinaciones=combinaciones,
         textos_tipo_aspecto=textos_tipo_aspecto,
@@ -3748,6 +3809,14 @@ def preparar_contenido_ia_transpersonales(carta, aspectos):
                 else p1
             )
 
+            if (
+                planeta in PLANETAS_TRANSPERSONALES
+                and otro in PLANETAS_TRANSPERSONALES
+                and ORDEN_PLANETAS_TRANSPERSONALES[planeta]
+                > ORDEN_PLANETAS_TRANSPERSONALES[otro]
+            ):
+                continue
+
             tipo = aspecto.get("tipo")
 
             texto = obtener_texto_aspecto(
@@ -3800,10 +3869,20 @@ def preparar_contenido_ia_transpersonales(carta, aspectos):
 
             "aspectos": aspectos_planeta,
 
+            "eje_nodal": texto_eje_nodal_transpersonal(
+                planeta,
+                obtener_aspectos_de_planeta(
+                    aspectos,
+                    planeta,
+                ),
+            ),
+
             "integracion": config[
                 "integracion"
             ],
         }
+
+    resultado["nucleos_globales"] = detectar_nucleos_globales(carta)
 
     return resultado
 

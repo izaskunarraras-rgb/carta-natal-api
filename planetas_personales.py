@@ -25,6 +25,8 @@ import swisseph as swe
 from geopy.geocoders import Nominatim
 from timezonefinder import TimezoneFinder
 
+from nucleos_globales import detectar_nucleos_globales
+
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY
 from reportlab.lib.pagesizes import A4
@@ -61,8 +63,8 @@ ELEMENTO_SIGNO = {
 }
 
 REGENTE_SIGNO = {
-    "Aries":"Marte","Tauro":"Venus","Géminis":"Mercurio","Cáncer":"la Luna",
-    "Leo":"el Sol","Virgo":"Mercurio","Libra":"Venus","Escorpio":"Plutón",
+    "Aries":"Marte","Tauro":"Venus","Géminis":"Mercurio","Cáncer":"Luna",
+    "Leo":"Sol","Virgo":"Mercurio","Libra":"Venus","Escorpio":"Plutón",
     "Sagitario":"Júpiter","Capricornio":"Saturno","Acuario":"Urano","Piscis":"Neptuno"
 }
 
@@ -115,6 +117,33 @@ COLORES_PLANETA  = {
     "Nodo Norte":"#888800","Nodo Sur":"#888800",
 }
 
+
+PLANETAS_PERSONALES_FRASE_TIPO_ASPECTO = {
+    "Conjunción": (
+        "La conjunción une estrechamente ambas funciones y hace que resulte difícil "
+        "separarlas por completo en la experiencia."
+    ),
+    "Sextil": (
+        "El sextil abre una vía de colaboración que se desarrolla especialmente "
+        "cuando la utilizas de forma consciente."
+    ),
+    "Cuadratura": (
+        "La cuadratura introduce fricción entre ambas funciones y pide encontrar "
+        "una manera propia de sostenerlas sin que una anule a la otra."
+    ),
+    "Trígono": (
+        "El trígono facilita que ambas funciones colaboren de manera espontánea, "
+        "aunque esa facilidad puede pasar desapercibida."
+    ),
+    "Oposición": (
+        "La oposición puede hacer que ambas funciones se vivan por momentos como "
+        "polos contrarios; la integración aparece al dejar de elegir una frente a la otra."
+    ),
+    "Quincuncio": (
+        "El quincuncio requiere ajustes continuos porque ambas funciones no encuentran "
+        "de entrada una forma evidente de coordinarse."
+    ),
+}
 
 PLANETAS_PERSONALES_TEXTOS_TIPO_ASPECTO = {
 
@@ -208,10 +237,10 @@ MERCURIO_SIGNO = {
     "Tu manera de pensar está profundamente unida a lo que sientes. Comprendes mejor cuando puedes conectar la información con tu experiencia y darle un significado personal. "
     "No sueles separar fácilmente la mente del mundo emocional.\n\n"
 
-    "Al comunicarte buscas cercanía y confianza. Es más fácil que expreses lo que realmente piensas cuando te sientes seguro y percibes que hay escucha al otro lado. "
+    "Al comunicarte buscas cercanía y confianza. Es más fácil que expreses lo que realmente piensas cuando sientes seguridad y percibes que hay escucha al otro lado. "
     "Las conversaciones frías, demasiado impersonales o excesivamente racionales pueden dejarte con la sensación de que falta algo importante.\n\n"
 
-    "Cuando te sientes herido o emocionalmente desbordado puedes guardar silencio, interpretar las palabras desde la sensibilidad o dar demasiadas vueltas a una misma situación. "
+    "Cuando algo te hiere o te desborda emocionalmente puedes guardar silencio, interpretar las palabras desde la sensibilidad o dar demasiadas vueltas a una misma situación. "
     "Con el tiempo aprendes que expresar lo que necesitas con claridad suele acercarte mucho más a los demás que intentar protegerte detrás del silencio."
 ),
 
@@ -417,7 +446,7 @@ MERCURIO_COMBINACIONES = {
         "Las palabras se convierten entonces en una forma de afirmar tu presencia y dar sentido a tu experiencia.\n\n"
 
         "Esta combinación te invita a observar hasta qué punto te identificas con tus pensamientos. "
-        "Cambiar de opinión, aprender algo nuevo o reconocer que estabas equivocado no disminuye tu identidad: permite que siga creciendo."
+        "Cambiar de opinión, aprender algo nuevo o reconocer que una idea anterior no era correcta no disminuye tu identidad: permite que siga creciendo."
     ),
 
     "Luna": (
@@ -501,7 +530,7 @@ MERCURIO_COMBINACIONES = {
     ),
 
     "Ascendente": (
-        "Cuando Mercurio y el Ascendente trabajan en sintonía, tu manera de pensar y tu forma de presentarte al mundo avanzan en la misma dirección. "
+        "En la relación entre Mercurio y el Ascendente, tu manera de pensar y tu forma de presentarte al mundo avanzan en la misma dirección. "
         "Las ideas encuentran una expresión natural y la comunicación se convierte en una extensión auténtica de quién eres.\n\n"
 
         "Esta combinación invita a desarrollar una forma de comunicar que refleje tu verdadera manera de comprender la vida. "
@@ -509,7 +538,7 @@ MERCURIO_COMBINACIONES = {
     ),
 
     "Nodo Norte": (
-        "Cuando Mercurio y el Nodo Norte colaboran, el aprendizaje, la comunicación y la capacidad de comprender la realidad se convierten en herramientas esenciales para tu evolución. "
+        "En la relación entre Mercurio y el Nodo Norte, el aprendizaje, la comunicación y la capacidad de comprender la realidad se convierten en herramientas importantes para tu desarrollo. "
         "Desarrollar una nueva manera de pensar y de interpretar la experiencia forma parte del camino que tu vida te invita a recorrer.\n\n"
 
         "Esta combinación recuerda que evolucionar también implica cuestionar antiguas certezas. "
@@ -554,7 +583,7 @@ MERCURIO_INTEGRACION = {
             "Cuando esa posibilidad desaparece, la mente suele intentar compensarlo pensando más, preocupándose más o buscando respuestas inmediatas.\n\n"
 
             "No todas las conversaciones alimentan a Mercurio. Tampoco toda la información aporta claridad. "
-            "Con frecuencia necesita silencio, curiosidad, lectura, escritura o un diálogo tranquilo que permita ordenar lo vivido sin sentirse juzgado.\n\n"
+            "Con frecuencia necesita silencio, curiosidad, lectura, escritura o un diálogo tranquilo que permita ordenar lo vivido sin sentir juicio.\n\n"
 
             "Cada vez que respetas el ritmo natural con el que tu mente comprende la realidad, Mercurio deja de luchar por controlar lo que ocurre y recupera su capacidad para aprender, comunicar y construir significado."
         )
@@ -565,7 +594,7 @@ MERCURIO_INTEGRACION = {
 
         "texto": (
             "Cuidar de Mercurio no significa aprender más ni pensar mejor. "
-            "Significa crear las condiciones para que tu mente pueda hacer aquello para lo que está diseñada: comprender.\n\n"
+            "Significa crear las condiciones para que tu mente pueda comprender, ordenar y dar significado a lo que vives.\n\n"
 
             "Cada vez que dispones de tiempo para reflexionar, mantener conversaciones que te nutren, leer, escribir o simplemente observar sin necesidad de responder de inmediato, Mercurio encuentra un espacio donde recuperar su equilibrio.\n\n"
 
@@ -642,7 +671,7 @@ MERCURIO_INTEGRACION = {
 VENUS_SIGNO = {
 
     "Aries": (
-        "Con Venus en Aries, el vínculo nace del impulso, la autenticidad y el deseo de sentirse vivo. "
+        "Con Venus en Aries, el vínculo nace del impulso, la autenticidad y el deseo de sentir vitalidad. "
         "Necesitas sentir que las relaciones, los proyectos y aquello que amas conservan movimiento, espontaneidad y la posibilidad de descubrir algo nuevo.\n\n"
 
         "Disfrutas cuando puedes tomar la iniciativa, expresar con claridad lo que sientes y vivir el afecto sin excesivas vueltas ni estrategias. "
@@ -847,7 +876,7 @@ VENUS_CASA = {
     ),
 
     5: (
-        "Con Venus en la casa 5, el vínculo nace del disfrute, la creatividad y la alegría de compartir aquello que hace que te sientas vivo. "
+        "Con Venus en la casa 5, el vínculo nace del disfrute, la creatividad y la alegría de compartir aquello que despierta vitalidad en ti. "
         "Necesitas sentir que el amor puede expresarse con espontaneidad, juego y entusiasmo, sin perder su autenticidad.\n\n"
 
         "Disfrutas creando, celebrando, seduciendo, riendo y compartiendo experiencias que despiertan ilusión. La belleza aparece cuando puedes mostrar tu parte más creativa y sentir que es recibida con naturalidad.\n\n"
@@ -922,7 +951,7 @@ VENUS_CASA = {
 VENUS_COMBINACIONES = {
 
     "Sol": (
-        "Cuando Venus y el Sol trabajan en sintonía, aquello que valoras se convierte en una expresión natural de quién eres. "
+        "En la relación entre Venus y el Sol, aquello que valoras se convierte en una expresión natural de quién eres. "
         "Tu identidad encuentra coherencia con tus afectos, tus decisiones y la manera en que eliges relacionarte con el mundo.\n\n"
 
         "Esta combinación invita a construir una vida donde no exista separación entre lo que eres y lo que amas. "
@@ -930,8 +959,8 @@ VENUS_COMBINACIONES = {
     ),
 
     "Luna": (
-        "Cuando Venus y la Luna colaboran, el mundo emocional y la forma de vincularte se alimentan mutuamente. "
-        "El afecto se convierte en un lugar donde puedes sentirte acogido, comprender tus necesidades y ofrecer cuidado sin perderte en el proceso.\n\n"
+        "En la relación entre Venus y la Luna, el mundo emocional y la forma de vincularte se alimentan mutuamente. "
+        "El afecto se convierte en un lugar donde puedes sentir acogida, comprender tus necesidades y ofrecer cuidado sin perderte en el proceso.\n\n"
 
         "Esta combinación recuerda que amar también implica permitirte recibir. "
         "El vínculo se fortalece cuando existe un equilibrio entre cuidar y dejarte cuidar."
@@ -945,21 +974,21 @@ VENUS_COMBINACIONES = {
     ),
 
     "Marte": (
-        "Cuando Venus y Marte colaboran, el deseo y el afecto avanzan en la misma dirección. "
+        "En la relación entre Venus y Marte, el deseo y el afecto avanzan en la misma dirección. "
         "Puedes actuar para proteger aquello que amas, expresar tus sentimientos con claridad y transformar la atracción en acciones coherentes.\n\n"
 
         "Esta combinación recuerda que la verdadera fuerza no consiste en conquistar, sino en sostener con decisión aquello que realmente tiene valor para ti."
     ),
 
     "Júpiter": (
-        "Cuando Venus y Júpiter se potencian mutuamente, el amor, la generosidad y la confianza encuentran espacio para crecer. "
+        "En la relación entre Venus y Júpiter, el amor, la generosidad y la confianza encuentran espacio para crecer. "
         "Los vínculos se convierten en una oportunidad para compartir, aprender y ampliar la mirada sobre la vida.\n\n"
 
         "Esta combinación invita a disfrutar de la abundancia sin olvidar que el verdadero crecimiento también necesita presencia, gratitud y equilibrio."
     ),
 
     "Saturno": (
-        "Cuando Venus y Saturno trabajan juntos, el vínculo se fortalece a través del compromiso, la constancia y la capacidad de construir relaciones que puedan sostenerse en el tiempo. "
+        "En la relación entre Venus y Saturno, el vínculo se fortalece a través del compromiso, la constancia y la capacidad de construir relaciones que puedan sostenerse en el tiempo. "
         "El afecto encuentra profundidad cuando existe responsabilidad mutua y disposición para cuidar aquello que realmente importa.\n\n"
 
         "Esta combinación invita a comprender que la estabilidad no nace únicamente del esfuerzo. "
@@ -967,7 +996,7 @@ VENUS_COMBINACIONES = {
     ),
 
     "Urano": (
-        "Cuando Venus y Urano colaboran, el amor encuentra nuevas formas de expresarse sin perder autenticidad. "
+        "En la relación entre Venus y Urano, el amor encuentra nuevas formas de expresarse sin perder autenticidad. "
         "Las relaciones se convierten en un espacio donde la libertad, la creatividad y el respeto por la individualidad permiten que ambas personas sigan evolucionando.\n\n"
 
         "Esta combinación recuerda que un vínculo puede ser estable sin dejar de transformarse. "
@@ -983,7 +1012,7 @@ VENUS_COMBINACIONES = {
     ),
 
     "Plutón": (
-        "Cuando Venus y Plutón trabajan en sintonía, el amor se convierte en una fuerza capaz de transformar profundamente tu manera de relacionarte contigo y con otras personas. "
+        "En la relación entre Venus y Plutón, el amor se convierte en una fuerza capaz de transformar profundamente tu manera de relacionarte contigo y con otras personas. "
         "Los vínculos ponen de manifiesto aquello que necesita sanar, soltar o renacer para construir relaciones más auténticas.\n\n"
 
         "Esta combinación recuerda que la verdadera profundidad no nace del control ni de la intensidad permanente. "
@@ -991,7 +1020,7 @@ VENUS_COMBINACIONES = {
     ),
 
     "Ascendente": (
-        "Cuando Venus y el Ascendente trabajan en sintonía, la forma en que te muestras al mundo refleja con naturalidad aquello que valoras y la manera en que te relacionas. "
+        "En la relación entre Venus y el Ascendente, la forma en que te muestras al mundo refleja con naturalidad aquello que valoras y la manera en que te relacionas. "
         "La calidez, la belleza y el afecto encuentran una expresión auténtica en tu presencia, facilitando vínculos que nacen desde la coherencia.\n\n"
 
         "Esta combinación invita a recordar que no necesitas construir una imagen para reconocer tu propio valor. "
@@ -999,15 +1028,15 @@ VENUS_COMBINACIONES = {
     ),
 
     "Nodo Norte": (
-        "Cuando Venus y el Nodo Norte colaboran, las relaciones, los valores y la capacidad de disfrutar forman parte de tu camino de evolución. "
-        "Aprender a amar de una manera más consciente, reconocer tu propio valor y elegir vínculos coherentes con quien estás llegando a ser constituye una parte importante de tu desarrollo.\n\n"
+        "En la relación entre Venus y el Nodo Norte, las relaciones, los valores y la capacidad de disfrutar forman parte de tu proceso de desarrollo. "
+        "Aprender a amar de una manera más consciente, reconocer tu propio valor y elegir vínculos coherentes con quien estás llegando a ser puede formar una parte importante de tu desarrollo.\n\n"
 
         "Esta combinación recuerda que cada relación significativa puede convertirse en una oportunidad para crecer. "
         "La manera de amar evoluciona cuando te atreves a elegir aquello que realmente te nutre."
     ),
 
     "Nodo Sur": (
-        "Cuando Venus y el Nodo Sur se encuentran, existe una forma de amar, vincularte o valorar la vida que resulta profundamente familiar. "
+        "Cuando Venus y el Nodo Sur se encuentran, existe una forma de amar, vincularte o valorar la vida que resulta muy familiar. "
         "Hay talentos afectivos y una manera natural de crear relaciones que forman parte de tu experiencia, aunque en ocasiones también pueden llevarte a repetir dinámicas conocidas por simple inercia.\n\n"
 
         "Esta combinación invita a conservar la riqueza de lo ya aprendido sin seguir repitiendo antiguos patrones. "
@@ -1082,7 +1111,7 @@ VENUS_INTEGRACION = {
     },
 
     "integracion": {
-        "titulo": "Integrar Venus",
+        "titulo": "Integración",
         "texto": (
             "Integrar Venus no consiste en aprender a gustar más a los demás. "
             "Consiste en reconocer qué tiene verdadero valor para ti y construir una vida donde el amor, la belleza y el disfrute dejen de depender de las circunstancias externas.\n\n"
@@ -1164,7 +1193,7 @@ MARTE_SIGNO = {
     ),
 
     "Libra": (
-        "Con Marte en Libra, la acción nace del deseo de cooperar, encontrar acuerdos y construir soluciones donde todas las partes puedan sentirse escuchadas. "
+        "Con Marte en Libra, la acción nace del deseo de cooperar, encontrar acuerdos y construir soluciones donde todas las partes puedan sentir que hay escucha. "
         "Necesitas sentir que avanzar no implica necesariamente enfrentarte a los demás, sino aprender a caminar junto a ellos.\n\n"
 
         "Tu energía suele dirigirse hacia la negociación, la colaboración y la búsqueda de equilibrio. Antes de actuar, acostumbras a valorar distintas perspectivas para encontrar el camino más armonioso posible.\n\n"
@@ -1347,7 +1376,7 @@ MARTE_CASA = {
 MARTE_COMBINACIONES = {
 
     "Sol": (
-        "Cuando Marte y el Sol trabajan en sintonía, la acción y la identidad avanzan en la misma dirección. "
+        "En la relación entre Marte y el Sol, la acción y la identidad avanzan en la misma dirección. "
         "Lo que decides hacer nace de una profunda coherencia con quien eres, permitiéndote actuar con determinación y propósito.\n\n"
 
         "Esta combinación invita a recordar que la verdadera fuerza no consiste únicamente en hacer más. "
@@ -1355,7 +1384,7 @@ MARTE_COMBINACIONES = {
     ),
 
     "Luna": (
-        "Cuando Marte y la Luna colaboran, la acción y las emociones dejan de vivirse como fuerzas opuestas. "
+        "En la relación entre Marte y la Luna, la acción y las emociones dejan de vivirse como fuerzas opuestas. "
         "Puedes responder a lo que sientes sin dejarte arrastrar por el impulso del momento, utilizando tu energía para proteger aquello que realmente importa.\n\n"
 
         "Esta combinación recuerda que actuar con sensibilidad no es una muestra de debilidad. "
@@ -1363,7 +1392,7 @@ MARTE_COMBINACIONES = {
     ),
 
     "Mercurio": (
-        "Cuando Marte y Mercurio trabajan juntos, el pensamiento encuentra la capacidad de convertirse en acción. "
+        "En la relación entre Marte y Mercurio, el pensamiento encuentra la capacidad de convertirse en acción. "
         "Las ideas dejan de permanecer únicamente en el plano mental y se transforman en decisiones, iniciativas y soluciones concretas.\n\n"
 
         "Esta combinación invita a equilibrar rapidez y reflexión. "
@@ -1371,14 +1400,14 @@ MARTE_COMBINACIONES = {
     ),
 
     "Venus": (
-        "Cuando Marte y Venus colaboran, el deseo y el afecto encuentran una dirección común. "
+        "En la relación entre Marte y Venus, el deseo y el afecto encuentran una dirección común. "
         "Puedes luchar por aquello que amas, proteger lo que valoras y construir relaciones donde la iniciativa y la sensibilidad se complementan.\n\n"
 
         "Esta combinación recuerda que la fuerza encuentra su mayor expresión cuando está al servicio de aquello que verdaderamente merece ser cuidado."
     ),
 
     "Júpiter": (
-        "Cuando Marte y Júpiter se potencian mutuamente, la acción se llena de confianza, entusiasmo y deseo de crecer. "
+        "En la relación entre Marte y Júpiter, la acción se llena de confianza, entusiasmo y deseo de crecer. "
         "Los desafíos se convierten en oportunidades para ampliar tus capacidades y explorar nuevos caminos.\n\n"
 
         "Esta combinación invita a actuar con valentía sin perder la capacidad de valorar las consecuencias. "
@@ -1386,14 +1415,14 @@ MARTE_COMBINACIONES = {
     ),
 
     "Saturno": (
-        "Cuando Marte y Saturno trabajan en sintonía, la energía encuentra estructura, disciplina y capacidad para sostener el esfuerzo a largo plazo. "
+        "En la relación entre Marte y Saturno, la energía encuentra estructura, disciplina y capacidad para sostener el esfuerzo a largo plazo. "
         "La determinación deja de depender del impulso inicial y se convierte en una fuerza constante que permite construir objetivos duraderos.\n\n"
 
         "Esta combinación recuerda que la perseverancia no consiste en avanzar sin descanso, sino en mantener el compromiso respetando también tus propios límites."
     ),
 
     "Urano": (
-        "Cuando Marte y Urano colaboran, la acción impulsa el cambio, la innovación y la búsqueda de nuevas soluciones. "
+        "En la relación entre Marte y Urano, la acción impulsa el cambio, la innovación y la búsqueda de nuevas soluciones. "
         "La iniciativa encuentra formas originales de transformar la realidad y romper con aquello que ya no favorece el crecimiento.\n\n"
 
         "Esta combinación invita a utilizar la libertad con responsabilidad. "
@@ -1401,14 +1430,14 @@ MARTE_COMBINACIONES = {
     ),
 
     "Neptuno": (
-        "Cuando Marte y Neptuno trabajan juntos, la acción se inspira en ideales, intuiciones y valores profundos. "
+        "En la relación entre Marte y Neptuno, la acción se inspira en ideales, intuiciones y valores profundos. "
         "La energía encuentra sentido cuando aquello que haces conecta con algo que trasciende el beneficio inmediato.\n\n"
 
         "Esta combinación recuerda que la inspiración necesita convertirse en decisiones concretas para poder transformar la realidad."
     ),
 
     "Plutón": (
-        "Cuando Marte y Plutón colaboran, la voluntad adquiere una enorme capacidad de transformación. "
+        "En la relación entre Marte y Plutón, la voluntad adquiere una enorme capacidad de transformación. "
         "Puedes afrontar procesos intensos, sostener cambios profundos y movilizar recursos internos que hasta entonces permanecían sin desarrollar.\n\n"
 
         "Esta combinación invita a recordar que la verdadera fuerza no necesita imponerse. "
@@ -1416,7 +1445,7 @@ MARTE_COMBINACIONES = {
     ),
 
     "Ascendente": (
-        "Cuando Marte y el Ascendente trabajan en sintonía, tu manera de actuar refleja con claridad quién eres y cómo decides abrirte camino en el mundo. "
+        "En la relación entre Marte y el Ascendente, tu manera de actuar refleja con claridad quién eres y cómo decides abrirte camino en el mundo. "
         "La iniciativa surge de forma natural y transmite una sensación de autenticidad y determinación.\n\n"
 
         "Esta combinación invita a desarrollar una acción coherente con tu identidad. "
@@ -1424,7 +1453,7 @@ MARTE_COMBINACIONES = {
     ),
 
     "Nodo Norte": (
-        "Cuando Marte y el Nodo Norte colaboran, aprender a actuar de una manera nueva forma parte esencial de tu evolución. "
+        "En la relación entre Marte y el Nodo Norte, aprender a actuar de una manera nueva forma parte importante de tu desarrollo. "
         "La vida te invita a desarrollar una voluntad más consciente, capaz de elegir con claridad y dirigir tu energía hacia aquello que favorece tu crecimiento.\n\n"
 
         "Esta combinación recuerda que evolucionar también implica atreverse a actuar de formas que al principio resultan desconocidas."
@@ -1439,7 +1468,7 @@ MARTE_COMBINACIONES = {
 
     "Quirón": (
         "Cuando Marte y Quirón interactúan, la capacidad de actuar, afirmarte o defender tus necesidades puede estar unida a antiguas heridas que piden ser comprendidas e integradas. "
-        "Precisamente ese recorrido puede convertirte en una persona capaz de actuar con una enorme sensibilidad hacia los procesos de los demás.\n\n"
+        "Precisamente ese recorrido puede desarrollar en ti una gran capacidad para actuar con sensibilidad ante los procesos de otras personas.\n\n"
 
         "Esta combinación recuerda que sanar no significa perder fuerza. "
         "Significa descubrir una forma de actuar que nace de la consciencia y no de la herida."
@@ -1504,7 +1533,7 @@ MARTE_INTEGRACION = {
     },
 
     "integracion": {
-        "titulo": "Integrar Marte",
+        "titulo": "Integración",
         "texto": (
             "Integrar Marte no consiste en hacer más cosas ni en demostrar fortaleza constantemente. "
             "Consiste en desarrollar una voluntad consciente, capaz de elegir dónde implicarse, cuándo avanzar, cuándo detenerse y qué merece realmente tu energía.\n\n"
@@ -1564,7 +1593,7 @@ def calcular_carta(anio, mes, dia, hora, minuto, lat, lon, tz_name):
     ephe_path = os.path.join(BASE_DIR, "ephe")
     swe.set_ephe_path(ephe_path)
 
-    flags = swe.FLG_SPEED
+    flags = swe.FLG_SWIEPH | swe.FLG_SPEED
     jd = fecha_a_jd(anio, mes, dia, hora, minuto, tz_name)
     planetas = {}
 
@@ -1615,31 +1644,42 @@ def calcular_carta(anio, mes, dia, hora, minuto, lat, lon, tz_name):
         "lon": pos_nn[0],
         "signo": signo_nn,
         "grado": grado_nn,
-        "retrogrado": pos_nn[3] < 0,
+        "retrogrado": False,
     }
     planetas["Nodo Sur"] = {
         "simbolo": "☋",
         "lon": lon_ns,
         "signo": signo_ns,
         "grado": grado_ns,
-        "retrogrado": pos_nn[3] < 0,
+        "retrogrado": False,
     }
 
     cuspides, ascmc = swe.houses(jd, lat, lon, b"P")
     asc_lon, mc_lon = ascmc[0], ascmc[1]
+    armc = ascmc[2]
     signo_asc, grado_asc = grados_a_signo(asc_lon)
     signo_mc, grado_mc = grados_a_signo(mc_lon)
 
+    eps_data, _ = swe.calc_ut(jd, swe.ECL_NUT)
+    eps = eps_data[0]
+
     def casa_de(p_lon):
-        for i in range(12):
-            c_ini = cuspides[i]
-            c_fin = cuspides[(i + 1) % 12]
-            if c_ini <= c_fin:
-                if c_ini <= p_lon < c_fin:
-                    return i + 1
-            elif p_lon >= c_ini or p_lon < c_fin:
-                return i + 1
-        return 12
+        hpos = swe.house_pos(
+            armc,
+            lat,
+            eps,
+            (p_lon, 0.0),
+            b"P",
+        )
+
+        numero_casa = int(hpos)
+
+        if numero_casa < 1:
+            return 1
+        if numero_casa > 12:
+            return 12
+
+        return numero_casa
 
     for objeto in planetas.values():
         objeto["casa"] = casa_de(objeto["lon"])
@@ -1818,19 +1858,26 @@ def obtener_texto_aspecto(
     tipo_aspecto,
 ):
     """
-    Construye la interpretación de un aspecto combinando:
+    Devuelve la interpretación específica de la pareja y añade una sola frase
+    breve que conserva la naturaleza técnica del tipo de aspecto.
 
-    1. El significado de la combinación entre ambos cuerpos.
-    2. La manera en que se expresa según el tipo de aspecto.
+    No se reutilizan los antiguos bloques genéricos largos porque producían
+    repetición. La frase técnica es corta y evita que una cuadratura, oposición,
+    quincuncio, etc. pueda leerse como si fuera una relación armónica.
     """
+    texto_combinacion = combinaciones.get(planeta, "")
+    frase_tipo = PLANETAS_PERSONALES_FRASE_TIPO_ASPECTO.get(
+        tipo_aspecto,
+        "",
+    )
 
-    texto_combinacion = combinaciones.get(planeta)
-    texto_aspecto = textos_tipo_aspecto.get(tipo_aspecto)
-
-    if not texto_combinacion or not texto_aspecto:
+    if not texto_combinacion:
         return ""
 
-    return f"{texto_combinacion}\n\n{texto_aspecto}"
+    if not frase_tipo:
+        return texto_combinacion
+
+    return f"{texto_combinacion}\n\n{frase_tipo}"
 
 def calcular_aspectos_planetas_personales(planetas, asc):
     return calcular_aspectos_modulo(
@@ -2082,12 +2129,95 @@ def dibujar_rueda_planetas_personales(carta, aspectos, archivo_salida):
             zorder=2,
         )
 
+    # Añade las conjunciones reales que construyen cualquier stellium en el
+    # que participe Mercurio, Venus o Marte. Se evita redibujar las parejas
+    # que ya estaban entre los aspectos focales.
+    pares_dibujados = {
+        tuple(sorted((a.get("p1"), a.get("p2")))) + (a.get("simbolo"),)
+        for a in aspectos_personales
+    }
+
+    nucleos_personales_rueda = [
+        nucleo
+        for nucleo in detectar_nucleos_globales(carta)
+        if any(
+            p in planetas_focales
+            for p in nucleo.get("puntos", [])
+        )
+    ]
+
+    for nucleo in nucleos_personales_rueda:
+        conjunciones = list(nucleo.get("conjunciones", []) or [])
+
+        if not conjunciones:
+            puntos_nucleo = [
+                p for p in nucleo.get("puntos", [])
+                if p in planetas
+            ]
+            for i, p1 in enumerate(puntos_nucleo):
+                for p2 in puntos_nucleo[i + 1:]:
+                    d = abs(planetas[p1]["lon"] - planetas[p2]["lon"]) % 360
+                    if d > 180:
+                        d = 360 - d
+                    limite = (
+                        5.0
+                        if p1 in PUNTOS_SENSIBLES or p2 in PUNTOS_SENSIBLES
+                        else 10.0
+                    )
+                    if d <= limite:
+                        conjunciones.append({
+                            "punto1": p1,
+                            "punto2": p2,
+                            "orbe": round(d, 2),
+                        })
+
+        for conj in conjunciones:
+            p1 = conj.get("punto1")
+            p2 = conj.get("punto2")
+            clave = tuple(sorted((p1, p2))) + ("=",)
+
+            if (
+                p1 not in planetas
+                or p2 not in planetas
+                or clave in pares_dibujados
+            ):
+                continue
+
+            pares_dibujados.add(clave)
+
+            a1 = lon_a_angulo(planetas[p1]["lon"])
+            a2 = lon_a_angulo(planetas[p2]["lon"])
+
+            ax.plot(
+                [
+                    math.cos(a1) * R_ASP,
+                    math.cos(a2) * R_ASP,
+                ],
+                [
+                    math.sin(a1) * R_ASP,
+                    math.sin(a2) * R_ASP,
+                ],
+                color=_ASP_COL["="],
+                linewidth=_ASP_LW["="],
+                alpha=0.78,
+                linestyle="solid",
+                zorder=2.4,
+            )
+
     # Los tres planetas personales siempre aparecen.
     nombres_visibles = {
         "Mercurio",
         "Venus",
         "Marte",
     }
+
+    # Si un planeta personal pertenece a un stellium, la rueda muestra el
+    # núcleo completo aunque alguno de sus miembros no tenga aspecto directo
+    # con Mercurio, Venus o Marte.
+    for nucleo in nucleos_personales_rueda:
+        for punto in nucleo.get("puntos", []):
+            if punto in planetas:
+                nombres_visibles.add(punto)
 
     # Añadimos todos los cuerpos que estén aspectados
     # con alguno de los tres planetas personales.
@@ -2433,8 +2563,8 @@ def bloque_portada_personales(
 def bloque_bienvenida_personales(estilos):
 
     texto = (
-        "Hay funciones que utilizas todos los días sin darte cuenta. "
-        "Cómo piensas, cómo decides, qué valor das a las personas, a las experiencias "
+        "Hay funciones que utilizas todos los días sin darte cuenta: "
+        "cómo piensas, cómo decides, qué valor das a las personas, a las experiencias "
         "y a quien eres, o de qué manera pasas a la acción. Todo ello forma parte de una "
         "arquitectura interna que sostiene tu forma de estar en el mundo.\n\n"
 
@@ -2736,6 +2866,124 @@ ORDEN_PLANETAS_PERSONALES = {
 }
 
 
+def _con_articulo(punto):
+    articulos = {
+        "Sol": "el Sol",
+        "Luna": "la Luna",
+        "Nodo Norte": "el Nodo Norte",
+        "Nodo Sur": "el Nodo Sur",
+        "Ascendente": "el Ascendente",
+        "Medio Cielo": "el Medio Cielo",
+    }
+    return articulos.get(punto, punto)
+
+
+def _descripcion_posiciones_nucleo(nucleo):
+    """Describe las posiciones reales sin atribuir un único signo/casa al núcleo."""
+    posiciones = nucleo.get("posiciones", {}) or {}
+    grupos = {}
+
+    for punto in nucleo.get("puntos", []):
+        datos = posiciones.get(punto, {}) or {}
+        clave = (datos.get("signo"), datos.get("casa"))
+        grupos.setdefault(clave, []).append(punto)
+
+    fragmentos = []
+    for (signo, casa), puntos in grupos.items():
+        nombres = _lista_y_puntos(puntos)
+        ubicacion = []
+        if signo:
+            ubicacion.append(str(signo))
+        if casa not in (None, ""):
+            ubicacion.append(f"Casa {casa}")
+
+        fragmentos.append(
+            f"{nombres} en {' y '.join(ubicacion)}" if ubicacion else nombres
+        )
+
+    return "; ".join(fragmentos)
+
+
+def _lista_y_puntos(items):
+    items = [_con_articulo(i) for i in items]
+    if not items:
+        return ""
+    if len(items) == 1:
+        return items[0]
+    if len(items) == 2:
+        return f"{items[0]} y {items[1]}"
+    return ", ".join(items[:-1]) + f" y {items[-1]}"
+
+
+def nucleos_de_planeta(carta, planeta):
+    return [
+        nucleo
+        for nucleo in detectar_nucleos_globales(carta)
+        if planeta in nucleo.get("puntos", [])
+    ]
+
+
+def texto_nucleos_planeta(carta, planeta):
+    """Contextualiza un planeta personal dentro de sus núcleos globales."""
+    nucleos = nucleos_de_planeta(carta, planeta)
+    if not nucleos:
+        return ""
+
+    partes = []
+    for nucleo in nucleos:
+        otros = [p for p in nucleo.get("puntos", []) if p != planeta]
+        ubicaciones = _descripcion_posiciones_nucleo(nucleo)
+
+        partes.append(
+            f"{planeta} no funciona aquí de forma aislada. Forma parte de un stellium con "
+            f"{_lista_y_puntos(otros)}. Este núcleo reúne varias funciones que pueden activarse "
+            f"de manera conjunta. {planeta} forma parte de esa concentración, por lo que sus "
+            f"relaciones con otros puntos de la carta también se expresan desde ese núcleo. "
+            f"Su distribución real es: {ubicaciones}."
+        )
+
+    return "\n\n".join(partes)
+
+
+def texto_eje_nodal_planeta(planeta, aspectos_planeta):
+    """Integra Nodo Norte y Nodo Sur como dos polos de un mismo eje."""
+    por_nodo = {
+        a.get("otro_punto"): a
+        for a in aspectos_planeta
+        if a.get("otro_punto") in ("Nodo Norte", "Nodo Sur")
+    }
+
+    nn = por_nodo.get("Nodo Norte")
+    ns = por_nodo.get("Nodo Sur")
+
+    if not (nn and ns):
+        return ""
+
+    funcion = {
+        "Mercurio": (
+            "El Nodo Sur señala formas de pensar, aprender o comunicar que resultan conocidas "
+            "y aparecen con facilidad; el Nodo Norte muestra hacia dónde necesita ampliarse "
+            "esa manera de comprender y expresar la experiencia."
+        ),
+        "Venus": (
+            "El Nodo Sur señala formas conocidas de valorar, vincularte y buscar afecto; "
+            "el Nodo Norte muestra hacia dónde necesitan desarrollarse tus elecciones, "
+            "tus valores y tu manera de construir los vínculos."
+        ),
+        "Marte": (
+            "El Nodo Sur señala formas de actuar y responder que resultan conocidas y automáticas; "
+            "el Nodo Norte muestra hacia dónde necesita desarrollarse tu voluntad y la manera "
+            "de dirigir tu energía."
+        ),
+    }.get(planeta, "")
+
+    return (
+        f"La relación de {planeta} con el eje nodal se expresa a través de dos polos inseparables: "
+        f"{nn.get('tipo', '').lower()} con el Nodo Norte y {ns.get('tipo', '').lower()} con el Nodo Sur. "
+        f"{funcion} No son dos mensajes independientes, sino los dos extremos de un mismo recorrido."
+    )
+
+
 def obtener_aspectos_de_planeta(aspectos, planeta):
     """
     Devuelve todos los aspectos en los que participa el planeta indicado,
@@ -2829,6 +3077,7 @@ def bloque_posicion_planeta(
 
 def bloque_aspectos_planeta(
     planeta,
+    carta,
     aspectos,
     combinaciones,
     textos_tipo_aspecto,
@@ -2842,12 +3091,27 @@ def bloque_aspectos_planeta(
         planeta,
     )
 
-    elementos = [
+    elementos = []
+
+    texto_nucleo = texto_nucleos_planeta(carta, planeta)
+    if texto_nucleo:
+        elementos.append(
+            Paragraph(
+                "Núcleo compartido",
+                estilos["subtitulo"],
+            )
+        )
+        elementos += _parrafos_reportlab(
+            texto_nucleo,
+            estilos["cuerpo"],
+        )
+
+    elementos.append(
         Paragraph(
             f"Los aspectos de {planeta}",
             estilos["subtitulo"],
-        ),
-    ]
+        )
+    )
 
     if not aspectos_planeta:
         elementos.append(
@@ -2897,7 +3161,7 @@ def bloque_aspectos_planeta(
         aspectos_con_texto += 1
 
         titulo = (
-            f"{planeta} con {otro_punto} "
+            f"{planeta} con {_con_articulo(otro_punto)} "
             f"— {tipo}"
         )
 
@@ -2920,6 +3184,19 @@ def bloque_aspectos_planeta(
                 "de una interpretación asociada en este módulo.",
                 estilos["cuerpo"],
             )
+        )
+
+    texto_eje = texto_eje_nodal_planeta(planeta, aspectos_planeta)
+    if texto_eje:
+        elementos.append(
+            Paragraph(
+                "El eje nodal",
+                estilos["subtitulo2"],
+            )
+        )
+        elementos += _parrafos_reportlab(
+            texto_eje,
+            estilos["cuerpo"],
         )
 
     return elementos
@@ -3028,6 +3305,7 @@ def bloque_planeta_personal(
 
     elementos += bloque_aspectos_planeta(
         planeta=planeta,
+        carta=carta,
         aspectos=aspectos,
         combinaciones=combinaciones,
         textos_tipo_aspecto=PLANETAS_PERSONALES_TEXTOS_TIPO_ASPECTO,
@@ -3158,22 +3436,24 @@ def preparar_contenido_ia_personales(carta, aspectos):
         )
 
         aspectos_planeta = []
+        aspectos_crudos_planeta = obtener_aspectos_de_planeta(
+            aspectos,
+            planeta,
+        )
 
-        for aspecto in aspectos:
-
-            p1 = aspecto.get("p1")
-            p2 = aspecto.get("p2")
-
-            if planeta not in (p1, p2):
-                continue
-
-            otro = (
-                p2
-                if p1 == planeta
-                else p1
-            )
-
+        for aspecto in aspectos_crudos_planeta:
+            otro = aspecto.get("otro_punto")
             tipo = aspecto.get("tipo")
+
+            # Misma propiedad editorial que en el PDF: un aspecto entre
+            # personales se interpreta una sola vez.
+            if (
+                planeta in PLANETAS_PERSONALES
+                and otro in PLANETAS_PERSONALES
+                and ORDEN_PLANETAS_PERSONALES[planeta]
+                > ORDEN_PLANETAS_PERSONALES[otro]
+            ):
+                continue
 
             texto = obtener_texto_aspecto(
                 config["combinaciones"],
@@ -3223,10 +3503,22 @@ def preparar_contenido_ia_personales(carta, aspectos):
 
             "aspectos": aspectos_planeta,
 
+            "nucleos": nucleos_de_planeta(
+                carta,
+                planeta,
+            ),
+
+            "eje_nodal": texto_eje_nodal_planeta(
+                planeta,
+                aspectos_crudos_planeta,
+            ),
+
             "integracion": config[
                 "integracion"
             ],
         }
+
+    resultado["nucleos_globales"] = detectar_nucleos_globales(carta)
 
     return resultado
 

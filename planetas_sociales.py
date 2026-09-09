@@ -62,8 +62,8 @@ ELEMENTO_SIGNO = {
 }
 
 REGENTE_SIGNO = {
-    "Aries":"Marte","Tauro":"Venus","Géminis":"Mercurio","Cáncer":"la Luna",
-    "Leo":"el Sol","Virgo":"Mercurio","Libra":"Venus","Escorpio":"Plutón",
+    "Aries":"Marte","Tauro":"Venus","Géminis":"Mercurio","Cáncer":"Luna",
+    "Leo":"Sol","Virgo":"Mercurio","Libra":"Venus","Escorpio":"Plutón",
     "Sagitario":"Júpiter","Capricornio":"Saturno","Acuario":"Urano","Piscis":"Neptuno"
 }
 
@@ -271,7 +271,7 @@ Recuperas el equilibrio cuando conviertes el conocimiento en experiencia y permi
 
 Es habitual que encuentres sentido fortaleciendo tus vínculos familiares, creando un hogar acogedor o desarrollando una sensación interna de pertenencia.
 
-Cuando esta energía pierde equilibrio puedes buscar protección en exceso o posponer nuevas experiencias esperando sentirte completamente seguro.
+Cuando esta energía pierde equilibrio puedes buscar protección en exceso o posponer nuevas experiencias hasta sentir suficiente seguridad.
 
 La expansión aparece con mayor facilidad cuando descubres que una base firme no impide avanzar, sino que precisamente hace posible hacerlo.""",
 
@@ -355,7 +355,7 @@ JUPITER_COMBINACIONES = {
         "Tu manera de crecer, encontrar sentido y confiar en la vida está estrechamente relacionada con la construcción de tu identidad. "
         "Necesitas sentir que puedes desarrollar tus capacidades, ampliar tus posibilidades y avanzar en una dirección coherente con quien eres.\n\n"
 
-        "Cuando ambas partes colaboran, aparece una confianza natural en tus recursos y una mayor facilidad para reconocer oportunidades de desarrollo. "
+        "Cuando encuentras una manera de integrar ambas partes, aparece una confianza natural en tus recursos y una mayor facilidad para reconocer oportunidades de desarrollo. "
         "Tu entusiasmo puede ayudarte a afirmar tu presencia y a compartir con otras personas una visión amplia de lo que es posible.\n\n"
 
         "Esta combinación te invita a distinguir entre confiar en ti y sentir que necesitas demostrar constantemente tu valor. "
@@ -366,7 +366,7 @@ JUPITER_COMBINACIONES = {
         "Tu forma de encontrar sentido y ampliar tu vida está conectada con tus necesidades emocionales. "
         "La confianza suele crecer cuando puedes sentirte en un lugar seguro, comprender lo que te ocurre y construir una experiencia interna suficientemente estable desde la que explorar.\n\n"
 
-        "Cuando ambas partes colaboran, desarrollas una actitud generosa, protectora y capaz de transmitir esperanza en momentos emocionalmente complejos. "
+        "Cuando encuentras una manera de integrar ambas partes, desarrollas una actitud generosa, protectora y capaz de transmitir esperanza en momentos emocionalmente complejos. "
         "También puedes encontrar significado en tus vivencias y convertirlas en una fuente de comprensión.\n\n"
 
         "Esta combinación te invita a observar cuándo el optimismo te ayuda a sostener una emoción y cuándo lo utilizas para evitar sentirla. "
@@ -377,7 +377,7 @@ JUPITER_COMBINACIONES = {
         "Tu manera de pensar busca amplitud, significado y una visión que permita comprender el conjunto. "
         "Las ideas crecen cuando puedes relacionarlas con preguntas importantes, nuevos conocimientos o formas diferentes de interpretar la vida.\n\n"
 
-        "Cuando ambas partes colaboran, puedes comunicar con entusiasmo, transmitir confianza y ayudar a otras personas a descubrir posibilidades que antes no habían considerado.\n\n"
+        "Cuando encuentras una manera de integrar ambas partes, puedes comunicar con entusiasmo, transmitir confianza y ayudar a otras personas a descubrir posibilidades que antes no habían considerado.\n\n"
 
         "Esta combinación te invita a equilibrar la visión amplia con la atención a los hechos. "
         "Una idea inspiradora gana profundidad cuando también puede contrastarse, concretarse y sostenerse en la realidad."
@@ -387,7 +387,7 @@ JUPITER_COMBINACIONES = {
         "Tu forma de crecer está vinculada con aquello que valoras, disfrutas y eliges compartir. "
         "La confianza suele aumentar cuando puedes relacionarte desde la apertura, descubrir nuevas formas de belleza y ampliar tu experiencia a través del encuentro con otras personas.\n\n"
 
-        "Cuando ambas partes colaboran, aparece generosidad afectiva, capacidad para disfrutar de lo que la vida ofrece y una disposición natural a crear relaciones que favorezcan el desarrollo mutuo.\n\n"
+        "Cuando encuentras una manera de integrar ambas partes, aparece generosidad afectiva, capacidad para disfrutar de lo que la vida ofrece y una disposición natural a crear relaciones que favorezcan el desarrollo mutuo.\n\n"
 
         "Esta combinación te invita a observar si identificas el bienestar con tener siempre más, recibir aprobación o evitar cualquier incomodidad. "
         "Disfrutar no exige ignorar los límites ni convertir cada deseo en una necesidad."
@@ -397,7 +397,7 @@ JUPITER_COMBINACIONES = {
         "Tu impulso de actuar está conectado con la necesidad de crecer, explorar y avanzar hacia objetivos que tengan sentido para ti. "
         "Cuando confías en una posibilidad, es habitual que aparezca también la energía necesaria para perseguirla.\n\n"
 
-        "Cuando ambas partes colaboran, puedes actuar con entusiasmo, asumir desafíos y movilizar recursos con una gran convicción. "
+        "Cuando encuentras una manera de integrar ambas partes, puedes actuar con entusiasmo, asumir desafíos y movilizar recursos con una gran convicción. "
         "Tu iniciativa se fortalece cuando existe una dirección amplia que orienta el esfuerzo.\n\n"
 
         "Esta combinación te invita a observar cuánto espacio existe entre la confianza y la acción. "
@@ -408,7 +408,7 @@ JUPITER_COMBINACIONES = {
         "Tu necesidad de crecer mantiene un diálogo constante con la parte de ti que busca estructura, prudencia y resultados sostenibles. "
         "Una función amplía las posibilidades; la otra comprueba qué puede sostenerse realmente en el tiempo.\n\n"
 
-        "Cuando ambas partes colaboran, puedes convertir una visión amplia en un proyecto concreto, desarrollar confianza a través de la experiencia y avanzar sin perder de vista las responsabilidades que has asumido.\n\n"
+        "Cuando encuentras una manera de integrar ambas partes, puedes convertir una visión amplia en un proyecto concreto, desarrollar confianza a través de la experiencia y avanzar sin perder de vista las responsabilidades que has asumido.\n\n"
 
         "Esta combinación te invita a evitar dos extremos: limitarte antes de haberlo intentado o expandirte sin una base capaz de sostener lo que inicias. "
         "El crecimiento se vuelve más sólido cuando la esperanza acepta trabajar con la realidad."
@@ -418,7 +418,7 @@ JUPITER_COMBINACIONES = {
         "Tu forma de crecer está conectada con la necesidad de descubrir perspectivas nuevas y cuestionar aquello que se ha quedado pequeño. "
         "La confianza aumenta cuando puedes pensar con independencia, explorar alternativas y abrir caminos que no estaban previstos.\n\n"
 
-        "Cuando ambas partes colaboran, aparece una gran capacidad para reconocer oportunidades de cambio, comprender tendencias colectivas y ampliar la visión de otras personas mediante ideas innovadoras.\n\n"
+        "Cuando encuentras una manera de integrar ambas partes, aparece una gran capacidad para reconocer oportunidades de cambio, comprender tendencias colectivas y ampliar la visión de otras personas mediante ideas innovadoras.\n\n"
 
         "Esta combinación te invita a observar cuándo la búsqueda de libertad favorece tu desarrollo y cuándo te lleva a abandonar procesos antes de haber descubierto todo lo que podían ofrecerte. "
         "No toda expansión necesita romper con lo anterior."
@@ -428,7 +428,7 @@ JUPITER_COMBINACIONES = {
         "Tu búsqueda de sentido está conectada con la sensibilidad, la imaginación y la percepción de una realidad más amplia que la experiencia inmediata. "
         "Necesitas confiar en que la vida contiene significados que no siempre pueden comprenderse únicamente desde la lógica.\n\n"
 
-        "Cuando ambas partes colaboran, puedes desarrollar una visión compasiva, inspiradora y capaz de encontrar posibilidades incluso en situaciones inciertas. "
+        "Cuando encuentras una manera de integrar ambas partes, puedes desarrollar una visión compasiva, inspiradora y capaz de encontrar posibilidades incluso en situaciones inciertas. "
         "La creatividad, la contemplación o la dimensión simbólica pueden convertirse en fuentes importantes de crecimiento.\n\n"
 
         "Esta combinación te invita a diferenciar entre una confianza profunda y la tendencia a creer aquello que deseas que sea cierto. "
@@ -439,7 +439,7 @@ JUPITER_COMBINACIONES = {
         "Tu forma de crecer está relacionada con experiencias que transforman profundamente tu manera de comprender la vida. "
         "No siempre encuentras sentido en respuestas simples: necesitas explorar las motivaciones, los conflictos y los procesos que operan bajo la superficie.\n\n"
 
-        "Cuando ambas partes colaboran, desarrollas una gran capacidad para encontrar recursos en momentos críticos, ampliar tu comprensión psicológica y convertir experiencias intensas en una fuente de conocimiento.\n\n"
+        "Cuando encuentras una manera de integrar ambas partes, desarrollas una gran capacidad para encontrar recursos en momentos críticos, ampliar tu comprensión psicológica y convertir experiencias intensas en una fuente de conocimiento.\n\n"
 
         "Esta combinación te invita a observar si la necesidad de transformación te lleva a buscar constantemente experiencias extremas o verdades definitivas. "
         "Crecer no siempre exige atravesar una crisis; también puede implicar integrar con profundidad lo que ya has comprendido."
@@ -491,66 +491,27 @@ JUPITER_COMBINACIONES = {
 JUPITER_TEXTOS_TIPO_ASPECTO = {
 
     "Conjunción": (
-        "Júpiter se encuentra muy unido a esta parte de ti, de modo que tu forma de crecer, confiar y buscar sentido tiende a expresarse a través de ella. "
-        "Ambas funciones participan simultáneamente en muchas de tus decisiones y pueden resultar difíciles de separar.\n\n"
-
-        "Esta unión amplifica la experiencia y concede una presencia importante a todo lo relacionado con esta combinación. "
-        "Puede aportar entusiasmo, amplitud y una fuerte necesidad de desarrollo, aunque también favorecer que algunas posibilidades se exageren o se den por seguras demasiado pronto.\n\n"
-
-        "El equilibrio aparece cuando reconoces qué aporta cada función por separado. "
-        "Así puedes utilizar la confianza como una fuerza de crecimiento sin perder la capacidad de valorar la realidad, los límites y los recursos disponibles."
+        "La conjunción une estrechamente ambas funciones y hace que tiendan a expresarse de manera conjunta."
     ),
 
     "Sextil": (
-        "Júpiter mantiene con esta parte de ti una relación que facilita el aprendizaje, la apertura y el desarrollo de nuevos recursos. "
-        "La posibilidad de colaboración está disponible, aunque necesita oportunidades concretas para desplegarse plenamente.\n\n"
-
-        "Cuando activas esta conexión de forma consciente, puedes ampliar tu perspectiva y descubrir maneras más constructivas de utilizar ambas funciones. "
-        "La confianza crece a través de la práctica, el intercambio y la disposición a explorar posibilidades que al principio quizá no resultaban evidentes.\n\n"
-
-        "El aprendizaje consiste en no dejar esta facilidad únicamente como una posibilidad. "
-        "Cuanto más la incorporas a tus decisiones cotidianas, más puede convertirse en un apoyo real para tu desarrollo."
+        "El sextil facilita la colaboración entre ambas funciones y ofrece recursos que se desarrollan cuando los utilizas de forma consciente."
     ),
 
     "Trígono": (
-        "Júpiter y esta parte de ti tienden a colaborar de manera espontánea. "
-        "Existe una facilidad natural para encontrar sentido, confiar en tus recursos y ampliar las posibilidades relacionadas con ambas funciones.\n\n"
-
-        "Esta fluidez puede ayudarte a desenvolverte con optimismo y a reconocer oportunidades con rapidez. "
-        "También es posible que aquello que se te da con naturalidad pase inadvertido o que confíes en que siempre estará disponible sin necesidad de desarrollarlo.\n\n"
-
-        "El equilibrio consiste en reconocer esta capacidad y darle una dirección consciente. "
-        "La facilidad se convierte en un recurso más sólido cuando la acompañas de criterio, constancia y atención a sus efectos reales."
+        "El trígono favorece una integración fluida entre ambas funciones, aunque esa facilidad necesita una dirección consciente para aprovecharse plenamente."
     ),
 
     "Cuadratura": (
-        "Júpiter y esta parte de ti no siempre encuentran con facilidad una dirección común. "
-        "La necesidad de crecer, confiar o ampliar horizontes puede entrar en conflicto con otras necesidades internas, generando exceso, dudas o decisiones difíciles de sostener.\n\n"
-
-        "En algunos momentos puedes avanzar más de lo que tus recursos permiten; en otros, la tensión puede hacer que cuestiones tus posibilidades o que busques respuestas demasiado amplias para resolver una dificultad concreta.\n\n"
-
-        "Esta fricción te impulsa a construir una confianza más consciente. "
-        "El aprendizaje consiste en desarrollar sin exagerar, ampliar sin dispersarte y encontrar una forma de crecer que también pueda sostenerse en la realidad."
+        "La cuadratura introduce fricción entre ambas funciones y pide encontrar una manera propia de sostenerlas sin que una anule a la otra."
     ),
 
     "Oposición": (
-        "Júpiter y esta parte de ti buscan un equilibrio que no siempre resulta inmediato. "
-        "Es posible que alternes entre confiar plenamente en tus posibilidades y sentir que la seguridad, el sentido o las oportunidades dependen de personas y circunstancias externas.\n\n"
-
-        "También puedes encontrarte con relaciones o situaciones que reflejan cualidades que todavía estás desarrollando en ti: una visión más amplia, una mayor confianza o una forma diferente de interpretar la experiencia.\n\n"
-
-        "El aprendizaje consiste en recuperar para ti lo que inicialmente reconoces fuera. "
-        "Cuando ambas funciones pueden dialogar, la expansión deja de vivirse como un extremo y empieza a integrar perspectivas distintas sin perder tu propio criterio."
+        "La oposición sitúa ambas funciones en polos diferentes y pide aprender a integrarlas sin reducir la experiencia a uno de los extremos."
     ),
 
     "Quincuncio": (
-        "La relación entre Júpiter y esta parte de ti requiere ajustes frecuentes. "
-        "Tu necesidad de crecer, confiar o encontrar sentido no siempre parece compatible con la manera en que funciona la otra energía, y puede costarte identificar de dónde procede la incomodidad.\n\n"
-
-        "Es posible que una expectativa demasiado amplia necesite adaptarse a circunstancias concretas, o que una parte de ti avance mientras la otra todavía no dispone de los recursos necesarios para acompañarla.\n\n"
-
-        "El aprendizaje se construye mediante pequeñas correcciones y una observación precisa de tus límites, creencias y decisiones. "
-        "Con el tiempo puedes desarrollar una forma muy personal de ampliar tu vida sin desatender aquello que necesita más cuidado o adaptación."
+        "El quincuncio requiere ajustes entre dos funciones que no terminan de encajar de forma automática y necesitan aprender a coordinarse."
     ),
 }
 
@@ -780,7 +741,7 @@ Es habitual que asumas la vida con seriedad y que prefieras avanzar sobre bases 
 
 Cuando esta función pierde equilibrio puedes exigirte demasiado, sentir que siempre debes demostrar tu valía o cargar con responsabilidades que terminan alejándote de tu espontaneidad.
 
-La estabilidad aparece cuando descubres que construir una identidad también implica permitirte aprender, equivocarte y evolucionar sin convertir cada paso en un examen.""",
+La estabilidad aparece cuando descubres que construir una identidad también implica permitirte aprender, equivocarte y cambiar sin convertir cada paso en un examen.""",
 
 2:
 """Necesitas desarrollar una relación estable con tus recursos, tus capacidades y aquello que te aporta seguridad. Saturno en esta casa invita a construir una sensación de valor basada en la experiencia y no únicamente en los resultados.
@@ -889,7 +850,7 @@ SATURNO_COMBINACIONES = {
         "Tu identidad y tu sentido de la responsabilidad mantienen un diálogo constante. "
         "Necesitas construir una imagen de ti basada en la experiencia, el compromiso y aquello que realmente puedes sostener con el paso del tiempo.\n\n"
 
-        "Cuando ambas partes colaboran, desarrollas una gran capacidad para perseverar, asumir responsabilidades y convertir tus objetivos en proyectos sólidos. "
+        "Cuando encuentras una manera de integrar ambas partes, desarrollas una gran capacidad para perseverar, asumir responsabilidades y convertir tus objetivos en proyectos sólidos. "
         "La confianza deja de depender únicamente de los resultados y empieza a apoyarse en la persona que has ido construyendo.\n\n"
 
         "Esta combinación te invita a distinguir entre responsabilidad y autoexigencia. "
@@ -900,7 +861,7 @@ SATURNO_COMBINACIONES = {
         "Tu mundo emocional y tu necesidad de construir estabilidad están profundamente relacionados. "
         "La seguridad suele aparecer cuando puedes comprender lo que sientes y desarrollar una base emocional suficientemente firme para sostenerte.\n\n"
 
-        "Cuando ambas partes colaboran, puedes afrontar momentos difíciles con serenidad, cuidar de otras personas sin perderte a ti y desarrollar una gran madurez emocional.\n\n"
+        "Cuando encuentras una manera de integrar ambas partes, puedes afrontar momentos difíciles con serenidad, cuidar de otras personas sin perderte a ti y desarrollar una gran madurez emocional.\n\n"
 
         "Esta combinación te invita a observar si sostienes demasiado tiempo aquello que te pesa o si te cuesta mostrar vulnerabilidad por miedo a que pueda interpretarse como debilidad. "
         "La fortaleza también incluye permitirte sentir y pedir apoyo cuando lo necesitas."
@@ -910,7 +871,7 @@ SATURNO_COMBINACIONES = {
         "Tu manera de pensar busca estructura, coherencia y solidez. "
         "Necesitas ordenar las ideas, comprobar lo que sabes y construir conclusiones que puedan mantenerse con el paso del tiempo.\n\n"
 
-        "Cuando ambas partes colaboran, desarrollas concentración, responsabilidad al comunicar y capacidad para profundizar en conocimientos complejos sin abandonar el proceso a mitad de camino.\n\n"
+        "Cuando encuentras una manera de integrar ambas partes, desarrollas concentración, responsabilidad al comunicar y capacidad para profundizar en conocimientos complejos sin abandonar el proceso a mitad de camino.\n\n"
 
         "Esta combinación te invita a observar la exigencia con la que juzgas tu propia mente. "
         "No necesitas tener todas las respuestas ni expresarte de forma perfecta para que tus palabras tengan valor."
@@ -920,7 +881,7 @@ SATURNO_COMBINACIONES = {
         "Tu forma de vincularte y aquello que valoras buscan estabilidad, compromiso y continuidad. "
         "Las relaciones y los afectos adquieren profundidad cuando pueden sostenerse sobre bases reales y no únicamente sobre la emoción del momento.\n\n"
 
-        "Cuando ambas partes colaboran, desarrollas lealtad, constancia y una capacidad especial para construir vínculos duraderos. "
+        "Cuando encuentras una manera de integrar ambas partes, desarrollas lealtad, constancia y una capacidad especial para construir vínculos duraderos. "
         "También puedes aprender a valorar aquello que realmente permanece con el paso del tiempo.\n\n"
 
         "Esta combinación te invita a observar si identificas el amor con la responsabilidad o si te cuesta disfrutar cuando todo no está completamente bajo control. "
@@ -931,7 +892,7 @@ SATURNO_COMBINACIONES = {
         "Tu forma de actuar está estrechamente relacionada con la disciplina, la planificación y la capacidad para sostener el esfuerzo. "
         "Necesitas sentir que tu energía tiene una dirección clara y un propósito que justifique el trabajo realizado.\n\n"
 
-        "Cuando ambas partes colaboran, puedes desarrollar una enorme perseverancia, afrontar proyectos complejos y mantener el esfuerzo incluso cuando los resultados tardan en aparecer.\n\n"
+        "Cuando encuentras una manera de integrar ambas partes, puedes desarrollar una enorme perseverancia, afrontar proyectos complejos y mantener el esfuerzo incluso cuando los resultados tardan en aparecer.\n\n"
 
         "Esta combinación te invita a distinguir entre actuar con constancia y exigirte más de lo que realmente puedes sostener. "
         "La disciplina resulta más eficaz cuando también respeta tus ritmos."
@@ -941,7 +902,7 @@ SATURNO_COMBINACIONES = {
         "Tu necesidad de crecer mantiene un diálogo constante con la parte de ti que busca estructura, prudencia y resultados sostenibles. "
         "Una función amplía las posibilidades; la otra comprueba qué puede sostenerse realmente en el tiempo.\n\n"
 
-        "Cuando ambas partes colaboran, puedes convertir una visión amplia en un proyecto concreto, desarrollar confianza a través de la experiencia y avanzar sin perder de vista las responsabilidades que has asumido.\n\n"
+        "Cuando encuentras una manera de integrar ambas partes, puedes convertir una visión amplia en un proyecto concreto, desarrollar confianza a través de la experiencia y avanzar sin perder de vista las responsabilidades que has asumido.\n\n"
 
         "Esta combinación te invita a evitar dos extremos: limitarte antes de haberlo intentado o expandirte sin una base capaz de sostener lo que inicias. "
         "El crecimiento se vuelve más sólido cuando la esperanza acepta trabajar con la realidad."
@@ -949,9 +910,9 @@ SATURNO_COMBINACIONES = {
 
     "Urano": (
         "Tu necesidad de construir estabilidad convive con una parte de ti que busca innovación, libertad y cambio. "
-        "Puede parecer que ambas funciones avanzan en direcciones distintas, aunque en realidad ambas intentan ayudarte a evolucionar.\n\n"
+        "Puede parecer que ambas funciones avanzan en direcciones distintas, aunque en realidad ambas participan en tu proceso de cambio.\n\n"
 
-        "Cuando colaboran, puedes desarrollar estructuras flexibles, introducir mejoras duraderas y transformar aquello que ya no funciona sin destruir lo que sigue siendo valioso.\n\n"
+        "Cuando encuentras una manera de integrar ambas partes, puedes desarrollar estructuras flexibles, introducir mejoras duraderas y transformar aquello que ya no funciona sin destruir lo que sigue siendo valioso.\n\n"
 
         "Esta combinación te invita a no elegir entre estabilidad o cambio. "
         "Las transformaciones más profundas suelen aparecer cuando ambas pueden trabajar juntas."
@@ -961,7 +922,7 @@ SATURNO_COMBINACIONES = {
         "Tu necesidad de construir una estructura sólida se relaciona con una parte de ti que percibe la vida desde la sensibilidad, la intuición y la imaginación. "
         "El reto consiste en permitir que ambas funciones se enriquezcan mutuamente.\n\n"
 
-        "Cuando colaboran, puedes convertir ideales en realidades, dar forma a proyectos inspiradores y desarrollar una espiritualidad o una creatividad capaces de integrarse en la vida cotidiana.\n\n"
+        "Cuando encuentras una manera de integrar ambas partes, puedes convertir ideales en realidades, dar forma a proyectos inspiradores y desarrollar una espiritualidad o una creatividad capaces de integrarse en la vida cotidiana.\n\n"
 
         "Esta combinación te invita a observar cuándo intentas controlar lo que necesita ser sentido y cuándo confías en algo sin darle una base suficiente. "
         "La sensibilidad encuentra más fuerza cuando dispone de una estructura que la sostenga."
@@ -971,15 +932,15 @@ SATURNO_COMBINACIONES = {
         "Tu forma de construir estabilidad está profundamente relacionada con los procesos de transformación. "
         "Las experiencias intensas pueden convertirse en oportunidades para desarrollar una fortaleza mucho más profunda que la basada únicamente en el control.\n\n"
 
-        "Cuando ambas partes colaboran, desarrollas una enorme capacidad para sostener cambios difíciles, reconstruirte después de las pérdidas y crear estructuras mucho más auténticas.\n\n"
+        "Cuando encuentras una manera de integrar ambas partes, desarrollas una enorme capacidad para sostener cambios difíciles, reconstruirte después de las pérdidas y crear estructuras mucho más auténticas.\n\n"
 
         "Esta combinación te invita a observar cuándo la necesidad de controlar impide que aparezca una transformación necesaria. "
         "La verdadera estabilidad también sabe adaptarse a aquello que cambia."
     ),
 
     "Ascendente": (
-        "Cuando Saturno y el Ascendente colaboran, la manera en que te presentas al mundo transmite solidez, responsabilidad y una presencia que suele generar confianza. "
-        "Es posible que otras personas perciban en ti una actitud seria o comprometida incluso antes de conocerte en profundidad.\n\n"
+        "Cuando Saturno y el Ascendente se relacionan, la manera en que te presentas al mundo puede transmitir solidez, responsabilidad y una presencia comprometida. "
+        "Es posible que esa impresión aparezca incluso antes de que otras personas te conozcan en profundidad.\n\n"
 
         "Esta combinación invita a construir una forma de estar en el mundo que refleje tu verdadera madurez sin convertir la responsabilidad en una carga permanente. "
         "La firmeza también puede convivir con la cercanía y la naturalidad."
@@ -987,7 +948,7 @@ SATURNO_COMBINACIONES = {
 
     "Nodo Norte": (
         "Cuando Saturno y el Nodo Norte se relacionan, desarrollar estructura, responsabilidad y compromiso forma parte importante de tu proceso de crecimiento. "
-        "Las experiencias que exigen constancia suelen convertirse en escenarios donde aparece una parte esencial de tu evolución.\n\n"
+        "Las experiencias que exigen constancia suelen convertirse en escenarios donde aparece una parte esencial de tu proceso de desarrollo.\n\n"
 
         "Esta combinación recuerda que avanzar no siempre significa hacerlo más rápido. "
         "Con frecuencia consiste en construir paso a paso una base suficientemente sólida para sostener aquello que realmente deseas desarrollar."
@@ -998,7 +959,7 @@ SATURNO_COMBINACIONES = {
         "Esa experiencia puede convertirse en un gran recurso cuando permanece abierta al cambio.\n\n"
 
         "Esta combinación invita a reconocer todo lo que ya sabes sostener sin convertirlo en la única manera posible de hacer las cosas. "
-        "La experiencia alcanza su mayor valor cuando sigue evolucionando."
+        "La experiencia alcanza su mayor valor cuando permanece abierta al cambio."
     ),
 
     "Quirón": (
@@ -1024,39 +985,27 @@ SATURNO_COMBINACIONES = {
 
 SATURNO_TEXTOS_TIPO_ASPECTO = {
     "Conjunción": (
-        "Ambas funciones actúan de manera muy unida. "
-        "La experiencia de Saturno se mezcla directamente con la del otro planeta, "
-        "de modo que sus necesidades, tensiones y recursos tienden a expresarse como una sola dinámica."
+        "La conjunción une estrechamente ambas funciones y hace que tiendan a expresarse de manera conjunta."
     ),
 
     "Sextil": (
-        "Existe una colaboración natural entre ambas funciones. "
-        "La relación puede facilitar que la estructura, la responsabilidad y la capacidad de sostener "
-        "se desarrollen de una manera más flexible y consciente."
+        "El sextil facilita la colaboración entre ambas funciones y permite desarrollar recursos de forma consciente y sostenida."
     ),
 
     "Trígono": (
-        "Ambas funciones tienden a integrarse con facilidad. "
-        "Saturno puede aportar estabilidad, constancia y madurez sin que el proceso se viva necesariamente "
-        "como una exigencia permanente."
+        "El trígono favorece una integración fluida entre ambas funciones, de modo que pueden apoyarse con relativa naturalidad."
     ),
 
     "Cuadratura": (
-        "Entre ambas funciones puede aparecer una tensión que exige ajustes. "
-        "La necesidad de control, seguridad o estructura puede entrar en conflicto con la forma de actuar "
-        "del otro planeta, generando bloqueos, presión o sensación de insuficiencia."
+        "La cuadratura introduce fricción entre ambas funciones y pide encontrar una manera propia de sostenerlas sin que una anule a la otra."
     ),
 
     "Oposición": (
-        "Las dos funciones pueden sentirse separadas o enfrentadas. "
-        "El aprendizaje consiste en encontrar una forma de atender ambas sin identificarse por completo "
-        "con uno de los extremos."
+        "La oposición sitúa ambas funciones en polos diferentes y pide aprender a integrarlas sin reducir la experiencia a uno de los extremos."
     ),
 
     "Quincuncio": (
-        "La relación entre ambas funciones requiere ajustes continuos. "
-        "Puede resultar difícil encontrar una forma estable de coordinarlas, por lo que será necesario "
-        "revisar expectativas, ritmos y responsabilidades."
+        "El quincuncio requiere ajustes entre dos funciones que no terminan de encajar de forma automática y necesitan aprender a coordinarse."
     ),
 }
 
@@ -1262,31 +1211,42 @@ def calcular_carta(anio, mes, dia, hora, minuto, lat, lon, tz_name):
         "lon": pos_nn[0],
         "signo": signo_nn,
         "grado": grado_nn,
-        "retrogrado": pos_nn[3] < 0,
+        "retrogrado": False,
     }
     planetas["Nodo Sur"] = {
         "simbolo": "☋",
         "lon": lon_ns,
         "signo": signo_ns,
         "grado": grado_ns,
-        "retrogrado": pos_nn[3] < 0,
+        "retrogrado": False,
     }
 
     cuspides, ascmc = swe.houses(jd, lat, lon, b"P")
     asc_lon, mc_lon = ascmc[0], ascmc[1]
+    armc = ascmc[2]
     signo_asc, grado_asc = grados_a_signo(asc_lon)
     signo_mc, grado_mc = grados_a_signo(mc_lon)
 
+    eps_data, _ = swe.calc_ut(jd, swe.ECL_NUT)
+    eps = eps_data[0]
+
     def casa_de(p_lon):
-        for i in range(12):
-            c_ini = cuspides[i]
-            c_fin = cuspides[(i + 1) % 12]
-            if c_ini <= c_fin:
-                if c_ini <= p_lon < c_fin:
-                    return i + 1
-            elif p_lon >= c_ini or p_lon < c_fin:
-                return i + 1
-        return 12
+        hpos = swe.house_pos(
+            armc,
+            lat,
+            eps,
+            (p_lon, 0.0),
+            b"P",
+        )
+
+        numero_casa = int(hpos)
+
+        if numero_casa < 1:
+            return 1
+        if numero_casa > 12:
+            return 12
+
+        return numero_casa
 
     for objeto in planetas.values():
         objeto["casa"] = casa_de(objeto["lon"])
@@ -2128,7 +2088,7 @@ def bloque_bienvenida_sociales(estilos):
     elementos += _parrafos_reportlab(
         "No necesitas comprenderlo todo en una primera lectura. "
         "Recorre el informe con curiosidad y observa qué partes describen mejor el momento que estás viviendo. "
-        "Con el tiempo descubrirás que Júpiter y Saturno no hablan únicamente de quién eres, sino también de cómo evolucionan tu manera de crecer y la forma en que construyes una vida capaz de sostener ese crecimiento.",
+        "Con el tiempo descubrirás que Júpiter y Saturno no hablan únicamente de quién eres, sino también de cómo cambian tu manera de crecer y la forma en que construyes una vida capaz de sostener ese crecimiento.",
         estilos["cuerpo"],
     )
 
@@ -2472,6 +2432,53 @@ ORDEN_PLANETAS_SOCIALES = {
 }
 
 
+def _con_articulo(punto):
+    articulos = {
+        "Sol": "el Sol",
+        "Luna": "la Luna",
+        "Nodo Norte": "el Nodo Norte",
+        "Nodo Sur": "el Nodo Sur",
+        "Ascendente": "el Ascendente",
+        "Medio Cielo": "el Medio Cielo",
+    }
+    return articulos.get(punto, punto)
+
+
+
+def texto_eje_nodal_social(planeta, aspectos_planeta):
+    """Integra Nodo Norte y Nodo Sur como dos polos de un mismo eje."""
+    por_nodo = {
+        a.get("otro_punto"): a
+        for a in aspectos_planeta
+        if a.get("otro_punto") in ("Nodo Norte", "Nodo Sur")
+    }
+
+    nn = por_nodo.get("Nodo Norte")
+    ns = por_nodo.get("Nodo Sur")
+
+    if not (nn and ns):
+        return ""
+
+    funcion = {
+        "Júpiter": (
+            "El Nodo Sur señala formas conocidas de buscar sentido, confiar o interpretar la vida; "
+            "el Nodo Norte muestra hacia dónde necesita ampliarse esa perspectiva y qué nuevas "
+            "formas de crecimiento pueden ir adquiriendo importancia."
+        ),
+        "Saturno": (
+            "El Nodo Sur señala formas conocidas de asumir responsabilidades, construir seguridad "
+            "o sostener estructuras; el Nodo Norte muestra hacia dónde necesita desarrollarse una "
+            "manera más consciente de construir estabilidad y autoridad propia."
+        ),
+    }.get(planeta, "")
+
+    return (
+        f"La relación de {planeta} con el eje nodal se expresa a través de dos polos inseparables: "
+        f"{nn.get('tipo', '').lower()} con el Nodo Norte y {ns.get('tipo', '').lower()} con el Nodo Sur. "
+        f"{funcion} No son dos mensajes independientes, sino los dos extremos de un mismo eje."
+    )
+
+
 def obtener_aspectos_de_planeta(aspectos, planeta):
     """
     Devuelve todos los aspectos en los que participa el planeta indicado,
@@ -2629,7 +2636,7 @@ def bloque_aspectos_planeta(
         aspectos_con_texto += 1
 
         titulo = (
-            f"{planeta} con {otro_punto} "
+            f"{planeta} con {_con_articulo(otro_punto)} "
             f"— {tipo}"
         )
 
@@ -2652,6 +2659,23 @@ def bloque_aspectos_planeta(
                 "de una interpretación asociada en este módulo.",
                 estilos["cuerpo"],
             )
+        )
+
+    texto_eje = texto_eje_nodal_social(
+        planeta,
+        aspectos_planeta,
+    )
+
+    if texto_eje:
+        elementos.append(
+            Paragraph(
+                "El eje nodal",
+                estilos["subtitulo2"],
+            )
+        )
+        elementos += _parrafos_reportlab(
+            texto_eje,
+            estilos["cuerpo"],
         )
 
     return elementos
@@ -2882,6 +2906,14 @@ def preparar_contenido_ia_sociales(carta, aspectos):
                 else p1
             )
 
+            if (
+                planeta in PLANETAS_SOCIALES
+                and otro in PLANETAS_SOCIALES
+                and ORDEN_PLANETAS_SOCIALES[planeta]
+                > ORDEN_PLANETAS_SOCIALES[otro]
+            ):
+                continue
+
             tipo = aspecto.get("tipo")
 
             texto = obtener_texto_aspecto(
@@ -2932,6 +2964,14 @@ def preparar_contenido_ia_sociales(carta, aspectos):
             ),
 
             "aspectos": aspectos_planeta,
+
+            "eje_nodal": texto_eje_nodal_social(
+                planeta,
+                obtener_aspectos_de_planeta(
+                    aspectos,
+                    planeta,
+                ),
+            ),
 
             "integracion": config[
                 "integracion"

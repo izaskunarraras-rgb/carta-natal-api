@@ -29,6 +29,8 @@ from geopy.geocoders import Nominatim
 from geopy.exc import GeocoderTimedOut
 from timezonefinder import TimezoneFinder
 
+from nucleos_globales import detectar_nucleos_globales
+
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY
 from reportlab.lib.pagesizes import A4
@@ -383,7 +385,7 @@ LUNA_SIGNO = {
     "Necesitas poder expresar lo que sientes para mantener vitalidad emocional. "
     "Cuando lo que ocurre dentro no encuentra espacio, reconocimiento o respuesta, "
     "la tensión empieza a crecer poco a poco. "
-    "La sensación de no ser visto puede afectarte mucho más profundamente de lo que aparentas desde fuera. "
+    "La sensación de que no te ven puede afectarte mucho más profundamente de lo que aparentas desde fuera. "
     "Si pasas demasiado tiempo sintiendo que tienes que esconder una parte de ti, "
     "la energía empieza a apagarse y el cuerpo pierde apertura.\n\n"
 
@@ -456,7 +458,7 @@ LUNA_SIGNO = {
 
 "Capricornio": (
     "No muestras fácilmente lo que sientes. "
-    "Antes de abrirte emocionalmente, una parte de ti evalúa si es seguro hacerlo. "
+    "Antes de abrirte emocionalmente, una parte de ti evalúa si puede hacerlo sin sentir demasiada exposición emocional. "
     "Muchas veces acabas procesando en soledad lo que te ocurre. "
     "Puedes sostener tensión emocional durante muchísimo tiempo sin derrumbarte, "
     "pero eso no significa que no tenga un coste. "
@@ -489,7 +491,7 @@ LUNA_SIGNO = {
     "Los estados emocionales de otras personas, la atmósfera de un lugar o incluso cosas que nadie ha dicho "
     "pueden quedarse dentro de ti sin que siempre seas consciente de ello. "
     "Muchas veces aparece saturación sin tener claro exactamente qué la provocó. "
-    "Tu cuerpo suele responder entonces con cansancio difuso, necesidad de retirarte o sensación de estar demasiado abierto emocionalmente.\n\n"
+    "Tu cuerpo suele responder entonces con cansancio difuso, necesidad de retirarte o sensación de demasiada apertura emocional.\n\n"
 
     "Necesitas momentos reales de silencio, descanso y descarga emocional. "
     "Cuando pasas demasiado tiempo absorbiendo sin vaciar, "
@@ -511,7 +513,7 @@ LUNA_CASA = {
     "Las personas cercanas suelen percibir enseguida cuándo algo te afecta. Eso puede darte sensación de autenticidad y conexión con lo que expresas, pero también hacer que a veces sientas demasiada exposición emocional, como si fuera difícil ocultar lo que te ocurre por dentro. "
     "Cuando pasas mucho tiempo intentando contener lo que sientes, la tensión suele terminar saliendo igualmente de alguna manera, aunque intentes mantenerla bajo control. "
     "Te ayuda poder expresar lo que te pasa con naturalidad, sin sentir que tienes que vigilar constantemente cómo te muestras o cuánto enseñas de ti. "
-    "En cambio, contenerte continuamente o sentir que no puedes mostrar cómo estás suele hacer que la tensión interna vaya creciendo poco a poco."
+    "En cambio, contenerte continuamente o sentir que no puedes mostrar cómo estás suelen hacer que la tensión interna vaya creciendo poco a poco."
 ),
 
 2: (
@@ -526,70 +528,70 @@ LUNA_CASA = {
     "Muchas veces la emoción acaba transformándose en pensamiento repetitivo, ruido mental o necesidad constante de entender qué está pasando. "
     "El entorno cotidiano tiene además un impacto muy fuerte sobre cómo te sientes: las conversaciones, los mensajes, los intercambios y los vínculos cercanos te afectan más de lo que suele parecer. "
     "Cuando acumulas demasiadas cosas sin expresarlas, la mente rara vez consigue descansar del todo. "
-    "Te ayuda hablar, escribir o sentir que alguien realmente te escucha. En cambio, guardar demasiado tiempo lo que te pasa o no encontrar espacio para expresarlo suele aumentar mucho la saturación interna."
+    "Te ayuda hablar, escribir o sentir que alguien realmente te escucha. En cambio, guardar demasiado tiempo lo que te pasa o no encontrar espacio para expresarlo suelen aumentar mucho la saturación interna."
 ),
 
 4: (
     "Tu mundo emocional está profundamente unido a la sensación de hogar y pertenencia. Los cambios familiares, las tensiones en casa o la pérdida de referencias afectivas te afectan mucho más de lo que suele verse desde fuera. "
     "Cuando algo te descoloca, tiendes a ir hacia dentro: buscar refugio, aislarte un poco o volver a lo conocido para recuperar sensación de seguridad. "
     "Necesitas sentir que existe un lugar donde puedes bajar la guardia de verdad. Cuando esa sensación de refugio falta, el cuerpo permanece mucho más tiempo en tensión. "
-    "Te ayuda la intimidad, la estabilidad emocional y sentir que tienes una base a la que volver. En cambio, la tensión familiar, la pérdida de seguridad afectiva o sentir que no tienes refugio suele hacer que aparezca mucha desprotección interna."
+    "Te ayuda la intimidad, la estabilidad emocional y sentir que tienes una base a la que volver. En cambio, la tensión familiar, la pérdida de seguridad afectiva o sentir que no tienes refugio suelen hacer que aparezca mucha desprotección interna."
 ),
 
 5: (
     "Necesitas expresar lo que sientes para mantener viva tu energía interior. La creatividad, el juego, el disfrute o la posibilidad de actuar con espontaneidad no son algo superficial para ti: forman parte de lo que te ayuda a sentirte bien emocionalmente. "
     "Cuando pasas demasiado tiempo reprimiendo esa parte de ti, la energía empieza a acumularse y pueden aparecer irritabilidad, vacío o sensación de desconexión contigo. "
     "Tu cuerpo suele apagarse cuando la vida pierde espacio para el disfrute auténtico o para la expresión personal. "
-    "Te ayuda crear, disfrutar y sentir que puedes expresarte libremente. En cambio, la exigencia constante, la represión emocional o sentir que no tienes espacio para ser quien eres suele desgastarte profundamente."
+    "Te ayuda crear, disfrutar y sentir que puedes expresarte libremente. En cambio, la exigencia constante, la represión emocional o sentir que no tienes espacio para ser quien eres suelen desgastarte profundamente."
 ),
 
 6: (
     "Tu cuerpo nota rápidamente aquello que emocionalmente se queda dentro demasiado tiempo. Lo que no expresas o no consigues colocar acaba apareciendo muchas veces como cansancio, tensión o alteración del ritmo cotidiano. "
     "La rutina tiene un impacto muy directo sobre cómo te sientes. Cuando pierdes hábitos, descanso o cierta continuidad corporal, todo dentro empieza a moverse más fácilmente. "
     "Necesitas una vida cotidiana relativamente estable para sentirte bien de verdad, porque el cuerpo necesita orden, descanso y cuidado para poder sostener lo que vas viviendo. "
-    "Te ayuda tener pequeños hábitos, descanso suficiente y momentos reales de cuidado corporal. En cambio, la sobrecarga, el desorden diario o acumular tensión durante demasiado tiempo suele terminar afectándote rápidamente."
+    "Te ayuda tener pequeños hábitos, descanso suficiente y momentos reales de cuidado corporal. En cambio, la sobrecarga, el desorden diario o acumular tensión durante demasiado tiempo suelen terminar afectándote rápidamente."
 ),
 
 7: (
     "Tus relaciones cercanas influyen muchísimo en cómo te sientes por dentro. Cuando un vínculo importante está bien, suele aparecer mucha más calma y estabilidad. Cuando entra en tensión, lo notas enseguida. "
     "Muchas veces intentas sostener la relación incluso cuando emocionalmente ya casi no quedan recursos disponibles, porque la necesidad de armonía puede hacer que postergues durante demasiado tiempo lo que tú necesitas. "
     "El conflicto sostenido suele dejarte sin energía, con sensación de bloqueo o con dificultad para relajarte de verdad. "
-    "Te ayuda sentir reciprocidad, claridad emocional y estabilidad en los vínculos. En cambio, las relaciones desequilibradas, la ambigüedad afectiva o vivir demasiado tiempo en conflicto suele generar mucho desgaste interno."
+    "Te ayuda sentir reciprocidad, claridad emocional y estabilidad en los vínculos. En cambio, las relaciones desequilibradas, la ambigüedad afectiva o vivir demasiado tiempo en conflicto suelen generar mucho desgaste interno."
 ),
 
 8: (
     "Las emociones superficiales rara vez te movilizan demasiado. Lo que realmente te afecta suelen ser las experiencias intensas: la intimidad profunda, las pérdidas, las crisis o los vínculos donde hay algo importante en juego. "
     "Tiendes a vivir muchas emociones intensamente en privado y, cuando no existe un espacio seguro para atravesar todo eso, la tensión empieza a acumularse dentro poco a poco. "
     "Hay vivencias que puedes sostener en silencio durante muchísimo tiempo sin que casi nadie lo note. "
-    "Te ayuda sentir confianza profunda, intimidad real y seguridad emocional. En cambio, la traición, las pérdidas emocionales o atravesar demasiada intensidad sin apoyo suele dejar estados internos difíciles de relajar."
+    "Te ayuda sentir confianza profunda, intimidad real y seguridad emocional. En cambio, la traición, las pérdidas emocionales o atravesar demasiada intensidad sin apoyo suelen dejar estados internos difíciles de relajar."
 ),
 
 9: (
     "Necesitas encontrar sentido a lo que estás viviendo. Cuando comprendes hacia dónde te lleva una experiencia, puedes atravesarla con mucha más amplitud emocional. "
     "La dificultad aparece cuando algo duele y no consigues encontrar ningún significado posible. Ahí puede surgir inquietud, necesidad de escapar o sensación de no poder sostener lo que estás sintiendo. "
     "Tu cuerpo suele pedir movimiento, aire o distancia cuando siente que no existe suficiente libertad emocional. "
-    "Te ayuda sentir dirección, comprensión y horizonte. En cambio, el vacío, el encierro o vivir algo que no consigues colocar dentro de una visión más amplia suele aumentar rápidamente la inquietud interna."
+    "Te ayuda sentir dirección, comprensión y horizonte. En cambio, el vacío, el encierro o vivir algo que no consigues colocar dentro de una visión más amplia suelen aumentar rápidamente la inquietud interna."
 ),
 
 10: (
     "Lo que ocurre en tu vida profesional o pública te afecta emocionalmente mucho más de lo que aparentas. El reconocimiento puede darte una sensación profunda de estabilidad interna, mientras que la crítica o la exposición pueden impactarte muchísimo aunque no siempre lo muestres. "
     "Muchas veces la sensación de valor personal se relaciona con cómo sientes que ocupas tu lugar frente al mundo. "
     "Cuando desaparece la dirección o el reconocimiento, la energía emocional puede caer muy rápido. "
-    "Te ayuda sentir propósito, coherencia y reconocimiento genuino. En cambio, la exposición excesiva, la sensación de fracaso o la inseguridad pública suele afectar profundamente tu estabilidad emocional."
+    "Te ayuda sentir propósito, coherencia y reconocimiento genuino. En cambio, la exposición excesiva, la sensación de fracaso o la inseguridad pública suelen afectar profundamente tu estabilidad emocional."
 ),
 
 11: (
     "Necesitas sentir que formas parte de algo más amplio. Cuando existe conexión con amistades, grupos o proyectos compartidos, tu mundo emocional encuentra mucha más estabilidad y sostén. "
     "El aislamiento suele afectarte más profundamente de lo que parece desde fuera, porque necesitas intercambio, red y sensación de pertenencia. "
     "Cuando esa conexión desaparece, puede aparecer vacío emocional o sensación de desconexión interna. "
-    "Te ayuda sentir comunidad, amistad y participación compartida. En cambio, el aislamiento, la desconexión o sentir que no tienes lugar dentro de un grupo suele generar mucha sensación de separación emocional."
+    "Te ayuda sentir comunidad, amistad y participación compartida. En cambio, el aislamiento, la desconexión o sentir que no tienes lugar dentro de un grupo suelen generar mucha sensación de separación emocional."
 ),
 
 12: (
     "Muchas de tus emociones se mueven dentro de ti antes incluso de que consigas entenderlas del todo. A veces aparece cansancio, saturación o tristeza sin una causa completamente clara. "
     "Necesitas períodos reales de silencio y retirada para dar espacio a todo lo que se va acumulando dentro. Cuando pasas demasiado tiempo entre ruido, demandas o estímulos externos, tu mundo interior empieza a saturarse aunque desde fuera parezca que sigues funcionando. "
     "Tu cuerpo suele necesitar descanso profundo con más frecuencia de la que imaginas. "
-    "Te ayuda tener momentos de soledad elegida, silencio y suficiente espacio interior. En cambio, el exceso de exposición, el ruido constante o no disponer de tiempo para desconectar suele generar mucha saturación emocional."
+    "Te ayuda tener momentos de soledad elegida, silencio y suficiente espacio interior. En cambio, el exceso de exposición, el ruido constante o no disponer de tiempo para desconectar suelen generar mucha saturación emocional."
 ),
 }
 
@@ -601,77 +603,77 @@ CASA4_SIGNO = {
     "Cuando algo amenaza tu estabilidad interna, reaccionas rápidamente. El impulso suele ser actuar, resolver o moverte, porque permanecer demasiado tiempo dentro de una situación tensa sin poder hacer nada con ella suele aumentar mucho la tensión. "
     "Necesitas sentir que existe margen de acción frente a lo que ocurre. Cuando aparecen límites, dependencia o sensación de no tener salida, el cuerpo entra rápidamente en alerta. "
     "La autonomía tiene un impacto enorme sobre tu sensación de seguridad interna y, cuanto más espacio sientes para decidir y moverte, más fácil resulta recuperar estabilidad. "
-    "Te ayuda poder actuar, decidir y sentir movimiento interno. En cambio, el bloqueo, la inmovilidad o sentir que no puedes salir de una situación suele aumentar rápidamente la tensión."
+    "Te ayuda poder actuar, decidir y sentir movimiento interno. En cambio, el bloqueo, la inmovilidad o sentir que no puedes salir de una situación suelen aumentar rápidamente la tensión."
 ),
 
 "Tauro": (
     "Necesitas estabilidad para sentir seguridad interna. Los cambios bruscos en el hogar, en las condiciones de vida o en la sensación de seguridad te afectan mucho más de lo que suele verse desde fuera. "
     "Cuando algo importante cambia demasiado rápido, puede aparecer una sensación muy profunda de haber perdido suelo. "
     "Tiendes a buscar lo conocido, la repetición y cierta continuidad para volver a sentir calma. Por eso no suele resultar fácil relajarte cuando todo alrededor cambia constantemente. "
-    "Te ayuda la calma, la estabilidad y sentir que existe un ritmo previsible en tu vida. En cambio, la incertidumbre, los cambios repentinos o sentir que pierdes tu base suele generar mucha inseguridad interna."
+    "Te ayuda la calma, la estabilidad y sentir que existe un ritmo previsible en tu vida. En cambio, la incertidumbre, los cambios repentinos o sentir que pierdes tu base suelen generar mucha inseguridad interna."
 ),
 
 "Géminis": (
     "Tu estabilidad interna depende mucho de entender qué está pasando a tu alrededor. Cuando aparecen silencios ambiguos, confusión o situaciones poco claras, la mente empieza a acelerarse intentando encontrar una explicación. "
     "Necesitas hablar, preguntar o poner palabras a lo que ocurre para recuperar cierta calma. Muchas veces analizas las situaciones antes incluso de terminar de sentirlas por completo. "
     "Cuando pasas demasiado tiempo intentando comprender algo sin conseguir claridad, el cuerpo empieza a tensarse y la inquietud mental aumenta cada vez más. "
-    "Te ayuda la comunicación clara, las conversaciones honestas y sentir que existe comprensión mutua. En cambio, la ambigüedad, los silencios prolongados o la sensación de confusión emocional suele generar mucho desorden interno."
+    "Te ayuda la comunicación clara, las conversaciones honestas y sentir que existe comprensión mutua. En cambio, la ambigüedad, los silencios prolongados o la sensación de confusión emocional suelen generar mucho desorden interno."
 ),
 
 "Cáncer": (
     "Tu mundo interno responde profundamente al clima emocional del entorno cercano. Cuando existe tensión en casa, en la familia o en las personas que sientes como propias, el cuerpo suele notarlo enseguida. "
     "Necesitas sentir que existe un lugar emocionalmente seguro donde puedas bajar la guardia de verdad. Cuando aparece desbordamiento emocional, tiendes a buscar refugio en lo conocido para recuperar sensación de protección. "
     "Volver a lo familiar suele ayudarte a sentir estabilidad otra vez. "
-    "Te ayuda la intimidad, la cercanía emocional y sentir que tienes un refugio real. En cambio, la inestabilidad afectiva, la tensión familiar o sentir que no tienes dónde apoyarte suele mantenerte en alerta durante demasiado tiempo."
+    "Te ayuda la intimidad, la cercanía emocional y sentir que tienes un refugio real. En cambio, la inestabilidad afectiva, la tensión familiar o sentir que no tienes dónde apoyarte suelen mantenerte en alerta durante demasiado tiempo."
 ),
 
 "Leo": (
     "Necesitas sentir calidez emocional dentro de tu espacio íntimo. Cuando no sientes que te ven, te valoran o te reciben emocionalmente, algo dentro empieza a apagarse aunque externamente sigas funcionando. "
     "La frialdad emocional suele afectarte mucho más de lo que aparentas, porque necesitas sentir que puedes existir emocionalmente sin reducirte ni esconder partes importantes de ti. "
     "Cuando pasas demasiado tiempo sintiendo indiferencia emocional alrededor, la sensación de seguridad interna empieza a resentirse poco a poco. "
-    "Te ayuda el afecto claro, el reconocimiento genuino y sentir calidez emocional en tu entorno cercano. En cambio, la frialdad, la indiferencia o sentir que no tienes un lugar emocional real suele desgastar profundamente tu estabilidad."
+    "Te ayuda el afecto claro, el reconocimiento genuino y sentir calidez emocional en tu entorno cercano. En cambio, la frialdad, la indiferencia o sentir que no tienes un lugar emocional real suelen desgastar profundamente tu estabilidad."
 ),
 
 "Virgo": (
     "Cuando aparece sensación de desorden dentro de ti, muchas veces intentas recuperar estabilidad organizando algo fuera. Ordenar, limpiar, resolver tareas o estructurar el entorno puede ayudarte a bajar momentáneamente la tensión interna. "
     "La dificultad aparece cuando pasas demasiado tiempo intentando corregir lo externo sin llegar a atender lo que realmente te está ocurriendo por dentro. "
     "Tu sensación de seguridad aumenta cuando la vida cotidiana tiene cierto orden y funcionalidad. Cuando todo alrededor se vuelve caótico, el cuerpo entra rápidamente en sobrecarga. "
-    "Te ayuda sentir estructura simple, orden y claridad en lo cotidiano. En cambio, el caos, la sobreexigencia o sentir que nunca llegas a todo suele generar mucha tensión interna."
+    "Te ayuda sentir estructura simple, orden y claridad en lo cotidiano. En cambio, el caos, la sobreexigencia o sentir que nunca llegas a todo suelen generar mucha tensión interna."
 ),
 
 "Libra": (
     "Tu estabilidad interna depende muchísimo de cómo estén tus vínculos cercanos. Cuando existe armonía en las relaciones importantes, resulta mucho más fácil sentir calma y equilibrio por dentro. "
     "Cuando aparece conflicto sostenido, desequilibrio emocional o tensión relacional, el cuerpo lo registra rápidamente. "
     "Muchas veces intentas sostener la paz adaptándote más de lo que realmente puedes, pero lo que callas o postergas termina acumulándose dentro. "
-    "Te ayuda la armonía, la reciprocidad y sentir equilibrio emocional en las relaciones. En cambio, el conflicto constante, la tensión vincular o sentir que tienes que adaptarte continuamente suele generar mucho agotamiento interno."
+    "Te ayuda la armonía, la reciprocidad y sentir equilibrio emocional en las relaciones. En cambio, el conflicto constante, la tensión vincular o sentir que tienes que adaptarte continuamente suelen generar mucho agotamiento interno."
 ),
 
 "Escorpio": (
     "Percibes muy rápido lo que ocurre debajo de la superficie. Las tensiones no dichas, las emociones contenidas o las dinámicas ocultas te afectan incluso cuando nadie las nombra. "
     "Eso hace que muchas veces permanezcas en vigilancia aunque externamente todo parezca tranquilo. "
     "Necesitas sentir confianza profunda para relajarte de verdad. Cuando percibes manipulación, secretos o falta de honestidad emocional, el cuerpo vuelve rápidamente al estado de alerta. "
-    "Te ayuda la intimidad real, la honestidad emocional y la sensación de confianza profunda. En cambio, la manipulación, las tensiones ocultas o sentir una amenaza emocional suele activar mucha intensidad interna."
+    "Te ayuda la intimidad real, la honestidad emocional y la sensación de confianza profunda. En cambio, la manipulación, las tensiones ocultas o sentir una amenaza emocional suelen activar mucha intensidad interna."
 ),
 
 "Sagitario": (
     "Necesitas sentir que tu vida tiene dirección para experimentar estabilidad interna. Cuando existe horizonte, expansión o sensación de crecimiento, tu mundo interno se sostiene mucho mejor. "
     "La dificultad aparece cuando la vida empieza a sentirse demasiado estrecha, repetitiva o sin sentido. Entonces puede surgir inquietud, necesidad de escapar o sensación de encierro interno. "
     "Muchas veces intentas recuperar estabilidad tomando distancia, moviéndote o buscando aire y perspectiva. "
-    "Te ayuda la libertad, el movimiento y sentir que existe propósito en lo que vives. En cambio, sentir límites constantes, no encontrar una salida o vivir algo que no tiene sentido para ti suele aumentar rápidamente la tensión interna."
+    "Te ayuda la libertad, el movimiento y sentir que existe propósito en lo que vives. En cambio, sentir límites constantes, no encontrar una salida o vivir algo que no tiene sentido para ti suelen aumentar rápidamente la tensión interna."
 ),
 
 "Capricornio": (
     "Desde muy pronto apareció la necesidad de sostenerte emocionalmente con muy poco apoyo. Muchas veces resulta más fácil resistir que pedir ayuda, porque la sensación de seguridad suele estar muy ligada a sentir que puedes hacerte cargo de lo que venga. "
     "La dificultad aparece cuando sostienes demasiado peso durante demasiado tiempo antes de reconocer que también necesitas apoyo y descanso. "
     "El cuerpo suele acumular muchísimo cansancio antes de detenerse realmente. "
-    "Te ayuda sentir estructura, estabilidad y cierta sensación de capacidad interna. En cambio, la sobrecarga prolongada, el exceso de responsabilidad o sentir que todo depende de ti suele desgastar profundamente la energía."
+    "Te ayuda sentir estructura, estabilidad y cierta sensación de capacidad interna. En cambio, la sobrecarga prolongada, el exceso de responsabilidad o sentir que todo depende de ti suelen desgastar profundamente la energía."
 ),
 
 "Acuario": (
     "Existe una parte de ti que observa lo que siente desde cierta distancia. Muchas veces entiendes emocionalmente lo que ocurre antes de terminar de sentirlo por completo. "
     "Necesitas bastante espacio interno para sentir seguridad y estabilidad emocional. Cuando los vínculos se vuelven demasiado invasivos o absorbentes, el cuerpo empieza a retirarse aunque emocionalmente sigas presente. "
     "La independencia tiene muchísimo peso en tu sensación de estabilidad interna. "
-    "Te ayuda la autonomía, el espacio personal y sentir libertad emocional. En cambio, la invasión emocional, la dependencia excesiva o sentir que pierdes espacio interno suele generar desconexión y tensión."
+    "Te ayuda la autonomía, el espacio personal y sentir libertad emocional. En cambio, la invasión emocional, la dependencia excesiva o sentir que pierdes espacio interno suelen generar desconexión y tensión."
 ),
 
 "Piscis": (
@@ -679,7 +681,7 @@ CASA4_SIGNO = {
     "Cuando pasas demasiado tiempo en ambientes confusos o emocionalmente cargados, la sensación de estabilidad empieza a diluirse poco a poco. "
     "Muchas veces necesitas retirarte, descansar o aislarte un tiempo para volver a sentir claridad interna. "
     "No siempre necesitas entender exactamente qué te ocurre para empezar a sentirte mejor. A veces simplemente necesitas silencio, descanso y menos exposición emocional alrededor. "
-    "Te ayudan los límites claros, los espacios de retiro y el descanso profundo. En cambio, la saturación emocional, los ambientes caóticos o el exceso de exposición suele generar muchísima sobrecarga interna."
+    "Te ayudan los límites claros, los espacios de retiro y el descanso profundo. En cambio, la saturación emocional, los ambientes caóticos o el exceso de exposición suelen generar muchísima sobrecarga interna."
 ),
 
 }
@@ -693,15 +695,15 @@ CASA6_SIGNO = {
     "Primero suele aparecer irritación, después impaciencia y más tarde la sensación de que cualquier cosa molesta más de lo normal. "
     "Pensar más rara vez resuelve ese exceso de intensidad. Lo que realmente ayuda es mover el cuerpo y darle salida a lo que se ha ido acumulando dentro. "
     "El movimiento físico tiene un impacto directo sobre cómo te sientes. Cuando no puedes moverte —por cansancio, enfermedad o bloqueo— la tensión empieza a quedarse atrapada dentro. "
-    "Te ayuda la acción física, el movimiento y poder descargar corporalmente lo que vas acumulando. En cambio, la inmovilidad, contener demasiado tiempo lo que sientes o sentir que no puedes avanzar suele aumentar rápidamente la tensión interna."
+    "Te ayuda la acción física, el movimiento y poder descargar corporalmente lo que vas acumulando. En cambio, la inmovilidad, contener demasiado tiempo lo que sientes o sentir que no puedes avanzar suelen aumentar rápidamente la tensión interna."
 ),
 
 "Tauro": (
-    "Tu cuerpo necesita estabilidad y repetición para sentirse seguro. Los cambios bruscos en horarios, sueño, alimentación o rutina te afectan mucho más de lo que suele verse desde fuera. "
+    "Tu cuerpo necesita estabilidad y repetición para sentir seguridad. Los cambios bruscos en horarios, sueño, alimentación o rutina te afectan mucho más de lo que suele verse desde fuera. "
     "Cuando pierdes continuidad, todo tarda bastante tiempo en volver a relajarse del todo, porque necesitas ritmos previsibles para sentir verdadera calma corporal. "
     "La repetición no funciona como una limitación para ti, sino como una forma de sostén. "
     "Tu cuerpo responde especialmente bien a lo constante, a lo simple y a aquello que puede mantenerse en el tiempo sin exceso de exigencia. "
-    "Te ayudan las rutinas estables, el descanso regular y los hábitos sostenidos. En cambio, el desorden, los cambios repentinos o la sensación de inestabilidad cotidiana suele generar mucha tensión física y emocional."
+    "Te ayudan las rutinas estables, el descanso regular y los hábitos sostenidos. En cambio, el desorden, los cambios repentinos o la sensación de inestabilidad cotidiana suelen generar mucha tensión física y emocional."
 ),
 
 "Géminis": (
@@ -709,7 +711,7 @@ CASA6_SIGNO = {
     "La dificultad no suele ser falta de energía, sino demasiadas cosas abiertas al mismo tiempo. Puedes pasar días con muchísima actividad mental mientras el cuerpo queda completamente en segundo plano. "
     "La sobrecarga suele aparecer como inquietud, dificultad para desconectar o sensación de que la mente nunca termina de apagarse del todo. "
     "Necesitas alternar estímulo y pausa de forma mucho más consciente de lo que imaginas. "
-    "Te ayudan la variedad, el aprendizaje y sentir movimiento mental con cierto orden. En cambio, el exceso de estímulos, la dispersión constante o no desconectar nunca suele saturarte rápidamente."
+    "Te ayudan la variedad, el aprendizaje y sentir movimiento mental con cierto orden. En cambio, el exceso de estímulos, la dispersión constante o no desconectar nunca suelen saturarte rápidamente."
 ),
 
 "Cáncer": (
@@ -718,7 +720,7 @@ CASA6_SIGNO = {
     "Necesitas sentir cuidado y cierta seguridad emocional para sentirte bien físicamente de verdad. "
     "Los pequeños rituales cotidianos tienen muchísimo impacto sobre ti: la comida, el descanso, el hogar o la sensación de refugio. "
     "Cuando pasas demasiado tiempo sosteniendo tensión emocional, el cuerpo termina expresándolo de alguna manera. "
-    "Te ayudan el cuidado cotidiano, la intimidad y sentir hogar alrededor. En cambio, la tensión relacional, la falta de descanso emocional o los ambientes afectivamente inestables suele desgastar rápidamente tu energía."
+    "Te ayudan el cuidado cotidiano, la intimidad y sentir hogar alrededor. En cambio, la tensión relacional, la falta de descanso emocional o los ambientes afectivamente inestables suelen desgastar rápidamente tu energía."
 ),
 
 "Leo": (
@@ -726,7 +728,7 @@ CASA6_SIGNO = {
     "Puedes seguir funcionando durante mucho tiempo, pero sin sensación real de vitalidad. "
     "Necesitas espacios donde puedas expresarte, crear o sentir conexión auténtica contigo. "
     "Cuando pasas demasiado tiempo lejos de esa parte de ti, la energía empieza a disminuir antes incluso de que puedas ponerle nombre a lo que te ocurre. "
-    "Te ayudan la creatividad, la expresión auténtica y sentir conexión personal con lo que haces. En cambio, la rutina mecánica, el exceso de obligación o no tener espacio propio suele apagar progresivamente la energía."
+    "Te ayudan la creatividad, la expresión auténtica y sentir conexión personal con lo que haces. En cambio, la rutina mecánica, el exceso de obligación o no tener espacio propio suelen apagar progresivamente la energía."
 ),
 
 "Virgo": (
@@ -735,7 +737,7 @@ CASA6_SIGNO = {
     "Cuando algo se descoloca, la tendencia suele ser analizarlo, corregirlo o intentar mejorarlo enseguida. "
     "La dificultad aparece cuando el cuerpo necesita descanso y recibe todavía más exigencia o supervisión. "
     "Puedes agotarte intentando hacerlo todo correctamente durante demasiado tiempo. "
-    "Te ayudan el orden simple, los hábitos claros y el cuidado corporal real. En cambio, el perfeccionismo, el exceso de análisis o vivir permanentemente intentando corregirte suele generar muchísima tensión."
+    "Te ayudan el orden simple, los hábitos claros y el cuidado corporal real. En cambio, el perfeccionismo, el exceso de análisis o vivir permanentemente intentando corregirte suelen generar muchísima tensión."
 ),
 
 "Libra": (
@@ -743,7 +745,7 @@ CASA6_SIGNO = {
     "La armonía no es un lujo para ti, sino una necesidad real para sentir bienestar físico y emocional. "
     "Necesitas cierta sensación de equilibrio, belleza y calma alrededor para poder relajarte de verdad. "
     "Cuando pasas demasiado tiempo adaptándote a entornos tensos o relaciones desgastantes, el cuerpo termina agotándose. "
-    "Te ayudan la armonía, el equilibrio y los ambientes agradables. En cambio, el conflicto constante, la tensión ambiental o los vínculos muy desgastantes suele afectar profundamente tu energía."
+    "Te ayudan la armonía, el equilibrio y los ambientes agradables. En cambio, el conflicto constante, la tensión ambiental o los vínculos muy desgastantes suelen afectar profundamente tu energía."
 ),
 
 "Escorpio": (
@@ -751,7 +753,7 @@ CASA6_SIGNO = {
     "Las prácticas demasiado suaves muchas veces no son suficientes para ti. Necesitas descargar de verdad: sudar, atravesar intensidad o entrar en períodos de silencio profundo. "
     "Cuando no existe esa descarga, el cuerpo empieza a endurecerse y la energía queda retenida durante demasiado tiempo. "
     "Entonces pueden aparecer tensión constante, dificultad para dormir o sensación de pesadez acumulada. "
-    "Te ayudan la descarga profunda, la intensidad bien canalizada y los espacios de silencio real. En cambio, acumular emociones, contener demasiado tiempo lo que sientes o no tener salida para ello suele generar muchísima presión interna."
+    "Te ayudan la descarga profunda, la intensidad bien canalizada y los espacios de silencio real. En cambio, acumular emociones, contener demasiado tiempo lo que sientes o no tener salida para ello suelen generar muchísima presión interna."
 ),
 
 "Sagitario": (
@@ -760,7 +762,7 @@ CASA6_SIGNO = {
     "La dificultad surge cuando desaparece el entusiasmo, porque muchas veces también desaparece toda la estructura cotidiana. "
     "Entonces el cuerpo termina pagando el coste de la irregularidad acumulada. "
     "Necesitas construir hábitos mínimos capaces de sostenerse incluso en momentos de poca motivación. "
-    "Te ayudan la dirección, el propósito y sentir movimiento en tu vida. En cambio, la rutina vacía, la desmotivación o la irregularidad constante suele desorganizar rápidamente la energía."
+    "Te ayudan la dirección, el propósito y sentir movimiento en tu vida. En cambio, la rutina vacía, la desmotivación o la irregularidad constante suelen desorganizar rápidamente la energía."
 ),
 
 "Capricornio": (
@@ -768,7 +770,7 @@ CASA6_SIGNO = {
     "Existe tendencia a seguir funcionando incluso cuando el cuerpo ya está pidiendo parar. Muchas veces priorizas las responsabilidades antes que la recuperación. "
     "No porque no sientas el agotamiento, sino porque el umbral interno para detenerte suele ser muy alto. "
     "El desgaste suele aparecer de golpe, cuando la acumulación ya supera lo que podías sostener. "
-    "Te ayudan los límites claros, el descanso suficiente y una estructura estable. En cambio, la sobrecarga prolongada, el exceso de responsabilidad o no permitirte parar suele desgastar profundamente el cuerpo."
+    "Te ayudan los límites claros, el descanso suficiente y una estructura estable. En cambio, la sobrecarga prolongada, el exceso de responsabilidad o no permitirte parar suelen desgastar profundamente el cuerpo."
 ),
 
 "Acuario": (
@@ -776,7 +778,7 @@ CASA6_SIGNO = {
     "Eres especialmente sensible al exceso de estímulos, ruido o demandas constantes, por eso necesitas períodos reales de desconexión para volver a sentir claridad interna. "
     "Cuando pasas demasiado tiempo adaptándote a ritmos externos que no sientes propios, el cuerpo empieza a saturarse poco a poco. "
     "Entender por qué haces algo tiene muchísimo impacto sobre tu capacidad para sostenerlo. "
-    "Te ayudan la autonomía, el espacio mental y la libertad de ritmo. En cambio, la sobreestimulación, la imposición externa o no disponer de tiempo para desconectar suele generar muchísima saturación."
+    "Te ayudan la autonomía, el espacio mental y la libertad de ritmo. En cambio, la sobreestimulación, la imposición externa o no disponer de tiempo para desconectar suelen generar muchísima saturación."
 ),
 
 "Piscis": (
@@ -785,7 +787,7 @@ CASA6_SIGNO = {
     "Necesitas momentos reales de silencio, retirada y descarga emocional para volver a sentirte bien. "
     "Cuando no existen espacios para soltar lo acumulado, la fatiga empieza a crecer lentamente. "
     "Tu cuerpo suele necesitar descanso profundo con más frecuencia de la que imaginas. "
-    "Te ayudan el silencio, el descanso, la suavidad y los espacios de retiro. En cambio, la saturación ambiental, el exceso de exposición o no disponer de momentos de descarga suele generar muchísima sobrecarga."
+    "Te ayudan el silencio, el descanso, la suavidad y los espacios de retiro. En cambio, la saturación ambiental, el exceso de exposición o no disponer de momentos de descarga suelen generar muchísima sobrecarga."
 ),
 
 }
@@ -805,7 +807,7 @@ PLANETA_CASA4 = {
     "Tu mundo emocional está profundamente unido a tus raíces y al entorno donde vives. Cuando hay tensión en casa o inestabilidad emocional alrededor, recuperar calma se vuelve mucho más difícil. "
     "Necesitas intimidad, refugio y cierta sensación de seguridad emocional para descansar de verdad. "
     "Los cambios en el hogar no te afectan solo de forma práctica. También se mueven profundamente por dentro y el cuerpo suele notarlo muy rápido cuando algo altera tu espacio emocional. "
-    "Cuando el entorno íntimo pierde estabilidad, todo dentro necesita mucho más tiempo para volver a sentirse seguro."
+    "Cuando el entorno íntimo pierde estabilidad, todo dentro necesita mucho más tiempo para volver a sentir seguridad."
 ),
 
 "Mercurio": (
@@ -825,7 +827,7 @@ PLANETA_CASA4 = {
 "Marte": (
     "Cuando algo amenaza tu espacio emocional o tu sensación de seguridad, la reacción suele aparecer muy rápido. El cuerpo entra fácilmente en defensa cuando percibe invasión, tensión o conflicto dentro del entorno íntimo. "
     "Muchas veces la respuesta llega antes incluso de haber comprobado del todo si el peligro es real, porque la necesidad de proteger tu espacio interno es muy fuerte. "
-    "La sensación de tener un lugar propio y protegido resulta especialmente importante para ti. "
+    "La sensación de tener un espacio propio que puedas proteger resulta especialmente importante para ti. "
     "Cuando no existe esa sensación de resguardo, la tensión interna suele subir rápidamente."
 ),
 
@@ -1108,7 +1110,7 @@ ASPECTOS_LUNA = {
 ),
 
 ("Luna","Venus","⚻"): (
-    "Existe un ajuste constante entre lo que necesitas emocionalmente y la manera en que te vinculas. A veces cuidar demasiado el vínculo puede alejarte de ti mismo. "
+    "Existe un ajuste constante entre lo que necesitas emocionalmente y la manera en que te vinculas. A veces cuidar demasiado el vínculo puede alejarte de ti. "
     "Y otras veces atenderte más a ti puede remover equilibrios que parecían estables. "
     "Tu bienestar depende mucho de revisar continuamente esa medida para que el cuidado no termine convirtiéndose en abandono propio."
 ),
@@ -1139,7 +1141,7 @@ ASPECTOS_LUNA = {
 
 ("Luna","Marte","✶"): (
     "Existe facilidad para mover emocionalmente lo que te pasa. Cuando algo te afecta, normalmente encuentras alguna manera de actuar, descargar o transformar esa energía en algo útil. "
-    "La acción puede ayudarte a no quedarte demasiado tiempo atrapado dentro de la activación emocional. "
+    "La acción puede ayudarte a no quedarte demasiado tiempo dentro de la activación emocional. "
     "Mover el cuerpo o tomar iniciativa suele regular mucho tu estado interno."
 ),
 
@@ -1168,7 +1170,7 @@ ASPECTOS_LUNA = {
 ),
 
 ("Luna","Júpiter","△"): (
-    "Tienes capacidad para darle espacio a lo que sientes. Cuando aparece una dificultad emocional, suele existir tendencia a buscar perspectiva antes de quedarte completamente atrapado dentro del problema. "
+    "Tienes capacidad para darle espacio a lo que sientes. Cuando aparece una dificultad emocional, suele existir tendencia a buscar perspectiva antes de quedarte completamente dentro del problema. "
     "Eso puede ayudarte muchísimo a atravesar experiencias complejas con más amplitud, comprensión y capacidad de recuperación. "
     "Tu mundo emocional necesita sentido, horizonte y sensación de espacio suficiente para sentirse bien."
 ),
@@ -1225,7 +1227,7 @@ ASPECTOS_LUNA = {
     "Tu mundo emocional cambia rápido y necesita mucha libertad para poder respirar. Cuando una situación empieza a sentirse demasiado cerrada, absorbente o asfixiante, puede aparecer desconexión de forma bastante repentina. "
     "Muchas veces el cuerpo se retira antes incluso de que hayas decidido conscientemente tomar distancia. "
     "Necesitas espacio para procesar lo que sientes sin presión constante ni sensación de invasión emocional. "
-    "Tu equilibrio mejora cuando existe libertad suficiente para moverte emocionalmente sin sentirte atrapado."
+    "Tu equilibrio mejora cuando existe libertad suficiente para moverte emocionalmente sin sentir que la situación te atrapa."
 ),
 
 ("Luna","Urano","□"): (
@@ -1315,7 +1317,7 @@ ASPECTOS_LUNA = {
 
 ("Luna","Plutón","☍"): (
     "Tu mundo emocional tiende a atraer intensidad. Existe una atracción muy fuerte hacia lo profundo, hacia los vínculos intensos y hacia todo aquello que remueve emocionalmente. "
-    "Pero al mismo tiempo puede aparecer miedo a perderte dentro de esa intensidad o a quedar demasiado absorbido por ella. "
+    "Pero al mismo tiempo puede aparecer miedo a perderte dentro de esa intensidad o a que termine absorbiéndote demasiado. "
     "A veces surge acercamiento emocional muy profundo y después necesidad de distancia para recuperar sensación de control interno. "
     "El aprendizaje está en poder entrar en profundidad sin sentir que tienes que desaparecer dentro de ella."
 ),
@@ -1329,7 +1331,7 @@ ASPECTOS_LUNA = {
 ("Luna","Plutón","✶"): (
     "Existe una vía de profundidad emocional que puede convertirse en un recurso muy importante para ti. Cuando te permites mirar lo que ocurre por debajo de la superficie, normalmente recuperas fuerza interna y sensación de verdad emocional. "
     "Tu mundo interno se regula mucho mejor cuando no tiene que quedarse únicamente en lo superficial o en lo aparentemente correcto. "
-    "La honestidad profunda contigo mismo puede devolverte centro y estabilidad."
+    "La honestidad profunda contigo puede devolverte centro y estabilidad."
 ),
 
 ("Luna","Plutón","⚻"): (
@@ -1353,7 +1355,7 @@ ASPECTOS_LUNA = {
 
 ("Luna","Quirón","☍"): (
     "Puede haber tensión entre tu necesidad emocional y una herida profunda que se activa especialmente dentro de los vínculos. A veces buscas cuidado fuera y, al mismo tiempo, algo dentro se protege automáticamente de recibirlo por completo. "
-    "Esa defensa no es el problema. Es una parte de ti que aprendió hace tiempo a protegerse para no volver a sentirse herido. "
+    "Esa defensa no es el problema. Es una parte de ti que aprendió hace tiempo a protegerse para no volver a sufrir de la misma manera. "
     "Tu equilibrio mejora cuando puedes reconocer esa defensa sin convertirla en enemiga ni obligarte a derribarla de golpe."
 ),
 
@@ -1388,7 +1390,7 @@ ASPECTOS_LUNA = {
 ),
 
 ("Luna","Lilith","☍"): (
-    "Puede haber oscilación entre buscar cuidado y rechazarlo cuando se siente demasiado invasivo o absorbente. Una parte de ti necesita pertenecer, sentirse acogido y poder descansar emocionalmente en alguien o en algo. "
+    "Puede haber oscilación entre buscar cuidado y rechazarlo cuando se siente demasiado invasivo o absorbente. Una parte de ti necesita pertenecer, sentir acogida y poder descansar emocionalmente en alguien o en algo. "
     "Y al mismo tiempo existe otra parte que se rebela rápidamente ante cualquier forma de dependencia emocional o sensación de pérdida de libertad interna. "
     "Tu regulación mejora cuando puedes reconocer ambas necesidades sin expulsar ninguna de ellas."
 ),
@@ -1426,7 +1428,7 @@ ASPECTOS_LUNA = {
 ("Luna","Nodo Norte","☍"): (
     "Existe tensión entre lo emocionalmente conocido y la dirección hacia la que tu vida intenta moverse. Puede haber atracción hacia formas antiguas de pertenencia, cuidado o refugio emocional aunque ya no sostengan realmente tu desarrollo actual. "
     "Lo familiar puede sentirse seguro incluso cuando limita profundamente el movimiento o el crecimiento. "
-    "Tu equilibrio aparece cuando puedes honrar lo vivido sin quedarte atrapado dentro de ello."
+    "Tu equilibrio aparece cuando puedes honrar lo vivido sin permanecer dentro de ello."
 ),
 
 ("Luna","Nodo Norte","△"): (
@@ -1467,7 +1469,7 @@ ASPECTOS_LUNA = {
 
 ("Luna","Nodo Sur","△"): (
     "Existe una memoria emocional disponible como recurso interno. Hay formas de cuidado, sensibilidad o pertenencia que reconoces con mucha facilidad y que pueden ayudarte a sostenerte en momentos difíciles. "
-    "La clave está en utilizar esos recursos como apoyo y no como lugar donde quedarte detenido. "
+    "La clave está en utilizar esos recursos como apoyo y no como lugar donde permanecer. "
     "El pasado puede sostenerte siempre que no sustituya completamente el presente."
 ),
 
@@ -1515,7 +1517,7 @@ REGENTE_CASA4_LUNA = {
 "Venus": (
     "Tu sensación de seguridad crece allí donde el cuerpo puede dejar de defenderse. "
     "La armonía, el afecto, la belleza cotidiana y los vínculos donde puedes relajarte ayudan a que el sistema emocional encuentre refugio. "
-    "No necesitas una vida perfecta. Necesitas espacios donde no tengas que permanecer constantemente en alerta y donde puedas sentirte acogido tal y como eres."
+    "No necesitas una vida perfecta. Necesitas espacios donde no tengas que permanecer constantemente en alerta y donde puedas bajar la guardia y ser tal y como eres."
 ),
 
 "Marte": (
@@ -1554,7 +1556,7 @@ REGENTE_CASA4_LUNA = {
 
 "Plutón": (
     "Con el tiempo descubres que tu verdadera seguridad no depende de evitar las crisis, sino de comprobar que eres capaz de atravesarlas. "
-    "Cada transformación importante fortalece una confianza más profunda en ti mismo. "
+    "Cada transformación importante fortalece una confianza más profunda en ti. "
     "Poco a poco aprendes que la estabilidad no consiste en que nada cambie, sino en desarrollar la capacidad de reconstruirte cuando la vida lo necesita."
 ),
 
@@ -1867,6 +1869,95 @@ def planetas_en_casa(planetas, num_casa):
         and nombre not in excluir
     ]
 
+def puntos_en_casa(planetas, num_casa):
+    """Incluye nodos y puntos sensibles para lectura estructural de la casa."""
+    return [
+        nombre
+        for nombre, p in planetas.items()
+        if p.get("casa") == num_casa
+    ]
+
+
+def _descripcion_posiciones_nucleo(nucleo):
+    """Describe un núcleo sin fingir que todos sus miembros comparten signo/casa."""
+    posiciones = nucleo.get("posiciones", {}) or {}
+    grupos = {}
+
+    for punto in nucleo.get("puntos", []):
+        datos = posiciones.get(punto, {}) or {}
+        clave = (datos.get("signo"), datos.get("casa"))
+        grupos.setdefault(clave, []).append(punto)
+
+    fragmentos = []
+    for (signo, casa), puntos in grupos.items():
+        ubicacion = []
+        if signo:
+            ubicacion.append(str(signo))
+        if casa not in (None, ""):
+            ubicacion.append(f"Casa {casa}")
+
+        if ubicacion:
+            fragmentos.append(
+                f"{lista_y(puntos)} en {' y '.join(ubicacion)}"
+            )
+        else:
+            fragmentos.append(lista_y(puntos))
+
+    return "; ".join(fragmentos)
+
+
+def texto_nucleos_luna(planetas):
+    """Contextualiza los núcleos globales en los que participa la Luna."""
+    carta_minima = {"planetas": planetas}
+    nucleos = [
+        nucleo
+        for nucleo in detectar_nucleos_globales(carta_minima)
+        if "Luna" in nucleo.get("puntos", [])
+    ]
+
+    if not nucleos:
+        return ""
+
+    partes = []
+    for nucleo in nucleos:
+        puntos = nucleo.get("puntos", [])
+        otros = [p for p in puntos if p != "Luna"]
+        ubicaciones = _descripcion_posiciones_nucleo(nucleo)
+
+        partes.append(
+            f"La Luna no funciona aquí de forma aislada. Forma parte de un stellium con "
+            f"{lista_y(otros)}. Este núcleo reúne varias funciones que pueden activarse de manera "
+            f"conjunta, de modo que los aspectos lunares que aparecen por separado a continuación "
+            f"también deben leerse como expresiones parciales de una misma concentración. "
+            f"Su distribución real es: {ubicaciones}."
+        )
+
+    return "\n\n".join(partes)
+
+
+def texto_nucleos_luna_breve(planetas):
+    """Referencia breve al núcleo lunar para la integración final."""
+    carta_minima = {"planetas": planetas}
+    nucleos = [
+        nucleo
+        for nucleo in detectar_nucleos_globales(carta_minima)
+        if "Luna" in nucleo.get("puntos", [])
+    ]
+
+    if not nucleos:
+        return ""
+
+    frases = []
+    for nucleo in nucleos:
+        otros = [p for p in nucleo.get("puntos", []) if p != "Luna"]
+        frases.append(
+            f"Esta lectura debe mantenerse dentro del contexto del stellium que une a la Luna con "
+            f"{lista_y(otros)}. Por eso, aunque algunos aspectos se describan por separado, forman parte "
+            f"de una misma concentración estructural y pueden movilizarse conjuntamente."
+        )
+    return "\n\n".join(frases)
+
+
 def agregar_parrafos(elementos, texto, cuerpo, cada=2):
     partes = [p.strip() for p in texto.split("\n\n") if p.strip()]
 
@@ -1899,8 +1990,22 @@ def texto_luna_casa(planetas):
     return LUNA_CASA.get(casa, "")
 
 
+def normalizar_eje_nodal_luna(aspectos_luna):
+    """
+    Mantiene los dos polos del eje nodal en la narrativa.
+
+    Nodo Norte y Nodo Sur forman un único eje y ambos deben poder aparecer
+    en la interpretación. La integración posterior evita contarlos como dos
+    mensajes independientes de tensión/apoyo.
+
+    Esta función se mantiene por compatibilidad con versiones anteriores.
+    """
+    return list(aspectos_luna or [])
+
 def textos_aspectos_luna(aspectos_luna):
     resultados = []
+
+    aspectos_luna = normalizar_eje_nodal_luna(aspectos_luna)
 
     if not aspectos_luna:
         return resultados
@@ -1917,7 +2022,37 @@ def textos_aspectos_luna(aspectos_luna):
         if aspecto.get("relevancia") == "estructural"
     ]
 
-    aspectos_relevantes = (exactos + estructurales)[:6]
+    candidatos = exactos + estructurales
+    aspectos_relevantes = candidatos[:6]
+
+    # El eje nodal se considera una unidad editorial. Si ambos polos existen
+    # en los aspectos lunares, nunca mostramos uno sin el otro por culpa
+    # del límite máximo de seis aspectos.
+    nodales_disponibles = {
+        a.get("planeta"): a
+        for a in candidatos
+        if a.get("planeta") in ("Nodo Norte", "Nodo Sur")
+    }
+
+    if "Nodo Norte" in nodales_disponibles and "Nodo Sur" in nodales_disponibles:
+        presentes = {a.get("planeta") for a in aspectos_relevantes}
+
+        for nodo in ("Nodo Norte", "Nodo Sur"):
+            if nodo not in presentes:
+                reemplazado = False
+                for i in range(len(aspectos_relevantes) - 1, -1, -1):
+                    if aspectos_relevantes[i].get("planeta") not in ("Nodo Norte", "Nodo Sur"):
+                        aspectos_relevantes[i] = nodales_disponibles[nodo]
+                        reemplazado = True
+                        break
+                if not reemplazado:
+                    aspectos_relevantes.append(nodales_disponibles[nodo])
+                presentes.add(nodo)
+
+        aspectos_relevantes = sorted(
+            aspectos_relevantes,
+            key=lambda a: a.get("orbe", 999),
+        )
 
     for aspecto in aspectos_relevantes:
         planeta = aspecto["planeta"]
@@ -2017,6 +2152,8 @@ def texto_casa6(planetas, cuspides):
 
 
 def texto_integracion(planetas, cuspides, aspectos_luna):
+    aspectos_luna = normalizar_eje_nodal_luna(aspectos_luna)
+
     luna        = planetas.get("Luna", {})
     signo_luna  = luna.get("signo", "")
     signo_c4    = signo_cuspide_casa(cuspides, 4)
@@ -2027,9 +2164,31 @@ def texto_integracion(planetas, cuspides, aspectos_luna):
 
     planetas_c4 = planetas_en_casa(planetas, 4)
     planetas_c6 = planetas_en_casa(planetas, 6)
+    puntos_c4   = puntos_en_casa(planetas, 4)
+    puntos_c6   = puntos_en_casa(planetas, 6)
+    texto_nucleo_lunar = texto_nucleos_luna_breve(planetas)
 
-    tensiones = [a for a in aspectos_luna if a["simbolo"] in ("□", "☍", "⚻")]
-    apoyos    = [a for a in aspectos_luna if a["simbolo"] in ("△", "✶", "=")]
+    aspectos_no_nodales = [
+        a for a in aspectos_luna
+        if a.get("planeta") not in ("Nodo Norte", "Nodo Sur")
+    ]
+    aspectos_nodales = [
+        a for a in aspectos_luna
+        if a.get("planeta") in ("Nodo Norte", "Nodo Sur")
+    ]
+
+    tensiones = [
+        a for a in aspectos_no_nodales
+        if a["simbolo"] in ("□", "☍", "⚻")
+    ]
+    apoyos = [
+        a for a in aspectos_no_nodales
+        if a["simbolo"] in ("△", "✶")
+    ]
+    conjunciones = [
+        a for a in aspectos_no_nodales
+        if a["simbolo"] == "="
+    ]
 
     apertura = (
         f"Tu Luna en {signo_luna} muestra cómo reaccionas emocionalmente cuando algo te afecta. "
@@ -2110,6 +2269,9 @@ def texto_integracion(planetas, cuspides, aspectos_luna):
 
     partes = [apertura, elem_coherencia]
 
+    if texto_nucleo_lunar:
+        partes.append(texto_nucleo_lunar)
+
     if planetas_c4:
         verbo_c4 = "influyen" if len(planetas_c4) > 1 else "influye"
         demostrativo_c4 = "esas energías" if len(planetas_c4) > 1 else "esa energía"
@@ -2118,51 +2280,167 @@ def texto_integracion(planetas, cuspides, aspectos_luna):
             f"Cuando buscas seguridad, refugio o estabilidad emocional profunda, "
             f"{demostrativo_c4} ya {'están' if len(planetas_c4) > 1 else 'está'} presente{'s' if len(planetas_c4) > 1 else ''} ahí. "
             f"Por eso tu forma de sentir hogar, intimidad y raíz no depende solo del signo de la Casa 4. "
-            f"También está marcada por la forma en que esos planetas activan tu mundo interno."
+            f"También está marcada por la forma en que "
+            f"{'esas energías activan' if len(planetas_c4) > 1 else 'esa energía activa'} tu mundo interno."
         )
 
     if planetas_c6:
         verbo_c6 = "influyen" if len(planetas_c6) > 1 else "influye"
+        sujeto_c6 = "Esas energías muestran" if len(planetas_c6) > 1 else "Esa energía muestra"
         partes.append(
             f"Además, {lista_y(planetas_c6)} en la Casa 6 {verbo_c6} en cómo tu cuerpo sostiene la vida cotidiana. "
             f"No se trata solo de hábitos o rutina. "
             f"Se trata de cómo organizas tu energía, cómo respondes al cansancio "
             f"y qué ocurre cuando el cuerpo empieza a pedir ajuste. "
-            f"Esos planetas muestran qué tipo de fuerza, sensibilidad o tensión entra en tu regulación diaria."
+            f"{sujeto_c6} qué tipo de fuerza, sensibilidad o tensión entra en tu regulación diaria."
         )
+
+    # Para la lectura estructural sí contamos los nodos, aunque los textos
+    # PLANETA_CASA4/6 sigan reservados a planetas y puntos con texto propio.
+    nodos_c4 = [p for p in puntos_c4 if p in ("Nodo Norte", "Nodo Sur")]
+    nodos_c6 = [p for p in puntos_c6 if p in ("Nodo Norte", "Nodo Sur")]
+
+    if nodos_c4:
+        plural_c4 = len(nodos_c4) > 1
+        partes.append(
+            f"En la Casa 4 también {'se encuentran' if plural_c4 else 'se encuentra'} {lista_y(nodos_c4)}. "
+            f"{'Estos puntos refuerzan' if plural_c4 else 'Este punto refuerza'} la importancia de la base interna, "
+            f"las raíces y la sensación de pertenencia dentro del recorrido de la carta."
+        )
+
+    if nodos_c6:
+        plural_c6 = len(nodos_c6) > 1
+        partes.append(
+            f"En la Casa 6 también {'se encuentran' if plural_c6 else 'se encuentra'} {lista_y(nodos_c6)}. "
+            f"{'Estos puntos refuerzan' if plural_c6 else 'Este punto refuerza'} la importancia de los hábitos, "
+            f"el cuerpo y la vida cotidiana dentro del recorrido de la carta."
+        )
+
+    # El eje nodal se interpreta como una unidad: ambos polos se nombran
+    # y se relacionan entre sí, sin clasificarlos por separado como apoyo/tensión.
+    if aspectos_nodales:
+        por_nodo = {a.get("planeta"): a for a in aspectos_nodales}
+        nn = por_nodo.get("Nodo Norte")
+        ns = por_nodo.get("Nodo Sur")
+
+        if nn and ns:
+            partes.append(
+                f"La relación de la Luna con el eje nodal se expresa por dos polos inseparables: "
+                f"{nn['tipo'].lower()} con el Nodo Norte y {ns['tipo'].lower()} con el Nodo Sur. "
+                f"El Nodo Sur muestra la forma emocional conocida, los patrones de seguridad y las respuestas "
+                f"que aparecen de manera más automática; el Nodo Norte señala la dirección hacia la que esa "
+                f"forma de sentir necesita desarrollarse. No son dos mensajes separados, sino los dos extremos "
+                f"de un mismo recorrido emocional."
+            )
+        else:
+            unico = nn or ns
+            if unico:
+                partes.append(
+                    f"La Luna forma {unico['tipo'].lower()} con {_con_articulo(unico['planeta'])}. "
+                    f"Este aspecto pertenece al eje nodal completo: el Nodo Sur describe lo conocido y automático, "
+                    f"mientras el Nodo Norte señala la dirección de crecimiento. Aunque solo uno de los dos extremos "
+                    f"entre en el orbe utilizado aquí, el sentido se comprende mejor al leer ambos polos juntos."
+                )
 
     if tensiones:
         nombres_t = [a["planeta"] for a in tensiones[:3]]
-        texto_tensiones = (
-            f"Los aspectos de tensión con {lista_y(nombres_t)} hacen que el mundo emocional tenga menos margen en ciertos momentos. "
-            f"Cuando algo te activa, puede haber menos tiempo entre sentir y reaccionar. "
-            f"La emoción puede llegar más intensa, más mezclada o más difícil de ordenar. "
-            f"Esto no significa que necesariamente vayas a desregularte. "
-            f"Significa que necesitas reconocer antes las señales iniciales, "
-            f"porque cuando la activación ya ha subido mucho, cuesta más volver al centro."
-        )
+        plural_t = len(nombres_t) > 1
+
+        if plural_t:
+            texto_tensiones = (
+                f"Los aspectos de tensión con {lista_y(nombres_t)} hacen que el mundo emocional tenga menos margen en ciertos momentos. "
+                f"Cuando algo te activa, puede haber menos tiempo entre sentir y reaccionar. "
+                f"La emoción puede llegar más intensa, más mezclada o más difícil de ordenar. "
+                f"Esto no significa que necesariamente vayas a desregularte. "
+                f"Significa que necesitas reconocer antes las señales iniciales, "
+                f"porque cuando la activación ya ha subido mucho, cuesta más volver al centro."
+            )
+        else:
+            texto_tensiones = (
+                f"El aspecto de tensión con {lista_y(nombres_t)} hace que el mundo emocional tenga menos margen en ciertos momentos. "
+                f"Cuando algo te activa, puede haber menos tiempo entre sentir y reaccionar. "
+                f"La emoción puede llegar más intensa, más mezclada o más difícil de ordenar. "
+                f"Esto no significa que necesariamente vayas a desregularte. "
+                f"Significa que necesitas reconocer antes las señales iniciales, "
+                f"porque cuando la activación ya ha subido mucho, cuesta más volver al centro."
+            )
 
         if apoyos:
             nombres_a = [a["planeta"] for a in apoyos[:3]]
-            texto_tensiones += (
-                f"\n\nAl mismo tiempo, los aspectos de apoyo con {lista_y(nombres_a)} ofrecen recursos reales. "
-                f"Cuando consigues encontrar un primer punto de estabilidad, "
-                f"esos aspectos ayudan a sostenerlo. "
-                f"No eliminan la tensión, pero pueden facilitar que vuelvas a organizarte "
-                f"sin quedarte completamente dentro de lo que se activó."
-            )
+            plural_a = len(nombres_a) > 1
+
+            if plural_a:
+                texto_tensiones += (
+                    f"\n\nAl mismo tiempo, los aspectos de apoyo con {lista_y(nombres_a)} ofrecen recursos reales. "
+                    f"Cuando consigues encontrar un primer punto de estabilidad, esos aspectos ayudan a sostenerlo. "
+                    f"No eliminan la tensión, pero pueden facilitar que vuelvas a organizarte "
+                    f"sin quedarte completamente dentro de lo que se activó."
+                )
+            else:
+                texto_tensiones += (
+                    f"\n\nAl mismo tiempo, el aspecto de apoyo con {lista_y(nombres_a)} ofrece un recurso real. "
+                    f"Cuando consigues encontrar un primer punto de estabilidad, ese aspecto ayuda a sostenerlo. "
+                    f"No elimina la tensión, pero puede facilitar que vuelvas a organizarte "
+                    f"sin quedarte completamente dentro de lo que se activó."
+                )
+
+        if conjunciones:
+            nombres_c = [a["planeta"] for a in conjunciones[:3]]
+            plural_c = len(nombres_c) > 1
+
+            if plural_c:
+                texto_tensiones += (
+                    f"\n\nLas conjunciones con {lista_y(nombres_c)} no se leen simplemente como apoyo o tensión. "
+                    f"Indican funciones muy unidas a la Luna que se activan con ella y aumentan su peso "
+                    f"dentro de la respuesta emocional."
+                )
+            else:
+                texto_tensiones += (
+                    f"\n\nLa conjunción con {lista_y(nombres_c)} no se lee simplemente como apoyo o tensión. "
+                    f"Indica una función muy unida a la Luna que se activa con ella y aumenta su peso "
+                    f"dentro de la respuesta emocional."
+                )
 
         partes.append(texto_tensiones)
 
-    elif apoyos:
-        nombres_a = [a["planeta"] for a in apoyos[:3]]
-        partes.append(
-            f"Los aspectos de apoyo con {lista_y(nombres_a)} facilitan la regulación emocional. "
-            f"Cuando algo te afecta, existe más posibilidad de encontrar un recurso interno, "
-            f"una vía de expresión o un punto de estabilidad desde el que recomponerte. "
-            f"Eso no significa que no haya intensidad emocional. "
-            f"Significa que tienes más caminos disponibles para volver a sostenerte."
-        )
+    else:
+        if apoyos:
+            nombres_a = [a["planeta"] for a in apoyos[:3]]
+            plural_a = len(nombres_a) > 1
+
+            if plural_a:
+                partes.append(
+                    f"Los aspectos de apoyo con {lista_y(nombres_a)} facilitan la regulación emocional. "
+                    f"Cuando algo te afecta, existe más posibilidad de encontrar un recurso interno, "
+                    f"una vía de expresión o un punto de estabilidad desde el que recomponerte. "
+                    f"Eso no significa que no haya intensidad emocional. "
+                    f"Significa que tienes más caminos disponibles para volver a sostenerte."
+                )
+            else:
+                partes.append(
+                    f"El aspecto de apoyo con {lista_y(nombres_a)} facilita la regulación emocional. "
+                    f"Cuando algo te afecta, existe más posibilidad de encontrar un recurso interno, "
+                    f"una vía de expresión o un punto de estabilidad desde el que recomponerte. "
+                    f"Eso no significa que no haya intensidad emocional. "
+                    f"Significa que tienes un camino adicional disponible para volver a sostenerte."
+                )
+
+        if conjunciones:
+            nombres_c = [a["planeta"] for a in conjunciones[:3]]
+            plural_c = len(nombres_c) > 1
+
+            if plural_c:
+                partes.append(
+                    f"Las conjunciones con {lista_y(nombres_c)} no se clasifican aquí como apoyo ni como tensión. "
+                    f"Muestran funciones estrechamente unidas a la Luna que se activan con ella "
+                    f"y forman parte directa de la respuesta emocional."
+                )
+            else:
+                partes.append(
+                    f"La conjunción con {lista_y(nombres_c)} no se clasifica aquí como apoyo ni como tensión. "
+                    f"Muestra una función estrechamente unida a la Luna que se activa con ella "
+                    f"y forma parte directa de la respuesta emocional."
+                )
 
     cierre = (
         f"Lo más difícil no suele ser que una sola parte se altere. "
@@ -2522,6 +2800,19 @@ def dibujar_rueda_luna(carta, aspectos_luna, archivo_salida):
         if a["planeta"] in planetas:
             planetas_mostrar.add(a["planeta"])
 
+    # Si la Luna pertenece a un stellium, la rueda debe mostrar el núcleo completo,
+    # aunque alguno de sus miembros no forme aspecto directo con la Luna.
+    nucleos_luna_rueda = [
+        nucleo
+        for nucleo in detectar_nucleos_globales(carta)
+        if "Luna" in nucleo.get("puntos", [])
+    ]
+
+    for nucleo in nucleos_luna_rueda:
+        for punto in nucleo.get("puntos", []):
+            if punto in planetas:
+                planetas_mostrar.add(punto)
+
     def lon_a_angulo(lon):
         return math.radians(180 + (lon - asc_lon))
 
@@ -2577,21 +2868,80 @@ def dibujar_rueda_luna(carta, aspectos_luna, archivo_salida):
         ax.text(math.cos(ang_num) * r_num, math.sin(ang_num) * r_num, str(i + 1),
                 ha='center', va='center', fontsize=7, color='#666', zorder=4)
 
-    # Líneas de aspecto (solo Luna, orbes estrictos)
+    # Líneas de aspecto. La rueda mantiene los aspectos directos de la Luna
+    # y, si existe un stellium lunar, añade TODAS las conjunciones reales
+    # que construyen ese núcleo. Se deduplican pares para que una conjunción
+    # Luna-miembro no desaparezca ni se dibuje dos veces.
     _ASP_COL = {"□": "#CC2200", "☍": "#CC2200", "△": "#1A5FA8",
                 "✶": "#1A5FA8", "⚻": "#2E7D32", "=": "#7B2D8B"}
-    _ASP_LW  = {"□": 1.3, "☍": 1.3, "△": 1.1, "✶": 1.0, "⚻": 0.9, "=": 1.1}
+    _ASP_LW  = {"□": 1.3, "☍": 1.3, "△": 1.1, "✶": 1.0, "⚻": 0.9, "=": 1.25}
     R_ASP = R_CASA_IN - 0.02
     a_luna = lon_a_angulo(planetas["Luna"]["lon"])
+
+    pares_dibujados = set()
+
+    # 1) Aspectos directos de la Luna, incluidas sus conjunciones.
     for a in asp_estrictos:
         sim = a["simbolo"]
-        if sim not in _ASP_COL: continue
+        if sim not in _ASP_COL:
+            continue
         p_nombre = a["planeta"]
-        if p_nombre not in planetas: continue
+        if p_nombre not in planetas:
+            continue
+
+        clave = tuple(sorted(("Luna", p_nombre))) + (sim,)
+        if clave in pares_dibujados:
+            continue
+        pares_dibujados.add(clave)
+
         a2 = lon_a_angulo(planetas[p_nombre]["lon"])
-        ax.plot([math.cos(a_luna) * R_ASP, math.cos(a2) * R_ASP],
-                [math.sin(a_luna) * R_ASP, math.sin(a2) * R_ASP],
-                color=_ASP_COL[sim], linewidth=_ASP_LW[sim], alpha=0.60, zorder=2)
+        ax.plot(
+            [math.cos(a_luna) * R_ASP, math.cos(a2) * R_ASP],
+            [math.sin(a_luna) * R_ASP, math.sin(a2) * R_ASP],
+            color=_ASP_COL[sim],
+            linewidth=_ASP_LW[sim],
+            alpha=0.68 if sim == "=" else 0.60,
+            zorder=2.3 if sim == "=" else 2,
+        )
+
+    # 2) Conjunciones reales que mantienen unido el stellium.
+    #    Si el módulo común no trae la lista por compatibilidad con una
+    #    versión anterior, se reconstruye aquí con el mismo criterio.
+    for nucleo in nucleos_luna_rueda:
+        conjunciones = list(nucleo.get("conjunciones", []) or [])
+
+        if not conjunciones:
+            puntos_nucleo = [p for p in nucleo.get("puntos", []) if p in planetas]
+            for i, p1 in enumerate(puntos_nucleo):
+                for p2 in puntos_nucleo[i + 1:]:
+                    d = abs(planetas[p1]["lon"] - planetas[p2]["lon"]) % 360
+                    if d > 180:
+                        d = 360 - d
+                    limite = 5.0 if (p1 in ("Quirón", "Lilith") or p2 in ("Quirón", "Lilith")) else 10.0
+                    if d <= limite:
+                        conjunciones.append({"punto1": p1, "punto2": p2, "orbe": round(d, 2)})
+
+        for conj in conjunciones:
+            p1 = conj.get("punto1")
+            p2 = conj.get("punto2")
+            if p1 not in planetas or p2 not in planetas:
+                continue
+
+            clave = tuple(sorted((p1, p2))) + ("=",)
+            if clave in pares_dibujados:
+                continue
+            pares_dibujados.add(clave)
+
+            a1 = lon_a_angulo(planetas[p1]["lon"])
+            a2 = lon_a_angulo(planetas[p2]["lon"])
+            ax.plot(
+                [math.cos(a1) * R_ASP, math.cos(a2) * R_ASP],
+                [math.sin(a1) * R_ASP, math.sin(a2) * R_ASP],
+                color=_ASP_COL["="],
+                linewidth=_ASP_LW["="],
+                alpha=0.78,
+                zorder=2.4,
+            )
 
     # Planetas seleccionados
     orden = ["Sol", "Luna", "Mercurio", "Venus", "Marte", "Júpiter", "Saturno",
@@ -2800,7 +3150,7 @@ def bloque_bienvenida(subtitulo, cuerpo):
     elementos.append(Paragraph("Bienvenida", subtitulo))
 
     texto_1 = (
-        "Todos necesitamos sentirnos seguros. Sin embargo, no todas las personas "
+        "Necesitamos sentir seguridad. Sin embargo, no todas las personas "
         "encuentran esa seguridad de la misma manera. Algunas necesitan silencio; "
         "otras, movimiento. Algunas buscan libertad; otras, estabilidad. Ninguna "
         "de esas necesidades es mejor que otra. Son simplemente formas distintas "
@@ -2810,7 +3160,7 @@ def bloque_bienvenida(subtitulo, cuerpo):
     texto_2 = (
         "En astrología, la Luna representa precisamente ese lugar. Habla de cómo "
         "sentimos, de aquello que necesitamos para recuperar la calma y de la manera "
-        "en la que aprendimos, desde muy pequeños, a relacionarnos con nuestras emociones."
+        "en la que aprendimos, desde la infancia, a relacionarnos con nuestras emociones."
     )
 
     texto_3 = (
@@ -3146,7 +3496,7 @@ def bloque_luna(
     elementos.append(Spacer(1, 0.35 * cm))
     elementos.append(
         Paragraph(
-            "¿Qué necesito para sentirme segura?",
+            "¿Qué necesito para sentir seguridad?",
             subtitulo
         )
     )
@@ -3187,6 +3537,20 @@ def bloque_luna(
                 Paragraph(parrafo.strip(), cuerpo)
             )
 
+    # Antes de desglosar los aspectos uno a uno, muestra el núcleo colectivo
+    # para evitar que un stellium se lea como una suma de relaciones aisladas.
+    texto_nucleo = texto_nucleos_luna(planetas)
+    if texto_nucleo:
+        elementos.append(
+            Paragraph(
+                "Núcleo emocional compartido",
+                subtitulo2
+            )
+        )
+        for parrafo in texto_nucleo.split("\n\n"):
+            if parrafo.strip():
+                elementos.append(Paragraph(parrafo.strip(), cuerpo))
+
     aspectos = textos_aspectos_luna(aspectos_luna)
 
     if aspectos:
@@ -3204,7 +3568,7 @@ def bloque_luna(
                 subtitulo2
             ),
             Paragraph(
-                f"Luna {primer_aspecto['tipo'].lower()} "
+                f"Luna · {primer_aspecto['tipo'].lower()} con "
                 f"{_con_articulo(primer_aspecto['planeta'])}",
                 titulo_aspecto
             ),
@@ -3233,7 +3597,7 @@ def bloque_luna(
                 elementos.append(
                     KeepTogether([
                         Paragraph(
-                            f"Luna {aspecto['tipo'].lower()} "
+                            f"Luna · {aspecto['tipo'].lower()} con "
                             f"{_con_articulo(aspecto['planeta'])}",
                             titulo_aspecto
                         ),
@@ -3516,6 +3880,8 @@ def preparar_contenido_ia_luna(carta, aspectos_luna):
             cuspides,
             aspectos_luna
         ),
+
+        "nucleos_globales": detectar_nucleos_globales(carta),
     }
 
 def generar_pdf_luna_casa4_casa6(

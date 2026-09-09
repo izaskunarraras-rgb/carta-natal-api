@@ -11,6 +11,8 @@ import swisseph as swe
 from geopy.geocoders import Nominatim
 from timezonefinder import TimezoneFinder
 import pytz
+
+from nucleos_globales import detectar_nucleos_globales
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -45,8 +47,8 @@ ELEMENTO_SIGNO = {
 }
 
 REGENTE_SIGNO = {
-    "Aries":"Marte","Tauro":"Venus","Géminis":"Mercurio","Cáncer":"la Luna",
-    "Leo":"el Sol","Virgo":"Mercurio","Libra":"Venus","Escorpio":"Plutón",
+    "Aries":"Marte","Tauro":"Venus","Géminis":"Mercurio","Cáncer":"Luna",
+    "Leo":"Sol","Virgo":"Mercurio","Libra":"Venus","Escorpio":"Plutón",
     "Sagitario":"Júpiter","Capricornio":"Saturno","Acuario":"Urano","Piscis":"Neptuno"
 }
 
@@ -179,7 +181,7 @@ SOL_SIGNO = {
     "Esto no significa dependencia. "
     "Muchas veces simplemente piensas mejor, decides mejor o entiendes mejor tu posición cuando puedes verla reflejada en otra persona o en un vínculo.\n\n"
     
-    "Te desgasta vivir demasiado tiempo en conflicto, en desequilibrios sostenidos o teniendo que decidir todo completamente solo. "
+    "Te desgasta vivir demasiado tiempo en conflicto, en desequilibrios sostenidos o teniendo que decidirlo todo sin apoyo. "
     "Cuando no hay referencias relacionales claras, puedes pasar mucho tiempo dudando antes de dar un paso."
 ),
 
@@ -435,7 +437,7 @@ ASC_SIGNO = {
     "que lo que haces tiene un valor real. Necesitas implicarte de corazón en aquello que consideras importante.\n\n"
 
     "Cuando aparece la inseguridad o el miedo a no ser suficiente, puedes esforzarte por demostrar constantemente tu "
-    "valor o, por el contrario, esconder una parte de ti para evitar sentirte expuesta al juicio de otras personas. "
+    "valor o, por el contrario, esconder una parte de ti para evitar la sensación de exposición ante el juicio de otras personas. "
     "Ambas respuestas nacen de la misma necesidad de reconocimiento.\n\n"
 
     "Cuando esta energía madura, descubres que no necesitas demostrar continuamente quién eres. Tu presencia transmite "
@@ -444,7 +446,7 @@ ASC_SIGNO = {
 ),
 
 "Virgo": (
-    "Con Ascendente en Virgo, necesitas comprender cómo funciona una situación antes de sentirte completamente tranquila. "
+    "Con Ascendente en Virgo, necesitas comprender cómo funciona una situación antes de sentir suficiente tranquilidad. "
     "Tu primera reacción suele ser observar los detalles, detectar lo que falta y buscar la forma más útil y ordenada de "
     "afrontar lo que tienes delante.\n\n"
 
@@ -942,7 +944,7 @@ NODO_NORTE_CASA = {
 7: (
     "Tu dirección pide aprender a construir junto a otras personas y no solamente desde la autosuficiencia o la independencia absoluta. "
     "El crecimiento aparece cuando desarrollas diálogo, cooperación y capacidad de incluir la mirada del otro sin sentir que eso amenaza tu dirección o tu identidad. "
-    "El reto suele estar en no resolverlo todo solo ni convertir la independencia en una manera de evitar el vínculo, la negociación o la vulnerabilidad relacional."
+    "El reto suele estar en no resolverlo todo sin apoyo ni convertir la independencia en una manera de evitar el vínculo, la negociación o la vulnerabilidad relacional."
 ),
 
 8: (
@@ -1838,11 +1840,129 @@ def texto_aspecto_sol_planeta(aspecto):
     dinamica = _DINAMICA_ASPECTO_SOL.get(simbolo, "")
     tipo = aspecto.get("tipo", "aspecto").lower()
 
+    otro_texto = "la Luna" if otro == "Luna" else otro
+
     return (
-        f"El Sol forma {tipo} con {otro}. "
+        f"El Sol forma {tipo} con {otro_texto}. "
         f"Esta relación conecta tu dirección vital con {funcion}. "
         f"{dinamica}"
     )
+
+
+# ─── REGLAS EDITORIALES DE ASPECTOS ─────────────────────────────────────────
+
+# Cada aspecto tiene un único lugar principal de interpretación para evitar
+# repetir el mismo texto en varias secciones del informe.
+#
+# - Sol ↔ planeta: sección Sol
+# - Ascendente ↔ planeta: sección Ascendente
+# - Sol ↔ Nodo / Nodo ↔ Luna / Nodo ↔ Ascendente: sección Nodos
+# - Sol ↔ Ascendente: integración final
+
+PUNTOS_NODALES = {"Nodo Norte", "Nodo Sur"}
+
+def _articulo_aspecto(tipo):
+    """Devuelve el artículo correcto para el nombre español del aspecto."""
+    return "la" if str(tipo).lower() in {"conjunción", "cuadratura", "oposición"} else "el"
+
+def _capitalizar_primera(texto):
+    """Mayúscula solo en el primer carácter, sin bajar el resto del texto."""
+    if not texto:
+        return texto
+    return texto[0].upper() + texto[1:]
+
+# ─── NÚCLEOS ESTRUCTURALES COMPARTIDOS ───────────────────────────────────────
+
+def _con_articulo_nucleo(nombre):
+    articulos = {
+        "Sol": "el Sol", "Luna": "la Luna",
+        "Nodo Norte": "el Nodo Norte", "Nodo Sur": "el Nodo Sur",
+    }
+    return articulos.get(nombre, nombre)
+
+
+def _lista_y_nucleo(items):
+    items = [_con_articulo_nucleo(x) for x in items if x]
+    if not items:
+        return ""
+    if len(items) == 1:
+        return items[0]
+    if len(items) == 2:
+        return f"{items[0]} y {items[1]}"
+    return ", ".join(items[:-1]) + f" y {items[-1]}"
+
+
+def _descripcion_posiciones_nucleo(nucleo):
+    """Describe posiciones reales sin atribuir una sola casa/signo al conjunto."""
+    posiciones = nucleo.get("posiciones", {}) or {}
+    grupos = {}
+    for punto in nucleo.get("puntos", []):
+        datos = posiciones.get(punto, {}) or {}
+        clave = (datos.get("signo"), datos.get("casa"))
+        grupos.setdefault(clave, []).append(punto)
+
+    partes = []
+    for (signo, casa), puntos in grupos.items():
+        ubicacion = []
+        if signo:
+            ubicacion.append(str(signo))
+        if casa not in (None, ""):
+            ubicacion.append(f"Casa {casa}")
+        if ubicacion:
+            partes.append(f"{_lista_y_nucleo(puntos)} en {' y '.join(ubicacion)}")
+        else:
+            partes.append(_lista_y_nucleo(puntos))
+    return "; ".join(partes)
+
+
+def nucleos_direccion(carta):
+    """Núcleos globales que contienen Sol o alguno de los Nodos."""
+    puntos_foco = {"Sol", "Nodo Norte", "Nodo Sur"}
+    return [
+        n for n in detectar_nucleos_globales(carta)
+        if puntos_foco.intersection(n.get("puntos", []))
+    ]
+
+
+def texto_nucleos_direccion(carta):
+    nucleos = nucleos_direccion(carta)
+    if not nucleos:
+        return ""
+
+    bloques = []
+    for nucleo in nucleos:
+        puntos = nucleo.get("puntos", [])
+        posiciones = _descripcion_posiciones_nucleo(nucleo)
+        focos = [p for p in puntos if p in ("Sol", "Nodo Norte", "Nodo Sur")]
+        foco_txt = _lista_y_nucleo(focos)
+        otros = [p for p in puntos if p not in focos]
+        verbo = "funcionan" if len(focos) > 1 else "funciona"
+        verbo_formar = "Forman" if len(focos) > 1 else "Forma"
+        enlace_otros = (
+            f" con {_lista_y_nucleo(otros)}" if otros else ""
+        )
+        bloques.append(
+            f"{_capitalizar_primera(foco_txt)} no {verbo} aquí de forma aislada. "
+            f"{verbo_formar} parte de un stellium{enlace_otros}. "
+            f"Este núcleo reúne varias funciones que pueden activarse de manera conjunta. "
+            f"Por eso, aunque después se describan algunos aspectos por separado, conviene leerlos como "
+            f"expresiones parciales de una misma concentración. Su distribución real es: {posiciones}."
+        )
+    return "\n\n".join(bloques)
+
+
+def texto_nucleos_direccion_breve(carta):
+    nucleos = nucleos_direccion(carta)
+    if not nucleos:
+        return ""
+    frases = []
+    for nucleo in nucleos:
+        frases.append(
+            f"Esta lectura debe mantenerse dentro del contexto del stellium que reúne "
+            f"{_lista_y_nucleo(nucleo.get('puntos', []))}. Las relaciones internas que aparecen "
+            f"por separado pertenecen a una misma concentración estructural."
+        )
+    return "\n\n".join(frases)
 
 
 # ─── TEXTOS DE SECCIÓN ────────────────────────────────────────────────────────
@@ -1959,11 +2079,15 @@ def texto_direccion_general(carta, aspectos):
     )
 
 def texto_sol(carta, aspectos):
+    """
+    Interpreta el Sol sin duplicar aspectos que pertenecen editorialmente
+    a Nodos o a la integración Sol–Ascendente.
+    """
     planetas = carta["planetas"]
 
     sol = planetas.get("Sol", {})
     sol_signo = sol.get("signo", "")
-    sol_casa  = sol.get("casa", 1)
+    sol_casa = sol.get("casa", 1)
 
     t = ""
 
@@ -1975,36 +2099,19 @@ def texto_sol(carta, aspectos):
     if texto_casa:
         t += "\n\n" + texto_casa
 
-    # Aspectos del Sol
-    asp_relevantes = [
-        a for a in aspectos
-        if a.get("p1") == "Sol" or a.get("p2") == "Sol"
-    ]
+    # PROPIEDAD EDITORIAL:
+    # aquí solo se interpretan Sol ↔ planetas/puntos no nodales.
+    # Sol ↔ Ascendente se reserva para la integración.
+    # Sol ↔ Nodos se reserva para la sección Nodos.
+    for asp in aspectos:
+        if "Sol" not in (asp.get("p1"), asp.get("p2")):
+            continue
 
-    for asp in asp_relevantes:
+        otro = asp.get("p2") if asp.get("p1") == "Sol" else asp.get("p1")
+        if otro == "Ascendente" or otro in PUNTOS_NODALES:
+            continue
 
-        clave1 = (asp["p1"], asp["p2"], asp["simbolo"])
-        clave2 = (asp["p2"], asp["p1"], asp["simbolo"])
-
-        texto_asp = None
-
-        # Sol ↔ Nodos
-        texto_asp = (
-            ASPECTOS_SOL_NODOS.get(clave1)
-            or ASPECTOS_SOL_NODOS.get(clave2)
-        )
-
-        # Sol ↔ Ascendente
-        if not texto_asp:
-            texto_asp = (
-                ASPECTOS_SOL_ASC.get(clave1)
-                or ASPECTOS_SOL_ASC.get(clave2)
-            )
-
-        # Sol ↔ resto de planetas
-        if not texto_asp:
-            texto_asp = texto_aspecto_sol_planeta(asp)
-
+        texto_asp = texto_aspecto_sol_planeta(asp)
         if texto_asp:
             t += f"\n\n{texto_asp}"
 
@@ -2139,7 +2246,7 @@ ASPECTOS_ASC_PLANETAS = {
 ("Ascendente", "Quirón", "="): (
     "La conjunción entre el Ascendente y Quirón sitúa una zona especialmente sensible muy cerca "
     "de tu manera espontánea de afrontar la vida. Algunas situaciones pueden activar con rapidez "
-    "la sensación de no encajar, quedar expuesta o no disponer de una respuesta suficientemente "
+    "la sensación de no encajar, sentir exposición o no disponer de una respuesta suficientemente "
     "segura ante lo que ocurre.\n\n"
 
     "Esta sensibilidad influye en la forma en la que te muestras, te posicionas y reaccionas ante "
@@ -2280,7 +2387,7 @@ ASPECTOS_ASC_PLANETAS = {
 ("Ascendente", "Sol", "□"): (
     "La cuadratura entre el Ascendente y el Sol puede hacer que la forma espontánea en la que respondes a la vida "
     "y la dirección que necesitas desarrollar no siempre avancen al mismo ritmo. A veces reaccionas de una manera "
-    "mientras otra parte de ti necesita algo diferente para sentirse plenamente realizada.\n\n"
+    "mientras otra parte de ti necesita algo diferente para sentir plena coherencia interna.\n\n"
 
     "Esta tensión impulsa a revisar quién responde y desde dónde lo hace. El aprendizaje consiste en construir una "
     "forma de vivir donde tu manera de actuar y tu dirección vital puedan colaborar en lugar de competir."
@@ -2360,7 +2467,7 @@ ASPECTOS_ASC_PLANETAS = {
 ("Ascendente", "Quirón", "□"): (
     "La cuadratura entre el Ascendente y Quirón señala una zona sensible en la manera de mostrarte, "
     "actuar u ocupar espacio frente a otras personas. Algunas situaciones pueden activar rápidamente "
-    "la sensación de no encajar, no saber cómo posicionarte o quedar expuesta de una forma incómoda.\n\n"
+    "la sensación de no encajar, no saber cómo posicionarte o sentir una exposición incómoda.\n\n"
 
     "Esta tensión también puede desarrollar una gran capacidad para comprender a quienes atraviesan "
     "dificultades parecidas. El trabajo consiste en no construir toda tu forma de afrontar la vida "
@@ -2722,7 +2829,7 @@ ASPECTOS_NODO_NORTE_LUNA = {
         "avanzar. El reto está en distinguir entre una necesidad emocional auténtica y una "
         "respuesta automática que simplemente resulta familiar. Crecer no significa dejar de "
         "escucharte, sino aprender a reconocer qué formas de cuidado sostienen realmente la "
-        "persona que estás intentando construir."
+        "dirección que estás intentando construir."
     ),
 
     ("Nodo Norte", "Luna", "✶"): (
@@ -2865,7 +2972,7 @@ ASPECTOS_NODO_SUR_LUNA = {
 
     "Esta relación pide ajustes progresivos en la forma de cuidarte, vincularte y recuperar seguridad. "
     "No se trata de abandonar por completo tus recursos emocionales anteriores, sino de revisar cómo los utilizas "
-    "y qué función están cumpliento para que puedan seguir siendo útiles sin obligarte a responder siempre desde estructuras "
+    "y qué función están cumpliendo para que puedan seguir siendo útiles sin obligarte a responder siempre desde estructuras "
     "que pertenecen a otra etapa de tu vida."
 ),
 }
@@ -2966,21 +3073,17 @@ def texto_ascendente(carta, aspectos=None):
             aspecto["simbolo"],
         )
 
-        # Textos específicos que ya existían.
-        texto_aspecto = (
-            ASPECTOS_SOL_ASC.get(clave1)
-            or ASPECTOS_SOL_ASC.get(clave2)
-            or ASPECTOS_NODO_NORTE_ASC.get(clave1)
-            or ASPECTOS_NODO_NORTE_ASC.get(clave2)
-        )
+        # PROPIEDAD EDITORIAL:
+        # Ascendente ↔ Sol se interpreta solo en la integración.
+        # Ascendente ↔ Nodos se interpreta solo en la sección Nodos.
+        if otro == "Sol" or otro in PUNTOS_NODALES:
+            continue
 
-        # Los aspectos con planetas se incorporarán mediante
-        # textos específicos, sin utilizar una plantilla repetitiva.
-        if not texto_aspecto:
-            texto_aspecto = ASPECTOS_ASC_PLANETAS.get(
-                ("Ascendente", otro, aspecto["simbolo"]),
-                "",
-            )
+        # Aquí quedan únicamente los aspectos Ascendente ↔ planetas/puntos.
+        texto_aspecto = ASPECTOS_ASC_PLANETAS.get(
+            ("Ascendente", otro, aspecto["simbolo"]),
+            "",
+        )
 
         if texto_aspecto and texto_aspecto not in partes:
             partes.append(texto_aspecto)
@@ -3244,6 +3347,11 @@ def texto_integracion(carta, aspectos):
         "más atención, práctica y participación consciente."
     )
 
+
+    texto_nucleo = texto_nucleos_direccion_breve(carta)
+    if texto_nucleo:
+        partes.append(texto_nucleo)
+
     # ── Integración Sol–Ascendente ────────────────────────────────────
 
     if elem_sol and elem_asc and elem_sol == elem_asc:
@@ -3299,7 +3407,7 @@ def texto_integracion(carta, aspectos):
 
         if simbolo in ("□", "☍", "⚻"):
             texto_sol_asc += (
-                f" La {tipo} entre el Sol y el Ascendente, con un orbe de "
+                f" {_articulo_aspecto(tipo).capitalize()} {tipo} entre el Sol y el Ascendente, con un orbe de "
                 f"{orbe}°, refuerza este trabajo de ajuste. La tensión no señala "
                 "que una parte sea correcta y la otra equivocada, sino que la "
                 "coherencia necesita construirse mediante decisiones que tengan "
@@ -3308,7 +3416,7 @@ def texto_integracion(carta, aspectos):
             )
         else:
             texto_sol_asc += (
-                f" La {tipo} entre el Sol y el Ascendente, con un orbe de "
+                f" {_articulo_aspecto(tipo).capitalize()} {tipo} entre el Sol y el Ascendente, con un orbe de "
                 f"{orbe}°, ofrece una vía de colaboración especialmente "
                 "disponible. Esta facilidad se convierte en un recurso real "
                 "cuando no se queda únicamente en una sensación interna de "
@@ -3396,7 +3504,7 @@ def texto_integracion(carta, aspectos):
 
         if simbolo in ("□", "☍", "⚻"):
             texto_sol_nodo += (
-                f" La {tipo} entre el Sol y el Nodo Norte, con un orbe de "
+                f" {_articulo_aspecto(tipo).capitalize()} {tipo} entre el Sol y el Nodo Norte, con un orbe de "
                 f"{orbe}°, hace especialmente visible esta diferencia de "
                 "ritmos. El desarrollo puede requerir reajustes repetidos y "
                 "decisiones que al principio no se sienten completamente "
@@ -3406,7 +3514,7 @@ def texto_integracion(carta, aspectos):
             )
         else:
             texto_sol_nodo += (
-                f" La {tipo} entre el Sol y el Nodo Norte, con un orbe de "
+                f" {_articulo_aspecto(tipo).capitalize()} {tipo} entre el Sol y el Nodo Norte, con un orbe de "
                 f"{orbe}°, facilita la comunicación entre ambas direcciones. "
                 "Existe una posibilidad real de avanzar con coherencia, siempre "
                 "que esa fluidez no se quede únicamente en comprensión o buena "
@@ -3468,7 +3576,7 @@ def texto_integracion(carta, aspectos):
 
         if simbolo in ("□", "☍", "⚻"):
             texto_asc_nodo += (
-                f" La {tipo} entre el Nodo Norte y el Ascendente, con un orbe "
+                f" {_articulo_aspecto(tipo).capitalize()} {tipo} entre el Nodo Norte y el Ascendente, con un orbe "
                 f"de {orbe}°, intensifica la necesidad de revisar respuestas "
                 "automáticas. Algunas formas de actuar que antes ofrecían "
                 "seguridad pueden necesitar modificaciones para seguir siendo "
@@ -3476,7 +3584,7 @@ def texto_integracion(carta, aspectos):
             )
         else:
             texto_asc_nodo += (
-                f" La {tipo} entre el Nodo Norte y el Ascendente, con un orbe "
+                f" {_articulo_aspecto(tipo).capitalize()} {tipo} entre el Nodo Norte y el Ascendente, con un orbe "
                 f"de {orbe}°, facilita que tu forma de posicionarte abra caminos "
                 "de crecimiento. La colaboración existe, aunque necesita ser "
                 "utilizada deliberadamente para no permanecer únicamente como "
@@ -3484,36 +3592,6 @@ def texto_integracion(carta, aspectos):
             )
 
     partes.append(texto_asc_nodo)
-
-    # ── Relación opcional Luna–Nodo Norte ─────────────────────────────
-
-    if asp_nn_luna:
-        simbolo = asp_nn_luna.get("simbolo", "")
-        tipo = asp_nn_luna.get("tipo", "").lower()
-        orbe = asp_nn_luna.get("orbe", "")
-
-        if simbolo in ("□", "☍", "⚻"):
-            partes.append(
-                f"La {tipo} entre la Luna y el Nodo Norte, con un orbe de "
-                f"{orbe}°, muestra que el recorrido de crecimiento no siempre "
-                "coincide con aquello que emocionalmente resulta familiar o "
-                "seguro. Algunas decisiones pueden ser necesarias para avanzar "
-                "y, al mismo tiempo, remover necesidades profundas de protección, "
-                "pertenencia o estabilidad. La cuestión no es ignorar esas "
-                "necesidades, sino construir condiciones internas que permitan "
-                "atravesar lo nuevo sin abandonarte emocionalmente durante el "
-                "proceso."
-            )
-        else:
-            partes.append(
-                f"La {tipo} entre la Luna y el Nodo Norte, con un orbe de "
-                f"{orbe}°, ofrece una colaboración entre tus necesidades "
-                "emocionales y la dirección de crecimiento. Esta relación puede "
-                "ayudarte a reconocer qué experiencias, vínculos o condiciones "
-                "internas sostienen mejor el proceso, siempre que el cuidado no "
-                "se convierta en una razón para permanecer únicamente dentro de "
-                "lo conocido."
-            )
 
     # ── Cierre narrativo ──────────────────────────────────────────────
 
@@ -3614,9 +3692,8 @@ def texto_orientacion(carta, aspectos):
 
     if asp_sol_asc:
         desde_donde += (
-            f" El Sol forma {asp_sol_asc['tipo'].lower()} con el Ascendente, con un orbe de "
-            f"{asp_sol_asc['orbe']}°. Por eso conviene observar especialmente si tu primera "
-            "reacción acompaña la dirección que deseas construir o si necesita algún ajuste."
+            " Por eso conviene observar especialmente si tu primera reacción acompaña "
+            "la dirección que deseas construir o si necesita algún ajuste."
         )
 
     sostener_map = {
@@ -3673,7 +3750,7 @@ def texto_orientacion(carta, aspectos):
     if tensiones:
         aspecto = tensiones[0]
         evitar += (
-            f" La {aspecto['tipo'].lower()} entre {aspecto['p1']} y {aspecto['p2']}, con un orbe "
+            f" {_articulo_aspecto(aspecto['tipo']).capitalize()} {aspecto['tipo'].lower()} entre {aspecto['p1']} y {aspecto['p2']}, con un orbe "
             f"de {aspecto['orbe']}°, indica que este movimiento puede requerir reajustes y generar "
             "incomodidad. No necesitas interpretar esa tensión como una señal de fracaso; puede ser "
             "la forma en la que una estructura nueva empieza a encontrar lugar dentro de tu vida."
@@ -3808,8 +3885,14 @@ def dibujar_rueda_sol_asc_nodos(carta, aspectos, archivo_salida):
     puntos_aspecto = {nombre: objeto for nombre, objeto in planetas.items() if objeto}
     puntos_aspecto["Ascendente"] = {"lon": carta["asc"]["lon"]}
 
+    # Núcleos completos relacionados con Sol/Nodos. Se muestran todos sus miembros
+    # y sus conjunciones reales, aunque alguna pareja interna no forme parte de la
+    # selección de aspectos de este informe.
+    nucleos_rueda = nucleos_direccion(carta)
+
     # Dibuja exactamente los aspectos calculados, evitando que la rueda y el texto
-    # utilicen lógicas diferentes.
+    # utilicen lógicas diferentes. Las conjunciones nucleares se deduplican después.
+    pares_dibujados = set()
     for aspecto in aspectos:
         p1 = aspecto["p1"]
         p2 = aspecto["p2"]
@@ -3823,6 +3906,7 @@ def dibujar_rueda_sol_asc_nodos(carta, aspectos, archivo_salida):
         a1 = lon_a_angulo(obj1["lon"])
         a2 = lon_a_angulo(obj2["lon"])
         con_nodo_sur = "Nodo Sur" in (p1, p2)
+        pares_dibujados.add((tuple(sorted((p1, p2))), simbolo))
 
         ax.plot(
             [math.cos(a1) * R_ASP, math.cos(a2) * R_ASP],
@@ -3833,6 +3917,44 @@ def dibujar_rueda_sol_asc_nodos(carta, aspectos, archivo_salida):
             linestyle="dashed" if con_nodo_sur else "solid",
             zorder=2,
         )
+
+    # Dibuja la trama completa de conjunciones reales de los stelliums relevantes.
+    # No inventa enlaces: usa las parejas calculadas por nucleos_globales.py.
+    for nucleo in nucleos_rueda:
+        conjunciones = nucleo.get("conjunciones", []) or []
+
+        # Compatibilidad defensiva con una versión antigua del detector: si el núcleo
+        # no trae las parejas, se reconstruyen aquí con los mismos orbes de conjunción.
+        if not conjunciones:
+            pts = [p for p in nucleo.get("puntos", []) if p in planetas]
+            for i, p1 in enumerate(pts):
+                for p2 in pts[i + 1:]:
+                    d = abs(planetas[p1]["lon"] - planetas[p2]["lon"]) % 360
+                    if d > 180:
+                        d = 360 - d
+                    limite = 5.0 if p1 in PUNTOS_SENSIBLES or p2 in PUNTOS_SENSIBLES else 10.0
+                    if d <= limite:
+                        conjunciones.append({"punto1": p1, "punto2": p2, "orbe": round(d, 2)})
+
+        for conj in conjunciones:
+            p1 = conj.get("punto1")
+            p2 = conj.get("punto2")
+            if p1 not in planetas or p2 not in planetas:
+                continue
+            clave = (tuple(sorted((p1, p2))), "=")
+            if clave in pares_dibujados:
+                continue
+            pares_dibujados.add(clave)
+            a1 = lon_a_angulo(planetas[p1]["lon"])
+            a2 = lon_a_angulo(planetas[p2]["lon"])
+            ax.plot(
+                [math.cos(a1) * R_ASP, math.cos(a2) * R_ASP],
+                [math.sin(a1) * R_ASP, math.sin(a2) * R_ASP],
+                color=_ASP_COL["="],
+                linewidth=1.2,
+                alpha=0.72,
+                zorder=2.2,
+            )
 
     nombres_visibles = {
         "Sol",
@@ -3848,6 +3970,11 @@ def dibujar_rueda_sol_asc_nodos(carta, aspectos, archivo_salida):
             if nombre == "Ascendente":
                 continue
 
+            if nombre in planetas:
+                nombres_visibles.add(nombre)
+
+    for nucleo in nucleos_rueda:
+        for nombre in nucleo.get("puntos", []):
             if nombre in planetas:
                 nombres_visibles.add(nombre)
 
@@ -4299,6 +4426,7 @@ def preparar_contenido_ia_sol_asc_nodos(carta, aspectos):
         ),
 
         "aspectos": aspectos,
+        "nucleos_globales": detectar_nucleos_globales(carta),
     }
 
 def generar_pdf_sol_asc_nodos(
@@ -4332,6 +4460,15 @@ def generar_pdf_sol_asc_nodos(
     contenido += bloque_bienvenida_sol(estilos)
     contenido += bloque_rueda_sol(ruta_rueda, estilos)
     contenido += bloque_resumen_sol(carta, estilos)
+
+    t_nucleo = texto_nucleos_direccion(carta)
+    if t_nucleo:
+        contenido += bloque_texto(
+            "Núcleo de dirección compartido",
+            t_nucleo,
+            estilos,
+        )
+
     contenido += bloque_referencias_tecnicas(carta, aspectos, estilos)
 
     contenido += bloque_texto(
