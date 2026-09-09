@@ -1666,7 +1666,17 @@ def bloque_portada(
 
     elementos.append(Spacer(1, 1*cm))
 
-    elementos.append(Paragraph(f"<b>{nombre}</b>", centro))
+    elementos.append(Paragraph(
+        nombre,
+        ParagraphStyle(
+            "NombrePortada",
+            parent=centro,
+            fontName="Times-Roman",
+            fontSize=24,
+            leading=29,
+            textColor=colors.HexColor("#8C5A00"),
+        ),
+    ))
     elementos.append(Paragraph(f"{fecha_str} · {hora_str}", centro))
     elementos.append(Paragraph(ciudad, centro))
 

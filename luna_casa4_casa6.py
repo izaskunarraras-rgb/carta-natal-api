@@ -1992,15 +1992,23 @@ def texto_luna_casa(planetas):
 
 def normalizar_eje_nodal_luna(aspectos_luna):
     """
-    Mantiene los dos polos del eje nodal en la narrativa.
+    Evita interpretar dos veces la misma geometría del eje nodal.
 
-    Nodo Norte y Nodo Sur forman un único eje y ambos deben poder aparecer
-    en la interpretación. La integración posterior evita contarlos como dos
-    mensajes independientes de tensión/apoyo.
+    Si la Luna forma simultáneamente aspecto con Nodo Norte y Nodo Sur,
+    conserva Nodo Norte como representación canónica del eje para la narrativa.
+    Si solo uno de los dos nodos entra en orbe, se conserva ese aspecto.
 
-    Esta función se mantiene por compatibilidad con versiones anteriores.
+    Esta normalización es editorial: no modifica el cálculo natal ni la rueda.
     """
-    return list(aspectos_luna or [])
+    aspectos = list(aspectos_luna or [])
+    tiene_nn = any(a.get("planeta") == "Nodo Norte" for a in aspectos)
+    tiene_ns = any(a.get("planeta") == "Nodo Sur" for a in aspectos)
+
+    if tiene_nn and tiene_ns:
+        return [a for a in aspectos if a.get("planeta") != "Nodo Sur"]
+
+    return aspectos
+
 
 def textos_aspectos_luna(aspectos_luna):
     resultados = []
@@ -2022,37 +2030,7 @@ def textos_aspectos_luna(aspectos_luna):
         if aspecto.get("relevancia") == "estructural"
     ]
 
-    candidatos = exactos + estructurales
-    aspectos_relevantes = candidatos[:6]
-
-    # El eje nodal se considera una unidad editorial. Si ambos polos existen
-    # en los aspectos lunares, nunca mostramos uno sin el otro por culpa
-    # del límite máximo de seis aspectos.
-    nodales_disponibles = {
-        a.get("planeta"): a
-        for a in candidatos
-        if a.get("planeta") in ("Nodo Norte", "Nodo Sur")
-    }
-
-    if "Nodo Norte" in nodales_disponibles and "Nodo Sur" in nodales_disponibles:
-        presentes = {a.get("planeta") for a in aspectos_relevantes}
-
-        for nodo in ("Nodo Norte", "Nodo Sur"):
-            if nodo not in presentes:
-                reemplazado = False
-                for i in range(len(aspectos_relevantes) - 1, -1, -1):
-                    if aspectos_relevantes[i].get("planeta") not in ("Nodo Norte", "Nodo Sur"):
-                        aspectos_relevantes[i] = nodales_disponibles[nodo]
-                        reemplazado = True
-                        break
-                if not reemplazado:
-                    aspectos_relevantes.append(nodales_disponibles[nodo])
-                presentes.add(nodo)
-
-        aspectos_relevantes = sorted(
-            aspectos_relevantes,
-            key=lambda a: a.get("orbe", 999),
-        )
+    aspectos_relevantes = (exactos + estructurales)[:6]
 
     for aspecto in aspectos_relevantes:
         planeta = aspecto["planeta"]
@@ -2168,27 +2146,8 @@ def texto_integracion(planetas, cuspides, aspectos_luna):
     puntos_c6   = puntos_en_casa(planetas, 6)
     texto_nucleo_lunar = texto_nucleos_luna_breve(planetas)
 
-    aspectos_no_nodales = [
-        a for a in aspectos_luna
-        if a.get("planeta") not in ("Nodo Norte", "Nodo Sur")
-    ]
-    aspectos_nodales = [
-        a for a in aspectos_luna
-        if a.get("planeta") in ("Nodo Norte", "Nodo Sur")
-    ]
-
-    tensiones = [
-        a for a in aspectos_no_nodales
-        if a["simbolo"] in ("□", "☍", "⚻")
-    ]
-    apoyos = [
-        a for a in aspectos_no_nodales
-        if a["simbolo"] in ("△", "✶")
-    ]
-    conjunciones = [
-        a for a in aspectos_no_nodales
-        if a["simbolo"] == "="
-    ]
+    tensiones = [a for a in aspectos_luna if a["simbolo"] in ("□", "☍", "⚻")]
+    apoyos    = [a for a in aspectos_luna if a["simbolo"] in ("△", "✶", "=")]
 
     apertura = (
         f"Tu Luna en {signo_luna} muestra cómo reaccionas emocionalmente cuando algo te afecta. "
@@ -2301,146 +2260,49 @@ def texto_integracion(planetas, cuspides, aspectos_luna):
     nodos_c6 = [p for p in puntos_c6 if p in ("Nodo Norte", "Nodo Sur")]
 
     if nodos_c4:
-        plural_c4 = len(nodos_c4) > 1
         partes.append(
-            f"En la Casa 4 también {'se encuentran' if plural_c4 else 'se encuentra'} {lista_y(nodos_c4)}. "
-            f"{'Estos puntos refuerzan' if plural_c4 else 'Este punto refuerza'} la importancia de la base interna, "
-            f"las raíces y la sensación de pertenencia dentro del recorrido de la carta."
+            f"En la Casa 4 también se encuentra {lista_y(nodos_c4)}. "
+            f"Se tiene en cuenta como punto estructural de la carta, aunque no se mezcle con la lista de planetas de la casa."
         )
 
     if nodos_c6:
-        plural_c6 = len(nodos_c6) > 1
         partes.append(
-            f"En la Casa 6 también {'se encuentran' if plural_c6 else 'se encuentra'} {lista_y(nodos_c6)}. "
-            f"{'Estos puntos refuerzan' if plural_c6 else 'Este punto refuerza'} la importancia de los hábitos, "
-            f"el cuerpo y la vida cotidiana dentro del recorrido de la carta."
+            f"En la Casa 6 también se encuentra {lista_y(nodos_c6)}. "
+            f"Se tiene en cuenta como punto estructural de la carta, aunque no se mezcle con la lista de planetas de la casa."
         )
-
-    # El eje nodal se interpreta como una unidad: ambos polos se nombran
-    # y se relacionan entre sí, sin clasificarlos por separado como apoyo/tensión.
-    if aspectos_nodales:
-        por_nodo = {a.get("planeta"): a for a in aspectos_nodales}
-        nn = por_nodo.get("Nodo Norte")
-        ns = por_nodo.get("Nodo Sur")
-
-        if nn and ns:
-            partes.append(
-                f"La relación de la Luna con el eje nodal se expresa por dos polos inseparables: "
-                f"{nn['tipo'].lower()} con el Nodo Norte y {ns['tipo'].lower()} con el Nodo Sur. "
-                f"El Nodo Sur muestra la forma emocional conocida, los patrones de seguridad y las respuestas "
-                f"que aparecen de manera más automática; el Nodo Norte señala la dirección hacia la que esa "
-                f"forma de sentir necesita desarrollarse. No son dos mensajes separados, sino los dos extremos "
-                f"de un mismo recorrido emocional."
-            )
-        else:
-            unico = nn or ns
-            if unico:
-                partes.append(
-                    f"La Luna forma {unico['tipo'].lower()} con {_con_articulo(unico['planeta'])}. "
-                    f"Este aspecto pertenece al eje nodal completo: el Nodo Sur describe lo conocido y automático, "
-                    f"mientras el Nodo Norte señala la dirección de crecimiento. Aunque solo uno de los dos extremos "
-                    f"entre en el orbe utilizado aquí, el sentido se comprende mejor al leer ambos polos juntos."
-                )
 
     if tensiones:
         nombres_t = [a["planeta"] for a in tensiones[:3]]
-        plural_t = len(nombres_t) > 1
-
-        if plural_t:
-            texto_tensiones = (
-                f"Los aspectos de tensión con {lista_y(nombres_t)} hacen que el mundo emocional tenga menos margen en ciertos momentos. "
-                f"Cuando algo te activa, puede haber menos tiempo entre sentir y reaccionar. "
-                f"La emoción puede llegar más intensa, más mezclada o más difícil de ordenar. "
-                f"Esto no significa que necesariamente vayas a desregularte. "
-                f"Significa que necesitas reconocer antes las señales iniciales, "
-                f"porque cuando la activación ya ha subido mucho, cuesta más volver al centro."
-            )
-        else:
-            texto_tensiones = (
-                f"El aspecto de tensión con {lista_y(nombres_t)} hace que el mundo emocional tenga menos margen en ciertos momentos. "
-                f"Cuando algo te activa, puede haber menos tiempo entre sentir y reaccionar. "
-                f"La emoción puede llegar más intensa, más mezclada o más difícil de ordenar. "
-                f"Esto no significa que necesariamente vayas a desregularte. "
-                f"Significa que necesitas reconocer antes las señales iniciales, "
-                f"porque cuando la activación ya ha subido mucho, cuesta más volver al centro."
-            )
+        texto_tensiones = (
+            f"Los aspectos de tensión con {lista_y(nombres_t)} hacen que el mundo emocional tenga menos margen en ciertos momentos. "
+            f"Cuando algo te activa, puede haber menos tiempo entre sentir y reaccionar. "
+            f"La emoción puede llegar más intensa, más mezclada o más difícil de ordenar. "
+            f"Esto no significa que necesariamente vayas a desregularte. "
+            f"Significa que necesitas reconocer antes las señales iniciales, "
+            f"porque cuando la activación ya ha subido mucho, cuesta más volver al centro."
+        )
 
         if apoyos:
             nombres_a = [a["planeta"] for a in apoyos[:3]]
-            plural_a = len(nombres_a) > 1
-
-            if plural_a:
-                texto_tensiones += (
-                    f"\n\nAl mismo tiempo, los aspectos de apoyo con {lista_y(nombres_a)} ofrecen recursos reales. "
-                    f"Cuando consigues encontrar un primer punto de estabilidad, esos aspectos ayudan a sostenerlo. "
-                    f"No eliminan la tensión, pero pueden facilitar que vuelvas a organizarte "
-                    f"sin quedarte completamente dentro de lo que se activó."
-                )
-            else:
-                texto_tensiones += (
-                    f"\n\nAl mismo tiempo, el aspecto de apoyo con {lista_y(nombres_a)} ofrece un recurso real. "
-                    f"Cuando consigues encontrar un primer punto de estabilidad, ese aspecto ayuda a sostenerlo. "
-                    f"No elimina la tensión, pero puede facilitar que vuelvas a organizarte "
-                    f"sin quedarte completamente dentro de lo que se activó."
-                )
-
-        if conjunciones:
-            nombres_c = [a["planeta"] for a in conjunciones[:3]]
-            plural_c = len(nombres_c) > 1
-
-            if plural_c:
-                texto_tensiones += (
-                    f"\n\nLas conjunciones con {lista_y(nombres_c)} no se leen simplemente como apoyo o tensión. "
-                    f"Indican funciones muy unidas a la Luna que se activan con ella y aumentan su peso "
-                    f"dentro de la respuesta emocional."
-                )
-            else:
-                texto_tensiones += (
-                    f"\n\nLa conjunción con {lista_y(nombres_c)} no se lee simplemente como apoyo o tensión. "
-                    f"Indica una función muy unida a la Luna que se activa con ella y aumenta su peso "
-                    f"dentro de la respuesta emocional."
-                )
+            texto_tensiones += (
+                f"\n\nAl mismo tiempo, los aspectos de apoyo con {lista_y(nombres_a)} ofrecen recursos reales. "
+                f"Cuando consigues encontrar un primer punto de estabilidad, "
+                f"esos aspectos ayudan a sostenerlo. "
+                f"No eliminan la tensión, pero pueden facilitar que vuelvas a organizarte "
+                f"sin quedarte completamente dentro de lo que se activó."
+            )
 
         partes.append(texto_tensiones)
 
-    else:
-        if apoyos:
-            nombres_a = [a["planeta"] for a in apoyos[:3]]
-            plural_a = len(nombres_a) > 1
-
-            if plural_a:
-                partes.append(
-                    f"Los aspectos de apoyo con {lista_y(nombres_a)} facilitan la regulación emocional. "
-                    f"Cuando algo te afecta, existe más posibilidad de encontrar un recurso interno, "
-                    f"una vía de expresión o un punto de estabilidad desde el que recomponerte. "
-                    f"Eso no significa que no haya intensidad emocional. "
-                    f"Significa que tienes más caminos disponibles para volver a sostenerte."
-                )
-            else:
-                partes.append(
-                    f"El aspecto de apoyo con {lista_y(nombres_a)} facilita la regulación emocional. "
-                    f"Cuando algo te afecta, existe más posibilidad de encontrar un recurso interno, "
-                    f"una vía de expresión o un punto de estabilidad desde el que recomponerte. "
-                    f"Eso no significa que no haya intensidad emocional. "
-                    f"Significa que tienes un camino adicional disponible para volver a sostenerte."
-                )
-
-        if conjunciones:
-            nombres_c = [a["planeta"] for a in conjunciones[:3]]
-            plural_c = len(nombres_c) > 1
-
-            if plural_c:
-                partes.append(
-                    f"Las conjunciones con {lista_y(nombres_c)} no se clasifican aquí como apoyo ni como tensión. "
-                    f"Muestran funciones estrechamente unidas a la Luna que se activan con ella "
-                    f"y forman parte directa de la respuesta emocional."
-                )
-            else:
-                partes.append(
-                    f"La conjunción con {lista_y(nombres_c)} no se clasifica aquí como apoyo ni como tensión. "
-                    f"Muestra una función estrechamente unida a la Luna que se activa con ella "
-                    f"y forma parte directa de la respuesta emocional."
-                )
+    elif apoyos:
+        nombres_a = [a["planeta"] for a in apoyos[:3]]
+        partes.append(
+            f"Los aspectos de apoyo con {lista_y(nombres_a)} facilitan la regulación emocional. "
+            f"Cuando algo te afecta, existe más posibilidad de encontrar un recurso interno, "
+            f"una vía de expresión o un punto de estabilidad desde el que recomponerte. "
+            f"Eso no significa que no haya intensidad emocional. "
+            f"Significa que tienes más caminos disponibles para volver a sostenerte."
+        )
 
     cierre = (
         f"Lo más difícil no suele ser que una sola parte se altere. "
@@ -2863,10 +2725,8 @@ def dibujar_rueda_luna(carta, aspectos_luna, archivo_salida):
         ax.plot([math.cos(ang) * R_CASA_IN, math.cos(ang) * R_CASA_OUT],
                 [math.sin(ang) * R_CASA_IN, math.sin(ang) * R_CASA_OUT],
                 color=col, linewidth=lw, zorder=3)
-        # Número de casa dentro del anillo planetario,
-        # cerca del círculo interior y junto a la cúspide.
-        ang_num = lon_a_angulo(cusp + 2.5)
-        r_num   = R_CASA_IN + 0.055
+        ang_num = lon_a_angulo(cusp + 4.0)
+        r_num   = (R_CASA_IN + 0.25) / 2 + 0.12
         ax.text(math.cos(ang_num) * r_num, math.sin(ang_num) * r_num, str(i + 1),
                 ha='center', va='center', fontsize=7, color='#666', zorder=4)
 
@@ -3125,7 +2985,16 @@ def bloque_portada(
     elementos.append(linea)
     elementos.append(Spacer(1, 1*cm))
 
-    elementos.append(Paragraph(f"<b>{nombre}</b>", centro))
+    estilo_nombre_portada = ParagraphStyle(
+        "NombrePortada",
+        parent=centro,
+        fontName="Times-Roman",
+        fontSize=24,
+        leading=29,
+        textColor=colors.HexColor("#8C5A00"),
+        alignment=TA_CENTER,
+    )
+    elementos.append(Paragraph(nombre, estilo_nombre_portada))
     elementos.append(Paragraph(f"{fecha_str} · {hora_str}", centro))
     elementos.append(Paragraph(ciudad, centro))
 
