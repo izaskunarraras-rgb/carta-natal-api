@@ -3978,43 +3978,84 @@ def dibujar_rueda_sol_asc_nodos(carta, aspectos, archivo_salida):
             if nombre in planetas:
                 nombres_visibles.add(nombre)
 
-    puntos = {}
+    # Colocación de planetas en carriles radiales, siguiendo la misma lógica
+    # utilizada en Carta Base y Luna. Los símbolos pueden separarse cuando hay
+    # acumulación angular, pero nunca invaden la zona interior de aspectos.
+    orden = [
+        "Sol", "Luna", "Mercurio", "Venus", "Marte", "Júpiter", "Saturno",
+        "Urano", "Neptuno", "Plutón", "Quirón", "Lilith",
+        "Nodo Norte", "Nodo Sur",
+    ]
 
-    for nombre in nombres_visibles:
-        if nombre in planetas:
-            puntos[nombre] = planetas[nombre]
+    RADIO_BASE = R_PLANETA
+    RADIO_MIN = R_CASA_IN + 0.10
+    RADIO_MAX = R_SIGN_IN - 0.10
 
-    lones_usados = []
+    CARRILES = [
+        RADIO_BASE,
+        min(RADIO_BASE + 0.09, RADIO_MAX),
+        max(RADIO_BASE - 0.09, RADIO_MIN),
+        min(RADIO_BASE + 0.16, RADIO_MAX),
+        max(RADIO_BASE - 0.16, RADIO_MIN),
+    ]
+
+    puntos = {
+        nombre: planetas[nombre]
+        for nombre in orden
+        if nombre in nombres_visibles
+        and nombre in planetas
+        and planetas[nombre]
+    }
+
+    planetas_ordenados = sorted(
+        ((nombre, p["lon"]) for nombre, p in puntos.items()),
+        key=lambda x: x[1],
+    )
+
     radios = {}
 
-    for nombre, p in puntos.items():
-        if not p:
-            continue
+    for nombre, lon in planetas_ordenados:
+        carril = CARRILES[0]
 
-        lon = p["lon"]
-        radio = R_PLANETA
+        cercanos = []
+        for otro_nombre, otro_lon in planetas_ordenados:
+            if otro_nombre == nombre:
+                continue
 
-        for lp, rp in lones_usados:
-            d = abs(lon - lp) % 360
+            d = abs(lon - otro_lon) % 360
             if d > 180:
                 d = 360 - d
 
-            if d < 8:
-                radio = rp - 0.10 if rp - 0.10 > 0.45 else rp + 0.10
-                break
+            if d < 9:
+                cercanos.append(otro_nombre)
 
-        lones_usados.append((lon, radio))
-        radios[nombre] = radio
+        if cercanos:
+            usados = [
+                radios[otro]
+                for otro in cercanos
+                if otro in radios
+            ]
 
-    for nombre, p in puntos.items():
-        if not p:
+            for candidato in CARRILES:
+                if all(abs(candidato - usado) > 0.04 for usado in usados):
+                    carril = candidato
+                    break
+
+        radios[nombre] = max(
+            RADIO_MIN,
+            min(carril, RADIO_MAX),
+        )
+
+    for nombre in orden:
+        if nombre not in puntos:
             continue
 
+        p = puntos[nombre]
         ang = lon_a_angulo(p["lon"])
         r = radios[nombre]
         color = COLORES_PLANETA.get(nombre, "#333")
-        simbolo = p["simbolo"]
-        fs = 22 if nombre == "Sol" else 16 if nombre == "Ascendente" else 18 if nombre in ("Nodo Norte", "Nodo Sur") else 15
+        simbolo = p["simbolo"] + ("ᴿ" if p.get("retrogrado") else "")
+        fs = 22 if nombre == "Sol" else 18 if nombre in ("Nodo Norte", "Nodo Sur") else 15
 
         ax.text(
             math.cos(ang) * r,
