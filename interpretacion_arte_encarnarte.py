@@ -11920,9 +11920,9 @@ def generar_pdf_arte_encarnarte(
 
 if __name__ == "__main__":
 
-    nombre = "HAIZE"
+    nombre = "ELAIA"
     fecha = "18/07/2015"
-    hora = "00:35"
+    hora = "01:04"
     lugar = "PAMPLONA, ESPAÑA"
     lat = 42.8157
     lon = -1.6522

@@ -3002,7 +3002,8 @@ def bloque_portada(
 
 
 
-    elementos.append(Spacer(1, 12*cm))
+    # Deja espacio para llevar la frase final al pie de la portada sin forzarla a la página siguiente.
+    elementos.append(Spacer(1, 10.5*cm))
     elementos.append(
         Paragraph(
             "Arquitectura Interna · Un método para sostener cuerpo, energía y vida con coherencia",

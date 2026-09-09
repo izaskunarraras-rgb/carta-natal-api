@@ -530,11 +530,11 @@ MERCURIO_COMBINACIONES = {
     ),
 
     "Ascendente": (
-        "En la relación entre Mercurio y el Ascendente, tu manera de pensar y tu forma de presentarte al mundo avanzan en la misma dirección. "
-        "Las ideas encuentran una expresión natural y la comunicación se convierte en una extensión auténtica de quién eres.\n\n"
+        "En la relación entre Mercurio y el Ascendente, tu manera de pensar y tu forma de presentarte al mundo pueden tirar en direcciones distintas. "
+        "A veces lo que piensas no encuentra una salida inmediata, o la forma en que te expresas no refleja del todo lo que querías decir.\n\n"
 
-        "Esta combinación invita a desarrollar una forma de comunicar que refleje tu verdadera manera de comprender la vida. "
-        "Cuanto mayor es la coherencia entre lo que piensas y lo que expresas, más fácil resulta conectar con los demás desde la autenticidad."
+        "Esta combinación invita a desarrollar una forma de comunicar que acerque pensamiento y expresión sin forzar que funcionen igual. "
+        "Cuando encuentras una manera propia de relacionar ambas partes, puedes mostrar mejor lo que piensas sin perder espontaneidad."
     ),
 
     "Nodo Norte": (
@@ -1445,11 +1445,11 @@ MARTE_COMBINACIONES = {
     ),
 
     "Ascendente": (
-        "En la relación entre Marte y el Ascendente, tu manera de actuar refleja con claridad quién eres y cómo decides abrirte camino en el mundo. "
-        "La iniciativa surge de forma natural y transmite una sensación de autenticidad y determinación.\n\n"
+        "En la relación entre Marte y el Ascendente, tu impulso para actuar y tu forma de presentarte al mundo pueden no encajar de manera automática. "
+        "A veces la iniciativa sale con demasiada fuerza; otras, puedes frenar justo cuando una parte de ti quiere avanzar.\n\n"
 
-        "Esta combinación invita a desarrollar una acción coherente con tu identidad. "
-        "Cuanto más alineadas están tus decisiones con tu verdadera forma de ser, mayor es la fuerza con la que avanzas."
+        "Esta combinación invita a encontrar una manera de actuar que tenga en cuenta tanto tu impulso como la forma en que entras en contacto con el entorno. "
+        "Cuando ambas partes encuentran su ritmo, puedes avanzar con firmeza sin sentir que una tiene que imponerse sobre la otra."
     ),
 
     "Nodo Norte": (
