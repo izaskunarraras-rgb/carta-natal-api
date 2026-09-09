@@ -9030,62 +9030,57 @@ def dibujar_arquitectura_casas(
         )
  
 
-    # Colocación radial de los planetas siguiendo el mismo criterio
-    # utilizado en Carta Natal Base. Se mantiene siempre la longitud real:
-    # únicamente cambia el radio cuando dos puntos están muy próximos.
-    orden = [
-        "Sol", "Luna", "Mercurio", "Venus", "Marte", "Júpiter", "Saturno",
-        "Urano", "Neptuno", "Plutón", "Quirón", "Lilith",
-        "Nodo Norte", "Nodo Sur",
-    ]
-
-    RADIO_MIN = R_CASA_IN + 0.08
-    RADIO_MAX = R_SIGN_IN - 0.08
-    RADIO_SEP = 0.08
-
-    puntos = {
-        nombre: planetas[nombre]
-        for nombre in orden
-        if nombre in planetas
-        and planetas[nombre]
-    }
-
+    # Distribución radial para evitar solapamientos
     lones_usados = []
     radios = {}
 
-    for nombre in orden:
-        if nombre not in puntos:
-            continue
+    # Ordenamos por longitud para que la distribución
+    # sea estable y no dependa del orden del conjunto.
+    puntos_ordenados = sorted(
+        puntos.items(),
+        key=lambda item: item[1]["lon"],
+    )
 
-        lon = puntos[nombre]["lon"]
+    for nombre, p in puntos_ordenados:
+        lon = p["lon"]
         radio = R_PLANETA
 
-        for lon_previa, radio_previo in lones_usados:
-            distancia = abs(lon - lon_previa) % 360
+        for (
+            lon_previa,
+            radio_previo,
+        ) in lones_usados:
+            distancia = abs(
+                lon - lon_previa
+            ) % 360
+
             if distancia > 180:
-                distancia = 360 - distancia
+                distancia = (
+                    360 - distancia
+                )
 
             if distancia < 8:
-                candidato = radio_previo - RADIO_SEP
+                if (
+                    radio_previo - 0.10
+                    > 0.45
+                ):
+                    radio = (
+                        radio_previo - 0.10
+                    )
+                else:
+                    radio = (
+                        radio_previo + 0.10
+                    )
 
-                if candidato < RADIO_MIN:
-                    candidato = radio_previo + RADIO_SEP
-
-                radio = max(
-                    RADIO_MIN,
-                    min(candidato, RADIO_MAX),
-                )
                 break
 
-        lones_usados.append((lon, radio))
+        lones_usados.append(
+            (lon, radio)
+        )
+
         radios[nombre] = radio
 
     # Símbolos planetarios
-    for nombre in orden:
-        if nombre not in puntos:
-            continue
-
-        p = puntos[nombre]
+    for nombre, p in puntos_ordenados:
         ang = lon_a_angulo(
             p["lon"]
         )
@@ -10231,6 +10226,85 @@ def bloque_tabla_resumen_casas(
         ),
         tabla,
     ]
+
+
+def preparar_contenido_ia_casas(carta):
+    """
+    Prepara el contenido interpretativo de Casas por Signo
+    para reutilizarlo posteriormente en la capa de IA.
+
+    No genera nuevas interpretaciones.
+    Reutiliza exactamente los textos de Cimientos.
+    """
+
+    arquitectura = carta["arquitectura_casas"]
+
+    signos_cuspides = arquitectura[
+        "signos_cuspides"
+    ]
+
+    casas = {}
+
+    for numero_casa in range(1, 13):
+
+        signo = signos_cuspides[
+            numero_casa - 1
+        ]
+
+        regente = REGENTE_SIGNO.get(
+            signo
+        )
+
+        datos_regente = carta[
+            "planetas"
+        ].get(
+            regente,
+            {}
+        )
+
+        casas[f"casa_{numero_casa}"] = {
+
+            "numero": numero_casa,
+
+            "area": CASA_LABEL.get(
+                numero_casa,
+                ""
+            ),
+
+            "signo_cuspide": signo,
+
+            "regente": regente,
+
+            "regente_signo": datos_regente.get(
+                "signo"
+            ),
+
+            "regente_casa": datos_regente.get(
+                "casa"
+            ),
+
+            "texto_area": CASA_AREA.get(
+                numero_casa,
+                ""
+            ),
+
+            "texto_signo_en_cuspide": SIGNO_EN_CUSPIDE.get(
+                signo,
+                ""
+            ),
+
+            "texto_casa_signo": TEXTOS_CASAS.get(
+                numero_casa,
+                {}
+            ).get(
+                signo,
+                ""
+            ),
+        }
+
+    return {
+        "casas": casas,
+    }
 
 
 def generar_casas_por_signo(
