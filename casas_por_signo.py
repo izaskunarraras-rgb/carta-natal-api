@@ -9030,57 +9030,62 @@ def dibujar_arquitectura_casas(
         )
  
 
-    # Distribución radial para evitar solapamientos
+    # Colocación radial de los planetas siguiendo el mismo criterio
+    # utilizado en Carta Natal Base. Se mantiene siempre la longitud real:
+    # únicamente cambia el radio cuando dos puntos están muy próximos.
+    orden = [
+        "Sol", "Luna", "Mercurio", "Venus", "Marte", "Júpiter", "Saturno",
+        "Urano", "Neptuno", "Plutón", "Quirón", "Lilith",
+        "Nodo Norte", "Nodo Sur",
+    ]
+
+    RADIO_MIN = R_CASA_IN + 0.08
+    RADIO_MAX = R_SIGN_IN - 0.08
+    RADIO_SEP = 0.08
+
+    puntos = {
+        nombre: planetas[nombre]
+        for nombre in orden
+        if nombre in planetas
+        and planetas[nombre]
+    }
+
     lones_usados = []
     radios = {}
 
-    # Ordenamos por longitud para que la distribución
-    # sea estable y no dependa del orden del conjunto.
-    puntos_ordenados = sorted(
-        puntos.items(),
-        key=lambda item: item[1]["lon"],
-    )
+    for nombre in orden:
+        if nombre not in puntos:
+            continue
 
-    for nombre, p in puntos_ordenados:
-        lon = p["lon"]
+        lon = puntos[nombre]["lon"]
         radio = R_PLANETA
 
-        for (
-            lon_previa,
-            radio_previo,
-        ) in lones_usados:
-            distancia = abs(
-                lon - lon_previa
-            ) % 360
-
+        for lon_previa, radio_previo in lones_usados:
+            distancia = abs(lon - lon_previa) % 360
             if distancia > 180:
-                distancia = (
-                    360 - distancia
-                )
+                distancia = 360 - distancia
 
             if distancia < 8:
-                if (
-                    radio_previo - 0.10
-                    > 0.45
-                ):
-                    radio = (
-                        radio_previo - 0.10
-                    )
-                else:
-                    radio = (
-                        radio_previo + 0.10
-                    )
+                candidato = radio_previo - RADIO_SEP
 
+                if candidato < RADIO_MIN:
+                    candidato = radio_previo + RADIO_SEP
+
+                radio = max(
+                    RADIO_MIN,
+                    min(candidato, RADIO_MAX),
+                )
                 break
 
-        lones_usados.append(
-            (lon, radio)
-        )
-
+        lones_usados.append((lon, radio))
         radios[nombre] = radio
 
     # Símbolos planetarios
-    for nombre, p in puntos_ordenados:
+    for nombre in orden:
+        if nombre not in puntos:
+            continue
+
+        p = puntos[nombre]
         ang = lon_a_angulo(
             p["lon"]
         )
