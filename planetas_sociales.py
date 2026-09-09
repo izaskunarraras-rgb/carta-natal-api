@@ -1715,26 +1715,18 @@ def dibujar_rueda_planetas_sociales(carta, aspectos, archivo_salida):
             if nombre in planetas:
                 nombres_visibles.add(nombre)
 
-    # Colocación de planetas en carriles radiales, siguiendo la misma lógica
-    # utilizada en Carta Base y Luna. Los símbolos pueden separarse cuando hay
-    # acumulación angular, pero nunca invaden la zona interior de aspectos.
+    # Colocación radial de los planetas siguiendo el mismo criterio
+    # utilizado en Carta Natal Base. Se mantiene siempre la longitud real:
+    # únicamente cambia el radio cuando dos puntos están muy próximos.
     orden = [
         "Sol", "Luna", "Mercurio", "Venus", "Marte", "Júpiter", "Saturno",
         "Urano", "Neptuno", "Plutón", "Quirón", "Lilith",
         "Nodo Norte", "Nodo Sur",
     ]
 
-    RADIO_BASE = R_PLANETA
-    RADIO_MIN = R_CASA_IN + 0.10
-    RADIO_MAX = R_SIGN_IN - 0.10
-
-    CARRILES = [
-        RADIO_BASE,
-        min(RADIO_BASE + 0.09, RADIO_MAX),
-        max(RADIO_BASE - 0.09, RADIO_MIN),
-        min(RADIO_BASE + 0.16, RADIO_MAX),
-        max(RADIO_BASE - 0.16, RADIO_MIN),
-    ]
+    RADIO_MIN = R_CASA_IN + 0.08
+    RADIO_MAX = R_SIGN_IN - 0.08
+    RADIO_SEP = 0.08
 
     puntos = {
         nombre: planetas[nombre]
@@ -1744,45 +1736,35 @@ def dibujar_rueda_planetas_sociales(carta, aspectos, archivo_salida):
         and planetas[nombre]
     }
 
-    puntos_ordenados = sorted(
-        puntos.items(),
-        key=lambda item: item[1]["lon"],
-    )
-
+    lones_usados = []
     radios = {}
 
-    for nombre, p in puntos_ordenados:
-        lon = p["lon"]
-        carril = CARRILES[0]
+    for nombre in orden:
+        if nombre not in puntos:
+            continue
 
-        cercanos = []
-        for otro_nombre, otro_p in puntos_ordenados:
-            if otro_nombre == nombre:
-                continue
+        lon = puntos[nombre]["lon"]
+        radio = R_PLANETA
 
-            distancia = abs(lon - otro_p["lon"]) % 360
-            if distancia > 180:
-                distancia = 360 - distancia
+        for lon_previa, radio_previo in lones_usados:
+            d = abs(lon - lon_previa) % 360
+            if d > 180:
+                d = 360 - d
 
-            if distancia < 9:
-                cercanos.append(otro_nombre)
+            if d < 8:
+                candidato = radio_previo - RADIO_SEP
 
-        if cercanos:
-            usados = [
-                radios[otro]
-                for otro in cercanos
-                if otro in radios
-            ]
+                if candidato < RADIO_MIN:
+                    candidato = radio_previo + RADIO_SEP
 
-            for candidato in CARRILES:
-                if all(abs(candidato - usado) > 0.04 for usado in usados):
-                    carril = candidato
-                    break
+                radio = max(
+                    RADIO_MIN,
+                    min(candidato, RADIO_MAX),
+                )
+                break
 
-        radios[nombre] = max(
-            RADIO_MIN,
-            min(carril, RADIO_MAX),
-        )
+        lones_usados.append((lon, radio))
+        radios[nombre] = radio
 
     # Símbolos planetarios
     for nombre in orden:
@@ -1798,7 +1780,7 @@ def dibujar_rueda_planetas_sociales(carta, aspectos, archivo_salida):
             "#333",
         )
 
-        simbolo = p["simbolo"] + ("ᴿ" if p.get("retrogrado") else "")
+        simbolo = p["simbolo"]
 
         # Júpiter y Saturno quedan ligeramente destacados.
         if nombre in planetas_focales:
