@@ -8995,23 +8995,10 @@ def dibujar_arquitectura_casas(
                 zorder=7,
             )
 
-        # Número de la casa situado en el centro real del sector
-        cuspide_inicio = cuspides[i] % 360
-        cuspide_fin = cuspides[(i + 1) % 12] % 360
- 
-        if cuspide_fin <= cuspide_inicio:
-            cuspide_fin += 360
- 
-        lon_centro_casa = (
-            cuspide_inicio
-            + (cuspide_fin - cuspide_inicio) / 2
-        ) % 360
-
-        ang_num = lon_a_angulo(
-            lon_centro_casa
-        )
-
-        r_num = R_CASA_IN + 0.08
+        # Número de todas las casas dentro del anillo planetario,
+        # cerca del círculo interior y ligeramente al lado de la cúspide.
+        ang_num = lon_a_angulo(cusp + 2.5)
+        r_num = R_CASA_IN + 0.055
 
         ax.text(
             math.cos(ang_num) * r_num,
