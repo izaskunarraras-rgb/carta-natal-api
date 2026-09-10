@@ -13,6 +13,7 @@ import math
 import os
 import subprocess
 import sys
+import re
 from datetime import datetime
 
 import matplotlib
