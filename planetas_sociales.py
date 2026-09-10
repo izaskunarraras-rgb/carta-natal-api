@@ -1417,29 +1417,134 @@ def calcular_aspectos_modulo(planetas, asc, planetas_focales):
     )
 
 
+
+PLANETAS_SOCIALES_ASPECTOS_TENSION = {
+    "Cuadratura",
+    "Oposición",
+    "Quincuncio",
+}
+
+_FUNCION_SOCIAL_2026 = {
+    "Júpiter": "tu forma de crecer, ampliar la perspectiva, confiar y encontrar sentido",
+    "Saturno": "tu forma de construir estabilidad, asumir responsabilidades, poner límites y sostener procesos",
+}
+
+_FUNCION_OTRO_SOCIAL_2026 = {
+    "Sol": "tu identidad, tu dirección vital y la forma en que afirmas quién eres",
+    "Luna": "tu mundo emocional, tus necesidades de seguridad y tu manera de reaccionar",
+    "Mercurio": "tu pensamiento, tu forma de comprender y tu manera de expresar lo que vives",
+    "Venus": "tu forma de vincularte, valorar, disfrutar y recibir afecto",
+    "Marte": "tu impulso, tu capacidad de actuar, defenderte y movilizar energía",
+    "Júpiter": "tu forma de crecer, confiar, ampliar horizontes y encontrar sentido",
+    "Saturno": "tu relación con los límites, la responsabilidad, la exigencia y el tiempo",
+    "Urano": "tu necesidad de libertad, cambio, diferencia y renovación",
+    "Neptuno": "tu sensibilidad, imaginación, idealización y apertura a lo intangible",
+    "Plutón": "tu intensidad, tu necesidad de transformación y tu relación con el poder interno",
+    "Ascendente": "tu manera espontánea de responder a la vida y posicionarte ante lo que ocurre",
+    "Nodo Norte": "la dirección de crecimiento que necesita desarrollarse con mayor consciencia",
+    "Nodo Sur": "los recursos y patrones conocidos a los que tiendes a volver con facilidad",
+    "Quirón": "una zona especialmente sensible que puede convertirse en aprendizaje y comprensión",
+    "Lilith": "una parte instintiva, incómoda o poco domesticada que necesita ser reconocida",
+}
+
+_DINAMICA_TENSION_SOCIAL_2026 = {
+    "Cuadratura": (
+        "La cuadratura introduce fricción entre ambas funciones. "
+        "No siempre pueden expresarse al mismo tiempo ni de la misma manera, "
+        "y esa diferencia puede generar bloqueo, sobreesfuerzo o la sensación de tener que elegir entre dos necesidades importantes. "
+        "La integración aparece cuando encuentras una forma propia de sostener ambas sin que una anule a la otra."
+    ),
+    "Oposición": (
+        "La oposición sitúa ambas funciones en polos diferentes. "
+        "Puede haber tendencia a vivir una con más fuerza mientras la otra aparece a través del entorno, "
+        "o a alternar entre ambos extremos según el momento. "
+        "El trabajo consiste en reconocer la legitimidad de los dos polos y aprender a relacionarlos sin reducir la experiencia a uno solo."
+    ),
+    "Quincuncio": (
+        "El quincuncio exige reajustes continuos entre dos funciones que no encajan de forma automática. "
+        "Lo que funciona para una puede desorganizar a la otra, de modo que el equilibrio suele construirse mediante pequeñas correcciones de medida, ritmo y prioridad. "
+        "No hay una solución fija: la relación necesita observación y adaptación continuas."
+    ),
+}
+
+def _texto_tension_social_2026(planeta_focal, otro_punto, tipo_aspecto):
+    """Construye un texto coherente para cuadraturas, oposiciones y quincuncios."""
+    funcion_focal = _FUNCION_SOCIAL_2026.get(
+        planeta_focal,
+        f"la función representada por {planeta_focal}",
+    )
+    funcion_otro = _FUNCION_OTRO_SOCIAL_2026.get(
+        otro_punto,
+        f"la función representada por {otro_punto}",
+    )
+    dinamica = _DINAMICA_TENSION_SOCIAL_2026.get(tipo_aspecto, "")
+
+    if not dinamica:
+        return ""
+
+    return (
+        f"Este aspecto pone en relación {funcion_focal} con {funcion_otro}. "
+        f"{dinamica}"
+    )
+
+def validar_coherencia_aspecto_tension_social_2026(texto, tipo_aspecto):
+    """Validación local mínima de los aspectos tensos del módulo."""
+    if tipo_aspecto not in PLANETAS_SOCIALES_ASPECTOS_TENSION:
+        return True
+
+    texto_min = (texto or "").lower()
+    claves = {
+        "Cuadratura": ("fricción", "tensión"),
+        "Oposición": ("polos", "opuestos", "alternar"),
+        "Quincuncio": ("ajustes", "reajustes", "no encajan"),
+    }
+    return any(palabra in texto_min for palabra in claves[tipo_aspecto])
+
 def obtener_texto_aspecto(
     combinaciones,
     textos_tipo_aspecto,
     planeta,
     tipo_aspecto,
+    planeta_focal=None,
 ):
     """
-    Construye la interpretación de un aspecto combinando:
+    Construye la interpretación de un aspecto.
 
-    1. El significado de la relación entre ambos cuerpos.
-    2. La manera en que se expresa según el tipo de aspecto.
+    Para conjunción, sextil y trígono mantiene la combinación general
+    de la pareja y añade la dinámica propia del aspecto.
 
-    Los diccionarios se reciben como argumentos para permitir
-    que cada planeta focal tenga una voz propia.
+    Para cuadratura, oposición y quincuncio evita anteponer el texto
+    genérico de la pareja, porque puede describir una integración
+    demasiado armónica antes de introducir una dinámica tensa.
     """
-
     texto_combinacion = combinaciones.get(planeta)
     texto_aspecto = textos_tipo_aspecto.get(tipo_aspecto)
 
     if not texto_combinacion or not texto_aspecto:
         return ""
 
-    return f"{texto_combinacion}\n\n{texto_aspecto}"
+    if tipo_aspecto in PLANETAS_SOCIALES_ASPECTOS_TENSION and planeta_focal:
+        texto_tension = _texto_tension_social_2026(
+            planeta_focal,
+            planeta,
+            tipo_aspecto,
+        )
+
+        if texto_tension:
+            texto = texto_tension + "\n\n" + texto_aspecto
+
+            if not validar_coherencia_aspecto_tension_social_2026(
+                texto,
+                tipo_aspecto,
+            ):
+                raise ValueError(
+                    f"Texto incoherente para aspecto tenso: "
+                    f"{planeta_focal} - {planeta} - {tipo_aspecto}"
+                )
+
+            return texto
+
+    return texto_combinacion + "\n\n" + texto_aspecto
 
 
 def calcular_aspectos_planetas_sociales(planetas, asc):
@@ -2643,6 +2748,7 @@ def bloque_aspectos_planeta(
             textos_tipo_aspecto,
             otro_punto,
             tipo,
+            planeta_focal=planeta,
         )
 
         if not texto:
@@ -2936,6 +3042,7 @@ def preparar_contenido_ia_sociales(carta, aspectos):
                 config["textos_tipo_aspecto"],
                 otro,
                 tipo,
+                planeta_focal=planeta,
             )
 
             if not texto:
