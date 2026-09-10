@@ -1851,19 +1851,114 @@ def calcular_aspectos_modulo(planetas, asc, planetas_focales):
 
 
 
+
+# ─── BLINDAJE EDITORIAL DE ASPECTOS DE TENSIÓN ────────────────────────────────
+PLANETAS_PERSONALES_ASPECTOS_TENSION = {
+    "Cuadratura",
+    "Oposición",
+    "Quincuncio",
+}
+
+PLANETAS_PERSONALES_FUNCION_BREVE = {
+    "Sol": "tu dirección personal y tu forma de reconocerte",
+    "Luna": "tu mundo emocional y tus necesidades de seguridad",
+    "Mercurio": "tu manera de pensar, comprender y comunicar",
+    "Venus": "tu forma de valorar, vincularte y recibir",
+    "Marte": "tu impulso, tu manera de actuar y afirmarte",
+    "Júpiter": "tu forma de crecer, confiar y ampliar horizontes",
+    "Saturno": "tu necesidad de estructura, medida y continuidad",
+    "Urano": "tu necesidad de cambio, libertad y renovación",
+    "Neptuno": "tu sensibilidad, imaginación y apertura a lo sutil",
+    "Plutón": "tu relación con la intensidad, el poder y la transformación",
+    "Ascendente": "tu forma de presentarte y entrar en contacto con la vida",
+    "Medio Cielo": "tu forma de orientarte hacia lo visible y lo vocacional",
+    "Nodo Norte": "la dirección de desarrollo que pide incorporar cualidades nuevas",
+    "Nodo Sur": "patrones conocidos y recursos que aparecen con facilidad",
+    "Quirón": "una zona sensible que pide ajuste y elaboración",
+    "Lilith": "una parte que busca autenticidad aunque incomode o cuestione lo esperado",
+}
+
+
+def _texto_tension_por_pareja_2026(planeta_focal, otro_punto, tipo_aspecto):
+    """Construye una introducción coherente para cuadratura, oposición y quincuncio."""
+    f1 = PLANETAS_PERSONALES_FUNCION_BREVE.get(
+        planeta_focal,
+        f"la función de {planeta_focal}",
+    )
+    f2 = PLANETAS_PERSONALES_FUNCION_BREVE.get(
+        otro_punto,
+        f"la función de {otro_punto}",
+    )
+
+    if tipo_aspecto == "Cuadratura":
+        return (
+            f"En la relación entre {planeta_focal} y {_con_articulo(otro_punto)}, "
+            f"{f1} y {f2} pueden empujar en direcciones distintas. "
+            "No es una colaboración automática: cuando una parte toma demasiado espacio, "
+            "la otra puede quedar forzada o reaccionar con tensión.\n\n"
+            "El trabajo de esta relación consiste en encontrar una respuesta que permita "
+            "dar lugar a ambas funciones sin intentar que una anule a la otra."
+        )
+
+    if tipo_aspecto == "Oposición":
+        return (
+            f"En la relación entre {planeta_focal} y {_con_articulo(otro_punto)}, "
+            f"{f1} y {f2} tienden a colocarse en polos opuestos. "
+            "Puede resultar fácil identificarse primero con un extremo y percibir el otro "
+            "como algo que aparece enfrente, fuera o en contraste.\n\n"
+            "La relación gana equilibrio cuando ambos polos pueden reconocerse al mismo tiempo, "
+            "sin tener que elegir uno y rechazar el otro."
+        )
+
+    return (
+        f"En la relación entre {planeta_focal} y {_con_articulo(otro_punto)}, "
+        f"{f1} y {f2} no encuentran de entrada una forma natural de coordinarse. "
+        "No necesariamente chocan de frente, pero funcionan con lógicas distintas y eso "
+        "puede obligar a reajustar cómo se da espacio a cada una.\n\n"
+        "Esta relación se afina mediante observación y pequeños cambios de medida, ritmo "
+        "o forma de expresión hasta encontrar una coordinación propia."
+    )
+
+
+def validar_coherencia_aspecto_tension_local_2026(texto, tipo_aspecto):
+    """Impide que un aspecto de tensión salga descrito como armonía espontánea."""
+    if not texto or tipo_aspecto not in PLANETAS_PERSONALES_ASPECTOS_TENSION:
+        return texto
+
+    frases_prohibidas = (
+        r"\brefleja con naturalidad\b",
+        r"\bfluye con naturalidad\b",
+        r"\bfluidez natural\b",
+        r"\bavanzan en la misma dirección\b",
+        r"\bencuentran una dirección común\b",
+        r"\bse alimentan mutuamente\b",
+        r"\bse apoyan de manera espontánea\b",
+        r"\bcolaboran de manera espontánea\b",
+        r"\bcoherencia natural\b",
+    )
+
+    frases = re.split(r"(?<=[.!?])\s+", texto)
+    limpias = []
+    for frase in frases:
+        if any(re.search(p, frase, flags=re.IGNORECASE) for p in frases_prohibidas):
+            continue
+        limpias.append(frase)
+
+    return " ".join(limpias).strip()
+
+
 def obtener_texto_aspecto(
     combinaciones,
     textos_tipo_aspecto,
     planeta,
     tipo_aspecto,
+    planeta_focal=None,
 ):
     """
-    Devuelve la interpretación específica de la pareja y añade una sola frase
-    breve que conserva la naturaleza técnica del tipo de aspecto.
+    Devuelve una interpretación coherente con el tipo de aspecto.
 
-    No se reutilizan los antiguos bloques genéricos largos porque producían
-    repetición. La frase técnica es corta y evita que una cuadratura, oposición,
-    quincuncio, etc. pueda leerse como si fuera una relación armónica.
+    Para cuadratura, oposición y quincuncio se usa una formulación específica
+    de tensión para evitar contradicciones con textos armónicos de la pareja.
     """
     texto_combinacion = combinaciones.get(planeta, "")
     frase_tipo = PLANETAS_PERSONALES_FRASE_TIPO_ASPECTO.get(
@@ -1871,13 +1966,28 @@ def obtener_texto_aspecto(
         "",
     )
 
+    if tipo_aspecto in PLANETAS_PERSONALES_ASPECTOS_TENSION:
+        focal = planeta_focal or ""
+        texto_tension = _texto_tension_por_pareja_2026(
+            focal,
+            planeta,
+            tipo_aspecto,
+        )
+        texto = texto_tension
+        if frase_tipo:
+            texto = texto_tension + "\n\n" + frase_tipo
+        return validar_coherencia_aspecto_tension_local_2026(
+            texto,
+            tipo_aspecto,
+        )
+
     if not texto_combinacion:
         return ""
 
     if not frase_tipo:
         return texto_combinacion
 
-    return f"{texto_combinacion}\n\n{frase_tipo}"
+    return texto_combinacion + "\n\n" + frase_tipo
 
 def calcular_aspectos_planetas_personales(planetas, asc):
     return calcular_aspectos_modulo(
@@ -3175,6 +3285,7 @@ def bloque_aspectos_planeta(
             textos_tipo_aspecto,
             otro_punto,
             tipo,
+            planeta_focal=planeta,
         )
 
         if not texto:
@@ -3482,6 +3593,7 @@ def preparar_contenido_ia_personales(carta, aspectos):
                 PLANETAS_PERSONALES_TEXTOS_TIPO_ASPECTO,
                 otro,
                 tipo,
+                planeta_focal=planeta,
             )
 
             if not texto:
