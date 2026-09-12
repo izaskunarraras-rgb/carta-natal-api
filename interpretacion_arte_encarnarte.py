@@ -16732,22 +16732,16 @@ def extraer_interpretacion_muestra(interpretacion):
     fin = None
 
     for indice, linea in enumerate(lineas):
-        titulo = re.sub(
-            r"^#{1,6}\s*",
-            "",
-            linea.strip(),
-        ).strip()
-
-        titulo_normalizado = re.sub(
-            r"\s+",
-            " ",
-            titulo,
-        ).strip().casefold()
+        titulo_normalizado = normalizar_titulo_seccion(
+            linea.strip()
+        )
 
         if (
             inicio is None
             and titulo_normalizado
-            == "1. la arquitectura central de tu carta"
+            == normalizar_titulo_seccion(
+                "La arquitectura central de tu carta"
+            )
         ):
             inicio = indice
             continue
@@ -16755,7 +16749,9 @@ def extraer_interpretacion_muestra(interpretacion):
         if (
             inicio is not None
             and titulo_normalizado
-            == "2. los núcleos que organizan tu carta"
+            == normalizar_titulo_seccion(
+                "Los núcleos que organizan tu carta"
+            )
         ):
             fin = indice
             break
