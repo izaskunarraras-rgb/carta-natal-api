@@ -16715,10 +16715,14 @@ def generar_pdf_arte_encarnarte(
 
 
 
-def extraer_interpretacion_muestra(interpretacion):
+def extraer_interpretacion_muestra(interpretacion, bloques_figuras=None):
     """
-    Extrae de forma determinista la primera sección del informe completo
-    para construir la muestra gratuita.
+    Construye de forma determinista la muestra gratuita a partir del
+    informe ya generado. Incluye:
+
+    - la arquitectura central completa;
+    - la primera figura con su título técnico y solo su primer párrafo;
+    - un cierre de desbloqueo.
 
     No llama a OpenAI ni reinterpreta la carta.
     """
@@ -16777,18 +16781,55 @@ def extraer_interpretacion_muestra(interpretacion):
             "La primera sección del informe está vacía."
         )
 
+    partes = [primera_seccion]
+
+    # Mostramos solo el comienzo de la primera figura ya calculada.
+    # Así la persona ve también una miniatura real de su arquitectura
+    # sin regalar el desarrollo completo de la figura.
+    if bloques_figuras:
+        primera_figura = bloques_figuras[0] or {}
+
+        titulo_humano = str(
+            primera_figura.get("titulo_humano") or ""
+        ).strip()
+        titulo_tecnico = normalizar_titulo_tecnico_figura(
+            primera_figura.get("titulo_tecnico") or ""
+        )
+        texto_figura = str(
+            primera_figura.get("interpretacion") or ""
+        ).strip()
+
+        parrafos_figura = [
+            parrafo.strip()
+            for parrafo in re.split(r"\n\s*\n", texto_figura)
+            if parrafo.strip()
+        ]
+
+        if titulo_humano and titulo_tecnico and parrafos_figura:
+            partes.append(
+                "\n".join([
+                    "## Una figura de tu arquitectura",
+                    "",
+                    f"### {titulo_humano}",
+                    f"**{titulo_tecnico}**",
+                    "",
+                    parrafos_figura[0],
+                ])
+            )
+
     cierre = """
+## Tu carta continúa
 
-2. Tu carta continúa
-
-Lo que acabas de leer es la arquitectura central de tu carta. El informe completo continúa desarrollando los núcleos que la organizan, cómo se relacionan sus distintas partes, las tensiones estructurales, los recursos y vías de integración, dónde se expresa esta arquitectura y cómo sostenerla.
+Lo que acabas de leer es solo una parte de tu Arquitectura Interna. El informe completo continúa desarrollando los núcleos que organizan tu carta, cómo se relacionan sus distintas partes, las tensiones estructurales, los recursos y vías de integración, dónde se expresa esta arquitectura y cómo sostenerla.
 
 **Tu informe completo ya está creado.**
 
 **El Arte de Encarnarte completo · 15 €**
 """.strip()
 
-    return f"{primera_seccion}\n\n{cierre}"
+    partes.append(cierre)
+
+    return "\n\n".join(partes)
 
 def generar_carta_api(
     nombre,
@@ -17239,7 +17280,8 @@ def generar_carta_api(
     # Se crea a partir de la interpretación YA generada.
     # No consume ninguna llamada adicional a OpenAI.
     interpretacion_muestra = extraer_interpretacion_muestra(
-        interpretacion
+        interpretacion,
+        bloques_figuras=bloques_figuras,
     )
 
     ruta_pdf_muestra = (
@@ -17254,7 +17296,7 @@ def generar_carta_api(
         interpretacion=interpretacion_muestra,
         ruta_rueda=ruta_rueda,
         ruta_pdf=ruta_pdf_muestra,
-        miniaturas_figuras=[],
+        miniaturas_figuras=miniaturas_figuras,
     )
 
     print()
