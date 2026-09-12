@@ -683,9 +683,35 @@ print(
     )
 
 
-    return obtener_ruta_pdf(
+    ruta_pdf = obtener_ruta_pdf(
         resultado
     )
+
+    if opcion == "opArteEncarnarte":
+        ruta_muestra = resultado.get(
+            "ruta_pdf_muestra"
+        )
+
+        if not ruta_muestra:
+            raise ValueError(
+                "El Arte de Encarnarte no ha devuelto el PDF de muestra."
+            )
+
+        resultado_muestra = {
+            "ok": True,
+            "ruta_pdf": ruta_muestra,
+        }
+
+        ruta_pdf_muestra = obtener_ruta_pdf(
+            resultado_muestra
+        )
+
+        return {
+            "ruta_pdf": ruta_pdf,
+            "ruta_pdf_muestra": ruta_pdf_muestra,
+        }
+
+    return ruta_pdf
 
 
 def unir_pdfs(
@@ -808,6 +834,7 @@ def ejecutar_trabajo_generacion(
             )
 
         rutas_generadas = []
+        ruta_muestra_encarnarte = None
 
         for indice, opcion in enumerate(
             opciones_a_generar,
@@ -824,7 +851,7 @@ def ejecutar_trabajo_generacion(
                     time.time()
                 )
 
-            ruta_pdf = generar_documento_en_proceso(
+            resultado_generacion = generar_documento_en_proceso(
                 opcion=opcion,
                 nombre=nombre,
                 fecha=fecha,
@@ -835,6 +862,32 @@ def ejecutar_trabajo_generacion(
                 tz_name=tz_name,
                 tratamiento=tratamiento,
             )
+
+            if opcion == "opArteEncarnarte":
+                if not isinstance(
+                    resultado_generacion,
+                    dict,
+                ):
+                    raise ValueError(
+                        "El Arte de Encarnarte no ha devuelto sus dos PDFs."
+                    )
+
+                ruta_pdf = resultado_generacion.get(
+                    "ruta_pdf"
+                )
+                ruta_muestra_encarnarte = resultado_generacion.get(
+                    "ruta_pdf_muestra"
+                )
+
+                if (
+                    not ruta_pdf
+                    or not ruta_muestra_encarnarte
+                ):
+                    raise ValueError(
+                        "Falta el PDF completo o la muestra de El Arte de Encarnarte."
+                    )
+            else:
+                ruta_pdf = resultado_generacion
 
             rutas_generadas.append(
                 ruta_pdf
@@ -919,7 +972,7 @@ def ejecutar_trabajo_generacion(
                 f"{base_url}{ruta_pdf_publica}"
             )
 
-        callback_correcto = notificar_wix({
+        datos_callback = {
             "pedidoId": pedido_id,
             "estado": "Generado",
             "pdfUrl": url_pdf_completa,
@@ -928,7 +981,38 @@ def ejecutar_trabajo_generacion(
             "opciones": opciones,
             "productos": productos,
             "tipoPedido": tipo_pedido,
-        })
+        }
+
+        if (
+            tipo_pedido == "muestra_encarnarte"
+            and ruta_muestra_encarnarte
+        ):
+            nombre_muestra = os.path.basename(
+                ruta_muestra_encarnarte
+            )
+
+            url_pdf_muestra_completa = (
+                f"{base_url}/descargas/{nombre_muestra}"
+            )
+
+            # Compatibilidad con el callback actual de Wix:
+            # pdfUrl pasa a ser la muestra, que es la que debe
+            # enviarse por correo. Además enviamos explícitamente
+            # ambas URLs para que Wix pueda guardar el completo
+            # de forma privada.
+            datos_callback["pdfUrl"] = (
+                url_pdf_muestra_completa
+            )
+            datos_callback["pdfMuestraUrl"] = (
+                url_pdf_muestra_completa
+            )
+            datos_callback["pdfCompletoUrl"] = (
+                url_pdf_completa
+            )
+
+        callback_correcto = notificar_wix(
+            datos_callback
+        )
 
         if not callback_correcto:
             print(

@@ -16714,6 +16714,86 @@ def generar_pdf_arte_encarnarte(
     return ruta_pdf
 
 
+
+def extraer_interpretacion_muestra(interpretacion):
+    """
+    Extrae de forma determinista la primera sección del informe completo
+    para construir la muestra gratuita.
+
+    No llama a OpenAI ni reinterpreta la carta.
+    """
+    if not interpretacion or not str(interpretacion).strip():
+        raise ValueError(
+            "No se puede crear la muestra: la interpretación está vacía."
+        )
+
+    lineas = str(interpretacion).splitlines()
+    inicio = None
+    fin = None
+
+    for indice, linea in enumerate(lineas):
+        titulo = re.sub(
+            r"^#{1,6}\s*",
+            "",
+            linea.strip(),
+        ).strip()
+
+        titulo_normalizado = re.sub(
+            r"\s+",
+            " ",
+            titulo,
+        ).strip().casefold()
+
+        if (
+            inicio is None
+            and titulo_normalizado
+            == "1. la arquitectura central de tu carta"
+        ):
+            inicio = indice
+            continue
+
+        if (
+            inicio is not None
+            and titulo_normalizado
+            == "2. los núcleos que organizan tu carta"
+        ):
+            fin = indice
+            break
+
+    if inicio is None:
+        raise ValueError(
+            "No se ha encontrado la sección 'La arquitectura central de tu carta' "
+            "para crear la muestra."
+        )
+
+    if fin is None:
+        raise ValueError(
+            "No se ha encontrado el final de la primera sección del informe "
+            "para crear la muestra."
+        )
+
+    primera_seccion = "\n".join(
+        lineas[inicio:fin]
+    ).strip()
+
+    if not primera_seccion:
+        raise ValueError(
+            "La primera sección del informe está vacía."
+        )
+
+    cierre = """
+
+2. Tu carta continúa
+
+Lo que acabas de leer es la arquitectura central de tu carta. El informe completo continúa desarrollando los núcleos que la organizan, cómo se relacionan sus distintas partes, las tensiones estructurales, los recursos y vías de integración, dónde se expresa esta arquitectura y cómo sostenerla.
+
+**Tu informe completo ya está creado.**
+
+**El Arte de Encarnarte completo · 15 €**
+""".strip()
+
+    return f"{primera_seccion}\n\n{cierre}"
+
 def generar_carta_api(
     nombre,
     fecha,
@@ -17159,9 +17239,31 @@ def generar_carta_api(
         miniaturas_figuras=miniaturas_figuras,
     )
 
+    # ── MUESTRA GRATUITA ──────────────────────────────
+    # Se crea a partir de la interpretación YA generada.
+    # No consume ninguna llamada adicional a OpenAI.
+    interpretacion_muestra = extraer_interpretacion_muestra(
+        interpretacion
+    )
+
+    ruta_pdf_muestra = (
+        f"{nombre_f}_Arte_de_Encarnarte_Muestra.pdf"
+    )
+
+    generar_pdf_arte_encarnarte(
+        nombre=nombre,
+        fecha=fecha,
+        hora=hora,
+        lugar=lugar,
+        interpretacion=interpretacion_muestra,
+        ruta_rueda=ruta_rueda,
+        ruta_pdf=ruta_pdf_muestra,
+        miniaturas_figuras=[],
+    )
+
     print()
     print(
-        "PDF generado correctamente:"
+        "PDF completo generado correctamente:"
     )
 
     print(
@@ -17170,10 +17272,23 @@ def generar_carta_api(
         )
     )
 
+    print(
+        "PDF de muestra generado correctamente:"
+    )
+
+    print(
+        os.path.abspath(
+            ruta_pdf_muestra
+        )
+    )
+
     return {
         "ok": True,
         "ruta_pdf": os.path.abspath(ruta_pdf),
         "pdf_path": os.path.abspath(ruta_pdf),
         "archivo": os.path.basename(ruta_pdf),
+        "ruta_pdf_completo": os.path.abspath(ruta_pdf),
+        "ruta_pdf_muestra": os.path.abspath(ruta_pdf_muestra),
+        "archivo_muestra": os.path.basename(ruta_pdf_muestra),
     }
 
