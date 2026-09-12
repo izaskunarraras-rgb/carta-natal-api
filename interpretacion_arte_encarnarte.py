@@ -17352,7 +17352,7 @@ def generar_carta_api(
     if pedido_id:
         pedido_id_url = quote(pedido_id, safe="")
         url_compra = (
-            "https://www.elhogardeuma.com/el-arte-de-encarnarte"
+            "https://www.elhogardeuma.com/desbloquear-el-arte"
             f"?pedidoId={pedido_id_url}"
         )
 
