@@ -4,6 +4,7 @@ V80_TRATAMIENTO_LINGUISTICO_SIMPLIFICADO = True
 import re
 import json
 import unicodedata
+from urllib.parse import quote
 
 from openai import OpenAI
 
@@ -16111,6 +16112,7 @@ def generar_pdf_arte_encarnarte(
     ruta_rueda,
     ruta_pdf,
     miniaturas_figuras=None,
+    url_compra=None,
 
 ):
     """
@@ -16341,6 +16343,68 @@ def generar_pdf_arte_encarnarte(
         linea = linea.strip()
 
         if not linea:
+            continue
+
+        # ── CTA DE COMPRA EN LA MUESTRA ──────────────
+        # Solo aparece en el PDF de muestra. La URL contiene
+        # el pedidoId que Wix ya utiliza para identificar la carta.
+        if linea == "[[CTA_COMPRA_ENCARNARTE]]":
+            if titulos_pendientes:
+                elementos.extend(titulos_pendientes)
+                titulos_pendientes = []
+
+            if url_compra:
+                estilo_cta = estilos["cuerpo"].clone(
+                    "CTACompraEncarnarte"
+                )
+                estilo_cta.alignment = 1
+                estilo_cta.fontName = "Times-Bold"
+                estilo_cta.fontSize = 12
+                estilo_cta.leading = 15
+                estilo_cta.textColor = colors.white
+
+                texto_cta = Paragraph(
+                    f'<link href="{url_compra}" color="#FFFFFF">'
+                    '<b>QUIERO MI ARTE DE ENCARNARTE · 15 €</b>'
+                    '</link>',
+                    estilo_cta,
+                )
+
+                boton_cta = Table(
+                    [[texto_cta]],
+                    colWidths=[12.8 * cm],
+                    hAlign="CENTER",
+                )
+                boton_cta.setStyle(
+                    TableStyle([
+                        ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#8C5A00")),
+                        ("BOX", (0, 0), (-1, -1), 0.8, colors.HexColor("#8C5A00")),
+                        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                        ("LEFTPADDING", (0, 0), (-1, -1), 0.45 * cm),
+                        ("RIGHTPADDING", (0, 0), (-1, -1), 0.45 * cm),
+                        ("TOPPADDING", (0, 0), (-1, -1), 0.35 * cm),
+                        ("BOTTOMPADDING", (0, 0), (-1, -1), 0.35 * cm),
+                    ])
+                )
+
+                elementos.append(Spacer(1, 0.35 * cm))
+                elementos.append(boton_cta)
+                elementos.append(Spacer(1, 0.20 * cm))
+                elementos.append(
+                    Paragraph(
+                        "Al pulsar, accederás a tu informe completo ya generado.",
+                        estilos["estilo_frase_final"],
+                    )
+                )
+            else:
+                # Compatibilidad con ejecuciones manuales antiguas sin pedidoId.
+                elementos.append(
+                    Paragraph(
+                        "El Arte de Encarnarte completo · 15 €",
+                        estilos["subtitulo3"],
+                    )
+                )
+
             continue
 
         # ── TÍTULO 1 ─────────────────────────────────
@@ -16824,7 +16888,7 @@ Lo que acabas de leer es solo una parte de tu Arquitectura Interna. El informe c
 
 **Tu informe completo ya está creado.**
 
-**El Arte de Encarnarte completo · 15 €**
+[[CTA_COMPRA_ENCARNARTE]]
 """.strip()
 
     partes.append(cierre)
@@ -16840,6 +16904,7 @@ def generar_carta_api(
     lon=None,
     tz_name=None,
     tratamiento=None,
+    pedido_id=None,
 ):
     """
     Genera El Arte de Encarnarte con datos recibidos desde la web.
@@ -16853,6 +16918,7 @@ def generar_carta_api(
     - latitud / longitud
     - tz_name, si está disponible
     - tratamiento: femenino / masculino / neutro
+    - pedido_id: identificador único del pedido en Wix (opcional en modo manual)
     """
     global TRATAMIENTO_LINGUISTICO
 
@@ -16863,6 +16929,7 @@ def generar_carta_api(
     fecha = str(fecha or "").strip()
     hora = str(hora or "").strip()
     lugar = str(lugar or "").strip()
+    pedido_id = str(pedido_id or "").strip()
 
     if not nombre:
         raise ValueError("Falta el nombre.")
@@ -17279,6 +17346,16 @@ def generar_carta_api(
     # ── MUESTRA GRATUITA ──────────────────────────────
     # Se crea a partir de la interpretación YA generada.
     # No consume ninguna llamada adicional a OpenAI.
+    # Si la petición viene de Wix, el botón conserva el pedidoId
+    # para que la página pueda recuperar el PDF completo correcto.
+    url_compra = None
+    if pedido_id:
+        pedido_id_url = quote(pedido_id, safe="")
+        url_compra = (
+            "https://www.elhogardeuma.com/el-arte-de-encarnarte"
+            f"?pedidoId={pedido_id_url}"
+        )
+
     interpretacion_muestra = extraer_interpretacion_muestra(
         interpretacion,
         bloques_figuras=bloques_figuras,
@@ -17297,6 +17374,7 @@ def generar_carta_api(
         ruta_rueda=ruta_rueda,
         ruta_pdf=ruta_pdf_muestra,
         miniaturas_figuras=miniaturas_figuras,
+        url_compra=url_compra,
     )
 
     print()

@@ -477,6 +477,7 @@ def generar_documento_en_proceso(
     lon,
     tz_name,
     tratamiento=None,
+    pedido_id=None,
 ):
     """
     Genera un informe en un proceso Python independiente.
@@ -531,6 +532,7 @@ def generar_documento_en_proceso(
         "lon": lon,
         "tz_name": tz_name,
         "tratamiento": tratamiento,
+        "pedido_id": pedido_id,
     }
 
 
@@ -563,6 +565,7 @@ try:
             lon=datos.get("lon"),
             tz_name=datos.get("tz_name"),
             tratamiento=datos.get("tratamiento"),
+            pedido_id=datos.get("pedido_id"),
         )
     else:
         resultado = generador(
@@ -861,6 +864,7 @@ def ejecutar_trabajo_generacion(
                 lon=lon,
                 tz_name=tz_name,
                 tratamiento=tratamiento,
+                pedido_id=pedido_id,
             )
 
             if opcion == "opArteEncarnarte":
