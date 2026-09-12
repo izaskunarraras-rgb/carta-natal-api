@@ -19,6 +19,7 @@ import uuid
 import threading
 
 from concurrent.futures import ThreadPoolExecutor
+from timezonefinder import TimezoneFinder
 
 
 app = Flask(__name__)
@@ -233,6 +234,49 @@ def descargar_pdf(nombre_archivo):
 
 
 # ───────────────────── FUNCIONES AUXILIARES ─────────────────────
+
+TIMEZONE_FINDER = TimezoneFinder()
+
+
+def resolver_zona_horaria(tz_name, lat, lon):
+    """
+    Conserva la zona horaria recibida si existe.
+    Si Wix no la envía, la obtiene a partir de las coordenadas.
+    """
+
+    tz_name = str(tz_name or "").strip()
+
+    if tz_name:
+        return tz_name
+
+    try:
+        latitud = float(lat)
+        longitud = float(lon)
+    except (TypeError, ValueError) as error:
+        raise ValueError(
+            "No se puede determinar la zona horaria: "
+            "las coordenadas no son válidas."
+        ) from error
+
+    zona = TIMEZONE_FINDER.timezone_at(
+        lat=latitud,
+        lng=longitud,
+    )
+
+    if not zona:
+        zona = TIMEZONE_FINDER.closest_timezone_at(
+            lat=latitud,
+            lng=longitud,
+        )
+
+    if not zona:
+        raise ValueError(
+            "No se ha podido determinar la zona horaria "
+            "del lugar de nacimiento."
+        )
+
+    return zona
+
 
 def limpiar_nombre_archivo(texto):
     """
@@ -1004,6 +1048,12 @@ def iniciar_generacion():
                     "del lugar de nacimiento.",
             }), 400
 
+        tz_name = resolver_zona_horaria(
+            tz_name,
+            lat,
+            lon,
+        )
+
         if not isinstance(
             opciones_recibidas,
             list,
@@ -1316,6 +1366,12 @@ def generar_carta():
                     "Faltan las coordenadas "
                     "del lugar de nacimiento.",
             }), 400
+
+        tz_name = resolver_zona_horaria(
+            tz_name,
+            lat,
+            lon,
+        )
 
         if not isinstance(
             opciones_recibidas,
