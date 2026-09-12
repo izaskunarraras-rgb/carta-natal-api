@@ -9,3 +9,4 @@ numpy
 reportlab
 pypdf
 requests
+openai

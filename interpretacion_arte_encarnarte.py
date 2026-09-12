@@ -1,6 +1,9 @@
 import os
+V80_TRATAMIENTO_LINGUISTICO_SIMPLIFICADO = True
+
 import re
 import json
+import unicodedata
 
 from openai import OpenAI
 
@@ -13,6 +16,7 @@ from reportlab.platypus import (
     KeepTogether,
     Table,
     TableStyle,
+
 )
 
 from reportlab.lib.pagesizes import A4
@@ -27,6 +31,185 @@ from contexto_ia import (
     generar_contexto_arte_encarnarte,
     construir_contexto_compacto_arte_encarnarte,
 )
+
+
+# ─── CONTROL DE COSTE · HASTA 4 LLAMADAS OPENAI POR INFORME ───────────────────
+# 1) interpretación global completa
+# 2) todas las figuras en una única salida estructurada
+# 3) SOLO si la segunda llamada falla la validación: reparación en lote
+# 4) auditoría final del informe completo ya ensamblado
+MAX_LLAMADAS_OPENAI_POR_INFORME = 4
+_CONTADOR_LLAMADAS_OPENAI = 0
+
+# V46 · Blindaje determinista final de aspectos nuevos en figuras de rescate.
+# No añade llamadas a OpenAI.
+V46_ASPECTOS_NUEVOS_RESCATE_DETERMINISTAS = True
+V47_RETROGRADACION_FINAL_DETERMINISTA = True
+
+
+# ─── V48 · RESCATE HUBER RESPETA LA PRIORIDAD MAESTRA ────────────────────────
+# La pasada principal de Figuras.py ya usa ORDEN_PRIORIDAD_FIGURAS_HUBER_2026,
+# pero la pasada de rescate elegía antes la figura más pequeña posible.
+# Eso podía fragmentar una figura mayor reconocida (p. ej. una Cometa) en
+# triángulos menores aunque la Cometa estuviera por encima en la lista maestra.
+#
+# Este parche NO recalcula geometría, NO crea figuras y NO llama a OpenAI.
+# Solo cambia el criterio de orden de las candidatas de rescate:
+#   1) prioridad maestra definida por Izaskun;
+#   2) menor orbe dentro del mismo tipo;
+#   3) mayor capacidad de integración como desempate;
+#   4) puntos solo para determinismo.
+V48_RESCATE_RESPETA_PRIORIDAD_MAESTRA_HUBER = True
+V49_ACTIVA_PRIORIDAD_RESCATE_ANTES_DEL_CONTEXTO = True
+V50_STELLIUM_VERTICE_SIEMPRE_COLECTIVO = True
+V51_VERTICES_COLECTIVOS_Y_POSICION_DETERMINISTA = True
+V52_RECUPERACION_DETERMINISTA_VERTICES_COLECTIVOS = True
+V54_BLINDAJE_LINGUISTICO_DETERMINISTA = True
+V56_FALLBACK_DETERMINISTA_COLORES_HUBER = True
+V57_AISLAMIENTO_GEOMETRICO_ESTRICTO_FIGURAS = True
+V58_BLINDAJE_EDITORIAL_POSTENSAMBLADO = True
+V59_VALIDACION_COLOR_POR_RELACION = True
+V59_GENERO_SIN_BLINDAJE_DETERMINISTA = True
+V60_COLOR_SOLO_POR_PAREJA_EXPLICITA = True
+V61_NOMBRE_ASPECTO_SOLO_POR_PAREJA_EXPLICITA = True
+V62_FALLBACK_DETERMINISTA_PUNTOS_AJENOS = True
+V63_PULIDO_EDITORIAL_FINAL = True
+V64_EDITORIAL_PRESERVA_ESTRUCTURA_MARKDOWN = True
+V65_CORRECCION_DETERMINISTA_NOMBRE_ASPECTO_EXPLICITO = True
+V66_REPARA_SIGNIFICADO_ASPECTO_EN_FIGURAS = True
+V67_FIGURAS_ORIENTADAS_A_EXPERIENCIA = True
+V68_FIGURAS_80_POR_CIENTO_HUMANAS = True
+V69_COLOR_SEMANTICA_SOLO_POR_RELACION_EXPLICITA = True
+V70_FALLBACK_NOMBRE_ASPECTO_MISMA_FAMILIA = True
+V71_FIX_DATOS_REPARADOS_SCOPE = True
+V72_COLOR_HUBER_POR_CLAUSULA_EXPLICITA = True
+V73_FIGURAS_HUMANAS_SIN_ANDAMIO_TECNICO_VISIBLE = True
+V74_ANDAMIO_INTERNO_SIN_CONFLICTO_EDITORIAL = True
+V75_VALIDADORES_EDITORIALES_NO_BLOQUEAN = True
+V77_SEMANTICA_ASPECTO_POR_CLAUSULA_COMPLETA = True
+V78_SEMANTICA_ASPECTO_POR_PREDICADO_DIRECTO = True
+V76_PULIDO_EDITORIAL_VERTICES_Y_LENGUAJE_NATURAL = True
+
+
+def instalar_prioridad_maestra_en_rescate_huber_2026():
+    """
+    Hace que la PASADA B de rescate de Figuras.py respete la misma lista maestra
+    que la pasada principal.
+
+    Ejemplo que corrige:
+    si para un aspecto libre compiten
+      - Triángulo de ambivalencia
+      - Triángulo de talento grande
+      - Cometa
+    y la Cometa está antes en ORDEN_PRIORIDAD_FIGURAS_HUBER_2026,
+    se conserva la Cometa en lugar de fragmentarla en la figura mínima.
+
+    No modifica detectores ni geometría. Solo sustituye la función de ordenación
+    usada por el rescate antes de generar el contexto astrológico.
+    """
+    nombre_fn = getattr(Figuras, "_nombre_prioridad_huber_2026", None)
+    indice_prioridad = getattr(
+        Figuras,
+        "INDICE_PRIORIDAD_FIGURAS_HUBER_2026",
+        None,
+    )
+    orbe_fn = getattr(Figuras, "_orbe_medio_seleccion_huber_2026", None)
+    puntos_fn = getattr(Figuras, "puntos_reales_figura", None)
+    claves_fn = getattr(Figuras, "_claves_seleccion_huber_2026", None)
+
+    # Compatibilidad con versiones donde la función de claves conserva
+    # todavía el nombre anterior.
+    if claves_fn is None:
+        claves_fn = getattr(
+            Figuras,
+            "_claves_aspectos_figura_huber_2026",
+            None,
+        )
+
+    if not callable(nombre_fn) or not isinstance(indice_prioridad, dict):
+        raise RuntimeError(
+            "V48: Figuras.py no expone la lista maestra de prioridad Huber 2026."
+        )
+
+    if not callable(orbe_fn) or not callable(puntos_fn):
+        raise RuntimeError(
+            "V48: Figuras.py no expone las funciones necesarias para ordenar rescates."
+        )
+
+    def _clave_rescate_prioridad_maestra_2026(figura):
+        nombre = nombre_fn(figura)
+        indice = indice_prioridad.get(nombre, 10_000)
+
+        try:
+            orbe = float(orbe_fn(figura))
+        except Exception:
+            orbe = 999.0
+
+        try:
+            puntos = tuple(sorted(puntos_fn(figura)))
+        except Exception:
+            puntos = tuple(sorted(figura.get("puntos", []) or []))
+
+        # Si dos candidatas pertenecen al mismo tipo, preferimos la que integra
+        # más relaciones y más vértices antes del desempate final por puntos.
+        try:
+            numero_lineas = len(claves_fn(figura)) if callable(claves_fn) else 0
+        except Exception:
+            numero_lineas = 0
+
+        numero_vertices = len(set(puntos))
+
+        return (
+            indice,
+            orbe,
+            -numero_lineas,
+            -numero_vertices,
+            puntos,
+        )
+
+    funcion_objetivo = "_clave_figura_mas_pequena_para_rescate_huber_2026"
+
+    if not hasattr(Figuras, funcion_objetivo):
+        raise RuntimeError(
+            "V48: la versión actual de Figuras.py no contiene la función "
+            "de ordenación de rescates esperada."
+        )
+
+    setattr(
+        Figuras,
+        funcion_objetivo,
+        _clave_rescate_prioridad_maestra_2026,
+    )
+
+    print(
+        "V48 Huber: el rescate respeta ORDEN_PRIORIDAD_FIGURAS_HUBER_2026 "
+        "en lugar de elegir automáticamente la figura más pequeña."
+    )
+
+
+
+
+def _reiniciar_contador_llamadas_openai():
+    global _CONTADOR_LLAMADAS_OPENAI
+    _CONTADOR_LLAMADAS_OPENAI = 0
+
+
+def _responses_create_controlado(client, *args, **kwargs):
+    global _CONTADOR_LLAMADAS_OPENAI
+
+    if _CONTADOR_LLAMADAS_OPENAI >= MAX_LLAMADAS_OPENAI_POR_INFORME:
+        raise RuntimeError(
+            "Se ha bloqueado una quinta llamada a OpenAI. "
+            "El Arte de Encarnarte permite hasta 4 llamadas por informe: "
+            "1 global + 1 figuras + 1 reparación condicional + 1 auditoría final."
+        )
+
+    _CONTADOR_LLAMADAS_OPENAI += 1
+    print(
+        f"Llamada OpenAI {_CONTADOR_LLAMADAS_OPENAI}/"
+        f"{MAX_LLAMADAS_OPENAI_POR_INFORME}"
+    )
+    return client.responses.create(*args, **kwargs)
 
 
 # ─── BIBLIOTECA ASTROLÓGICA GENERAL · FILE SEARCH ───────────────────────────
@@ -216,7 +399,93 @@ En figuras de rescate, céntrate en lo que añaden las líneas nuevas.
 No uses la biblioteca como excusa para volver a explicar todas las líneas
 reutilizadas.
 
+REGLA V68 · PROPORCIÓN DE INTERPRETACIÓN
+
+El texto visible de cada figura debe ser, aproximadamente:
+- 75–80 % interpretación humana y práctica;
+- 20–25 % explicación astrológica explícita como máximo.
+
+Usa internamente TODA la geometría, todos los aspectos y todos los roles para
+razonar, pero NO los recorras uno por uno en el informe.
+
+No hace falta nombrar todos los aspectos ni todos los colores Huber.
+Menciona solo el dato técnico imprescindible para justificar una conclusión
+que de otro modo quedaría demasiado genérica.
+
+Si al quitar los nombres de planetas y aspectos el texto deja de tener sentido,
+la interpretación sigue siendo demasiado técnica.
+
+Cada figura debe dejar claro, en lenguaje cotidiano:
+1. qué patrón o contradicción describe;
+2. cómo puede notarse en una situación normal;
+3. qué riesgo, exceso o confusión puede aparecer;
+4. qué recurso, margen o forma de manejarlo contiene la propia figura.
+
+No conviertas estos cuatro puntos en subtítulos fijos. Deben integrarse de
+forma natural en 2 o 3 párrafos breves.
+
+PROHIBIDO:
+- describir línea por línea toda la figura;
+- nombrar colores Huber en el texto visible: rojo, azul, verde o "capa" de color;
+- usar "puerta geométrica", "vértice colectivo", "vértice", "geometría",
+  "andamio", "capa roja", "capa azul" o "capa verde" en el texto destinado
+  a la persona;
+- dedicar un párrafo entero a demostrar que conoces la construcción técnica;
+- explicar todos los aspectos por obligación.
+
+REGLA V73 · EL ANDAMIO TÉCNICO NO SE VE
+
+La geometría, los colores Huber, los vértices y las puertas geométricas son
+DATOS INTERNOS PARA RAZONAR. Debes utilizarlos para construir una lectura
+correcta, pero NO nombrarlos en la interpretación visible.
+
+El primer párrafo de CADA figura debe poder entenderse por completo sin saber
+astrología:
+- empieza por el patrón humano;
+- no empieces por Stellium, Conjunción, planeta, aspecto, color, vértice ni
+  geometría;
+- no nombres en ese primer párrafo cuadratura, oposición, trígono, sextil,
+  quincuncio o semisextil.
+
+Después puedes incluir astrología como apoyo, pero con esta limitación:
+- máximo UNA relación astrológica explícita por párrafo;
+- si necesitas usar otras relaciones para razonar, intégralas en el significado
+  sin enumerarlas;
+- un párrafo con dos o más aspectos técnicos nombrados debe reescribirse.
+
+La persona debe recibir primero:
+patrón → cómo se nota → qué complica → qué ayuda.
+La técnica solo justifica; nunca dirige la narración.
+
+REGLA V76 · EL VÉRTICE COLECTIVO SE INTEGRA, NO SE DECLARA
+
+Cuando exista un Stellium o una Conjunción colectiva, conserva internamente
+todos sus integrantes y su efecto conjunto, pero NO abras la interpretación con
+una frase técnica del tipo "funciona como una sola unidad", "sus integrantes
+participan juntos" o "ninguno sustituye al conjunto".
+
+Traduce esa unidad directamente a significado humano. Por ejemplo, en vez de
+explicar que cuatro puntos forman un bloque, explica qué funciones tienden a
+activarse a la vez y qué consecuencia tiene eso en una decisión, reacción o
+vínculo. Nombra el Stellium o la Conjunción solo después, si aporta precisión.
+
+Evita "memoria antigua"; prefiere "patrones conocidos", "formas conocidas de
+responder" o una formulación equivalente según el contexto. Evita "masa de
+fondo"; describe directamente qué respuesta o combinación está operando.
+
+
 En un Stellium, interpreta el conjunto como unidad.
+
+REGLA V63 · REPERCUSIÓN CONTINUA DEL VÉRTICE COLECTIVO
+Si una relación externa entra o sale del Stellium a través de uno de sus miembros:
+- ese miembro es la puerta geométrica exacta del aspecto;
+- NO lo interpretes como planeta aislado;
+- explica brevemente qué modifica en el funcionamiento del bloque completo;
+- NO inventes aspectos directos entre el punto externo y los demás miembros;
+- no basta con explicar el Stellium al inicio de la figura y olvidarlo después:
+  cuando una relación relevante vuelva a apoyarse en un miembro del Stellium,
+  recuerda de forma natural cómo repercute en el conjunto, sin repetir párrafos enteros.
+
 
 Si una relación interna tiene un peso claro en la geometría, busca material
 que ayude a comprender esa relación concreta y después intégrala dentro de
@@ -228,9 +497,81 @@ la figura completa. No la conviertas en una sección independiente.
 # ─── FIN BIBLIOTECA ASTROLÓGICA GENERAL ─────────────────────────────────────
 
 
+def instrucciones_autocontrol_en_misma_llamada(modo):
+    """
+    Reglas de auditoría que la IA debe aplicar ANTES de devolver la misma
+    respuesta. No generan ninguna llamada adicional.
+    """
+    comunes = """
+AUDITORÍA SILENCIOSA OBLIGATORIA · DENTRO DE ESTA MISMA LLAMADA
+
+Antes de devolver la salida definitiva, revisa internamente todo lo que has
+escrito. Esta comprobación forma parte de ESTA MISMA respuesta y no debe
+producir una segunda versión, comentarios, notas ni explicación de la revisión.
+
+1. FIDELIDAD TÉCNICA DE ASPECTOS
+Los nombres de aspectos son datos, no recursos literarios. Si mencionas un
+aspecto, usa exactamente el tipo calculado que aparece en los datos de entrada.
+No cambies oposición por cuadratura, quincuncio por semicuadratura, etc.
+No introduzcas semicuadratura, sesquicuadratura ni ningún aspecto ausente.
+No inventes un aspecto para explicar una relación.
+
+2. POSICIONES Y VÉRTICES COLECTIVOS
+No asignes un único signo o casa a un Stellium o conjunción salvo que TODOS sus
+miembros compartan realmente ese signo y esa casa. Si hay mezcla, expresa la
+concentración mayoritaria y señala la excepción o las excepciones.
+No reduzcas un vértice colectivo a uno de sus miembros.
+Si una relación concreta usa uno de los miembros del Stellium o de una conjunción
+como puerta geométrica, conserva el aspecto exacto pero explica también su efecto
+sobre el bloque colectivo completo. No inventes aspectos directos con los demás
+miembros.
+
+3. EVIDENCIA
+No conviertas casas, aspectos, nodos, ángulos o símbolos en hechos biográficos.
+No inventes profesión, acontecimientos, trauma, relaciones concretas, síntomas
+ni decisiones reales. Mantén el grado de certeza permitido por los datos.
+
+4. SALIDA
+Haz esta revisión de forma silenciosa y devuelve únicamente la salida pedida,
+ya corregida.
+""".strip()
+
+    if modo == "figuras":
+        extra = """
+
+CONTROL ESPECÍFICO DE FIGURAS
+Antes de devolver cada id_figura, comprueba además:
+- titulo_humano e interpretacion no vacíos;
+- solo aparecen puntos permitidos para ESA figura;
+- el nombre canónico y el tamaño del triángulo son exactos;
+- rojo, azul y verde solo se atribuyen a relaciones que Python ha marcado con
+  ese color en ESA figura;
+- no se mezclan datos de otra figura;
+- si la figura es de rescate, el foco permanece en la relación nueva sin
+  falsear las relaciones reutilizadas;
+- comprueba que la mayor parte del texto explica a la persona y no la geometría;
+- si has nombrado más de 2 aspectos técnicos en una figura, revisa si todos son
+  realmente imprescindibles; elimina los que solo sirven para demostrar la
+  construcción de la figura;
+- no describas un aspecto azul como presión, fricción, choque u obligación;
+- no describas un aspecto rojo como facilidad o apoyo;
+- no describas un aspecto verde como fluidez estable;
+- el primer párrafo debe entenderse sin conocimientos astrológicos y no debe
+  contener nombres de aspectos;
+- no escribas "puerta geométrica", "vértice colectivo", "vértice", "geometría",
+  "capa roja", "capa azul", "capa verde" ni colores Huber en el texto visible;
+- en cada párrafo, nombra como máximo UNA relación astrológica explícita;
+- si has usado dos o más nombres de aspectos en el mismo párrafo, reescribe
+  ese párrafo antes de devolver la salida.
+""".strip()
+        return comunes + "\n\n" + extra
+
+    return comunes
+
+
 
 # ─── FASE 15: AUDITORÍA GLOBAL DE EVIDENCIA E INFERENCIAS ───────────────────
-HUBER_FASE15_AUDITORIA_GLOBAL = True
+HUBER_FASE15_AUDITORIA_GLOBAL = False
 
 
 def _fase15_lista_segura(valor):
@@ -508,7 +849,7 @@ Devuelve únicamente el informe completo corregido.
 </INFORME_GLOBAL>
 """
 
-    response = client.responses.create(
+    response = _responses_create_controlado(client, 
         model="gpt-5.4-mini",
         input=prompt,
     )
@@ -525,7 +866,7 @@ Devuelve únicamente el informe completo corregido.
 
 
 # ─── FASE 16: MATRIZ DE INFERENCIAS POR CONVERGENCIA ────────────────────────
-HUBER_FASE16_MATRIZ_INFERENCIAS = True
+HUBER_FASE16_MATRIZ_INFERENCIAS = False
 
 
 def _fase16_nombre_figura(figura):
@@ -1342,7 +1683,7 @@ Devuelve únicamente el informe global completo corregido.
 </INFORME_GLOBAL>
 """
 
-    response = client.responses.create(
+    response = _responses_create_controlado(client, 
         model="gpt-5.4-mini",
         input=prompt,
     )
@@ -1363,10 +1704,10 @@ MODO_IA_MANUAL = False
 
 
 # ─── TRATAMIENTO LINGÜÍSTICO DEL INFORME ─────────────────────────────────────
-# Valores admitidos:
-# - "femenino"  -> terminaciones femeninas cuando corresponda;
-# - "masculino" -> terminaciones masculinas cuando corresponda;
-# - "neutro"    -> lenguaje neutro con terminación -e cuando corresponda.
+# Valores admitidos: "femenino", "masculino" o "neutro".
+# La elección expresa únicamente la preferencia de tratamiento de quien recibe
+# el informe. La IA se encarga del español natural sin reglas morfológicas
+# adicionales ni correcciones deterministas de género.
 #
 # Esta variable puede sustituirse más adelante por el valor recibido desde Wix.
 TRATAMIENTO_LINGUISTICO = "neutro"
@@ -1405,7 +1746,7 @@ def elegir_tratamiento_linguistico():
     print("Tratamiento lingüístico del informe:")
     print("  1. Femenino")
     print("  2. Masculino")
-    print("  3. Neutro (-e)")
+    print("  3. Neutro")
     print()
 
     while True:
@@ -1430,146 +1771,28 @@ def elegir_tratamiento_linguistico():
 
 def instruccion_tratamiento_linguistico(valor=None):
     """
-    Instrucción de tratamiento para la IA.
-
-    V39:
-    Python no modifica después el género del texto.
-    Por tanto, la IA debe resolver correctamente:
-    - el tratamiento de la persona lectora;
-    - la concordancia gramatical normal del resto de sustantivos.
+    V80 · Comunica únicamente la preferencia elegida por la persona.
+    No enseña gramática, no prescribe terminaciones y no introduce reglas
+    morfológicas. Confiamos en el español natural de la IA.
     """
     tratamiento = normalizar_tratamiento_linguistico(
         TRATAMIENTO_LINGUISTICO if valor is None else valor
     )
 
-    regla_comun = """
-REGLA GRAMATICAL CRÍTICA
+    return (
+        f"Tratamiento elegido por la persona: {tratamiento}. "
+        "Escribe en español natural de España y respeta esta preferencia "
+        "cuando te dirijas directamente a quien lee."
+    )
 
-El tratamiento elegido se aplica ÚNICAMENTE a palabras que se refieren
-DIRECTAMENTE a la persona que lee.
-
-NO cambies el género gramatical normal de sustantivos, pronombres,
-adjetivos o participios que se refieran a otras cosas.
-
-La concordancia gramatical ordinaria del español debe conservarse siempre.
-
-Ejemplos que deben mantenerse aunque el tratamiento de la persona sea neutro:
-
-"esa energía aparece muy concentrada"
-"una respuesta muy concentrada"
-"la figura está integrada"
-"una dinámica intensa"
-"una postura cerrada"
-"la carta está organizada"
-"la relación queda definida"
-
-En esos ejemplos, "concentrada", "integrada", "intensa", "cerrada",
-"organizada" y "definida" concuerdan con sustantivos femeninos.
-NO se refieren a quien lee y NUNCA deben convertirse en -e.
-
-Antes de usar una terminación de tratamiento, identifica el referente:
-¿el adjetivo o participio describe a la persona lectora o describe
-a un sustantivo de la frase?
-
-Solo si describe directamente a la persona lectora se aplica
-el tratamiento elegido.
-
-No neutralices palabras por proximidad a "tu", "te", "ti" o "tú".
-La concordancia depende del referente gramatical real.
-
-Python NO corregirá después estas terminaciones.
-La redacción que devuelvas debe salir ya gramaticalmente correcta.
-""".strip()
-
-    if tratamiento == "femenino":
-        especifica = """
-TRATAMIENTO ELEGIDO: FEMENINO
-
-Cuando un adjetivo, participio o forma con género se refiera
-DIRECTAMENTE a quien lee, utiliza femenino.
-
-Ejemplos:
-"puedes sentirte segura"
-"puedes estar convencida"
-"puedes quedar expuesta"
-"puedes sentirte preparada"
-
-Pero conserva la concordancia propia de otros sustantivos:
-"esa energía está concentrada"
-"el impulso está concentrado"
-"la respuesta está preparada"
-""".strip()
-
-    elif tratamiento == "masculino":
-        especifica = """
-TRATAMIENTO ELEGIDO: MASCULINO
-
-Cuando un adjetivo, participio o forma con género se refiera
-DIRECTAMENTE a quien lee, utiliza masculino.
-
-Ejemplos:
-"puedes sentirte seguro"
-"puedes estar convencido"
-"puedes quedar expuesto"
-"puedes sentirte preparado"
-
-Pero conserva la concordancia propia de otros sustantivos:
-"esa energía está concentrada"
-"el impulso está concentrado"
-"la respuesta está preparada"
-""".strip()
-
-    else:
-        especifica = """
-TRATAMIENTO ELEGIDO: NEUTRO (-e)
-
-Cuando un adjetivo, participio o forma con género se refiera
-DIRECTAMENTE a quien lee, utiliza terminación -e cuando corresponda.
-
-Ejemplos:
-"puedes sentirte segure"
-"puedes estar convencide"
-"puedes quedar expueste"
-"puedes sentirte preparade"
-"puedes quedarte atrapade"
-
-La terminación -e se aplica SOLO al referente humano directo.
-
-NO la apliques a sustantivos gramaticales ni a conceptos de la carta.
-
-CORRECTO:
-"esa energía aparece muy concentrada"
-"una sola respuesta muy concentrada"
-"la figura queda integrada"
-"la dinámica está orientada hacia..."
-"la carta está organizada alrededor de..."
-"una parte puede quedar bloqueada"
-"el impulso puede quedar bloqueado"
-
-INCORRECTO:
-"esa energía aparece muy concentrade"
-"una respuesta muy concentrade"
-"la figura queda integrade"
-"la dinámica está orientade"
-"la carta está organizade"
-
-No uses x, @, barras ni fórmulas como "seguro/a".
-En neutro, usa -e solo cuando el referente sea quien lee.
-""".strip()
-
-    return regla_comun + "\n\n" + especifica
 
 
 def adaptar_tratamiento_linguistico_local(texto, valor=None):
     """
     V39 · COMPATIBILIDAD.
 
-    Python NO modifica género, concordancia ni terminaciones -a/-o/-e.
-
-    El tratamiento lingüístico se resuelve completamente en la IA,
-    porque una sustitución por expresiones regulares no puede distinguir
-    con seguridad si un adjetivo se refiere a la persona lectora o a un
-    sustantivo como "energía", "respuesta", "figura", "carta", etc.
+    Python no modifica ni valida el género del texto.
+    La IA recibe únicamente la preferencia de tratamiento elegida.
 
     Esta función se conserva únicamente para no romper llamadas antiguas.
     """
@@ -1798,6 +2021,23 @@ def cargar_interpretacion_manual_chatgpt(
 
 
 
+def _normalizar_bool_retrogrado_2026(valor):
+    """Normaliza el estado retrógrado sin convertir strings como "false" en True."""
+    if isinstance(valor, bool):
+        return valor
+    if valor is None:
+        return False
+    if isinstance(valor, (int, float)):
+        return bool(valor)
+    texto = str(valor).strip().casefold()
+    if texto in {"true", "1", "sí", "si", "yes", "y", "r", "retrogrado", "retrógrado"}:
+        return True
+    if texto in {"false", "0", "no", "n", "directo", "directa", "d", ""}:
+        return False
+    # Ante un valor desconocido no afirmamos retrogradación por mera truthiness.
+    return False
+
+
 def construir_resumen_retrogradacion_global(contexto_compacto):
     """
     Resume de forma determinista la retrogradación natal relevante.
@@ -1810,7 +2050,7 @@ def construir_resumen_retrogradacion_global(contexto_compacto):
     retrogrados = [
         nombre
         for nombre, datos in posiciones.items()
-        if isinstance(datos, dict) and datos.get("retrogrado")
+        if isinstance(datos, dict) and _normalizar_bool_retrogrado_2026(datos.get("retrogrado"))
     ]
 
     if not retrogrados:
@@ -1903,6 +2143,98 @@ def asegurar_retrogradacion_en_global(texto, contexto_compacto):
     return izquierda + "\n\n" + parrafo + "\n\n" + derecha
 
 
+
+def propagar_metadatos_rescate_huber_2026(contexto_completo, contexto_compacto):
+    """
+    Conserva en el contexto compacto los metadatos técnicos del rescate calculados
+    por Figuras.py. No recalcula geometría ni llama a OpenAI.
+    """
+    if not isinstance(contexto_completo, dict) or not isinstance(contexto_compacto, dict):
+        return contexto_compacto
+
+    campos_directos = (
+        "seleccion_huber_2026",
+        "fase_seleccion_huber_2026",
+        "aspectos_nuevos_huber_2026",
+        "aspectos_reutilizados_huber_2026",
+        "familia_editorial_huber_2026",
+        "puntos_editoriales_familia_huber_2026",
+    )
+
+    mapa_fuente = {}
+
+    def recorrer_fuente(valor):
+        if isinstance(valor, dict):
+            id_figura = str(valor.get("id_figura") or "").strip()
+            if id_figura:
+                actual = mapa_fuente.setdefault(id_figura, {})
+                for campo in campos_directos:
+                    dato = valor.get(campo)
+                    if dato not in (None, "", [], {}, ()):
+                        actual[campo] = dato
+                paquete = valor.get("paquete_huber_ia")
+                if isinstance(paquete, dict):
+                    paquete_actual = actual.setdefault("paquete_huber_ia", {})
+                    for campo in campos_directos:
+                        dato = paquete.get(campo)
+                        if dato not in (None, "", [], {}, ()):
+                            paquete_actual[campo] = dato
+            for sub in valor.values():
+                recorrer_fuente(sub)
+        elif isinstance(valor, (list, tuple)):
+            for sub in valor:
+                recorrer_fuente(sub)
+
+    recorrer_fuente(contexto_completo)
+
+    figuras_compactas = (
+        (contexto_compacto.get("figuras", {}) or {})
+        .get("arquitectura", {})
+        .get("figuras", [])
+        or []
+    )
+
+    propagadas = 0
+    for figura in figuras_compactas:
+        if not isinstance(figura, dict):
+            continue
+        id_figura = str(figura.get("id_figura") or "").strip()
+        if not id_figura:
+            continue
+        fuente = mapa_fuente.get(id_figura) or {}
+        if not fuente:
+            continue
+
+        for campo in campos_directos:
+            if figura.get(campo) in (None, "", [], {}, ()):
+                dato = fuente.get(campo)
+                if dato not in (None, "", [], {}, ()):
+                    figura[campo] = dato
+                    propagadas += 1
+
+        paquete_destino = figura.get("paquete_huber_ia")
+        if not isinstance(paquete_destino, dict):
+            paquete_destino = {}
+            figura["paquete_huber_ia"] = paquete_destino
+
+        paquete_fuente = fuente.get("paquete_huber_ia") or {}
+        if isinstance(paquete_fuente, dict):
+            for campo in campos_directos:
+                if paquete_destino.get(campo) in (None, "", [], {}, ()):
+                    dato = paquete_fuente.get(campo)
+                    if dato not in (None, "", [], {}, ()):
+                        paquete_destino[campo] = dato
+                        propagadas += 1
+
+    if propagadas:
+        print(
+            "Metadatos Huber de rescate propagados al contexto compacto: "
+            f"{propagadas} campo(s)."
+        )
+
+    return contexto_compacto
+
+
 def construir_prompt_arte_encarnarte(
     contexto_arte_encarnarte,
     guia_estilo="",
@@ -1947,11 +2279,8 @@ def construir_prompt_arte_encarnarte(
         indent=2,
     )
 
-    nucleos = (
+    nucleos = obtener_nucleos_globales_robustos(
         contexto_arte_encarnarte
-        .get("figuras", {})
-        .get("arquitectura", {})
-        .get("nucleos", [])
     )
 
     lineas_nucleos = []
@@ -2171,6 +2500,18 @@ identifica y explica ese patrón compartido.
 
 Esa lectura conjunta sirve para establecer jerarquía
 y comprender los núcleos de la carta.
+
+REGLA V67 · CRUCE FINAL DE FIGURAS
+
+Cuando un mismo mecanismo aparezca sostenido por varias figuras diferentes,
+hazlo visible en la lectura global: explica que no es una observación aislada,
+sino una dinámica repetida estructuralmente. No vuelvas a describir cada figura.
+Sintetiza qué tienen en común y qué matiz distinto aporta cada una.
+
+Este cruce es una de las funciones centrales de El Arte de Encarnarte: las
+figuras individuales muestran piezas distintas; la lectura global debe mostrar
+qué patrón aparece al montarlas juntas. Solo afirma repetición cuando esté
+respaldada por los datos estructurales recibidos.
 
 ────────────────────────────────────────────
 DIVERSIDAD DE LA LECTURA GLOBAL
@@ -2613,9 +2954,6 @@ La interpretación debe sonar humana y directa, no defensiva ni jurídica.
 Distingue entre una tendencia astrológica y un hecho biográfico real,
 pero no vacíes la interpretación para mantener esa distinción.
 
-Mantén lenguaje neutro cuando una palabra se refiera directamente
-a quien está leyendo.
-
 ────────────────────────────────────────────
 TENSIONES
 ────────────────────────────────────────────
@@ -2779,14 +3117,6 @@ No escribas "parece una persona que...", "esta persona...",
 
 {instruccion_tratamiento_linguistico()}
 
-RECORDATORIO DE CONCORDANCIA
-
-El tratamiento de la persona NO cambia el género gramatical del resto
-de la frase. "Energía", "respuesta", "figura", "carta", "dinámica",
-"relación", "parte" y otros sustantivos conservan su género normal.
-En neutro, usa -e exclusivamente cuando el adjetivo o participio
-describe directamente a quien lee.
-
 El tono debe ser:
 
 - cercano;
@@ -2920,11 +3250,6 @@ se repite, qué tiene más peso y dónde puede notarse.
 No escribas "tu arquitectura hace..." cuando puedas escribir
 "en tu carta se repite..." o "esto puede notarse...".
 
-
-
-GÉNERO DE LA PERSONA LECTORA
-
-{instruccion_tratamiento_linguistico()}
 
 
 REGLA GENERAL PARA LAS SECCIONES GLOBALES
@@ -3375,6 +3700,27 @@ REGLA CRÍTICA SOBRE STELLIUMS Y CONJUNCIONES
 Si "tipo_nucleo" es "stellium" o "conjunción",
 trata TODOS sus puntos como UNA sola unidad estructural.
 
+POSICIÓN DE LOS MIEMBROS DEL NÚCLEO · REGLA CRÍTICA
+
+El campo "posiciones_miembros" contiene el signo y la casa REALES de
+cada integrante y es autoritativo.
+
+NO atribuyas al Stellium o a la Conjunción un único signo o una única
+casa salvo que TODOS sus integrantes tengan literalmente ese mismo
+signo y esa misma casa en "posiciones_miembros".
+
+Si los miembros atraviesan signos o casas, dilo de forma explícita y
+precisa. Puedes indicar dónde se concentra la mayoría, pero debes señalar
+la excepción o las excepciones.
+
+Ejemplo: si cuatro miembros están en Escorpio/Casa 6 y Mercurio está en
+Libra/Casa 5, NO escribas "el stellium ... en Escorpio y Casa 6".
+Escribe, por ejemplo: "la mayor parte del stellium se concentra en
+Escorpio y Casa 6, mientras Mercurio se sitúa en Libra y Casa 5".
+
+Esta regla se aplica también cada vez que ese núcleo aparezca como
+vértice colectivo dentro de otra figura.
+
 No descompongas el Stellium en parejas como:
 Mercurio–Venus,
 Mercurio–Marte,
@@ -3459,7 +3805,60 @@ pero NO conviertas esas relaciones en la interpretación
 completa de una figura.
 
 Las figuras completas serán interpretadas e insertadas
-posteriormente mediante Structured Outputs.
+posteriormente mediante 
+REGLA V68/V73 · EL SIGNIFICADO VA DELANTE DE LA GEOMETRÍA
+
+Esta versión del informe NO es una clase de astrología.
+
+Para cada figura:
+- conserva el título técnico que añade Python;
+- escribe un título humano;
+- desarrolla 2 o 3 párrafos centrados en la experiencia y la utilidad;
+- PRIMER PÁRRAFO: solo significado humano. Debe poder entenderse aunque se
+  eliminen todos los nombres astrológicos. No nombres aspectos en él;
+- PÁRRAFOS SIGUIENTES: como máximo UNA relación astrológica explícita por
+  párrafo;
+- no recorras todos los aspectos;
+- no nombres colores Huber;
+- no uses "puerta geométrica", "vértice colectivo", "vértice", "geometría",
+  "andamio" ni "capa" de color en el texto visible;
+- no describas la figura como si estuvieras enseñando a reconstruirla.
+
+IMPORTANTE:
+Los datos internos de vértices colectivos y puertas geométricas siguen siendo
+OBLIGATORIOS para razonar correctamente. Que no se nombren esas expresiones
+técnicas NO significa ignorarlos. Integra el efecto del Stellium o Conjunción
+completos cuando corresponda, pero explícalo como una combinación funcional,
+no como lenguaje de ingeniería astrológica.
+
+Tu objetivo es que quien lee pueda responder:
+"¿Qué me pasa aquí?"
+"¿Cómo lo reconozco?"
+"¿Qué me complica?"
+"¿Qué puedo hacer con esto?"
+
+ORDEN RECOMENDADO:
+A. empieza por el patrón humano;
+B. baja a una escena cotidiana reconocible;
+C. explica la contradicción o el riesgo;
+D. cierra con el recurso o la forma de manejarlo;
+E. menciona astrología solo cuando añada precisión real.
+
+PRUEBA DE CALIDAD:
+si un párrafo contiene más nombres de planetas/aspectos que verbos cotidianos
+sobre experiencia, decisión, vínculo, reacción, elección, límite, ritmo,
+claridad, deseo o acción, reescríbelo.
+
+REGLA DE COLOR Y SIGNIFICADO:
+- azul = apoyo, facilidad, circulación, recurso o vía disponible;
+- rojo = fricción, presión, contraste, choque o exigencia;
+- verde = ajuste, búsqueda, calibración, incomodidad parcial o necesidad de
+  encontrar una forma que no sale automáticamente.
+
+Nunca llames "presión" a un trígono o sextil azul solo porque sea una relación
+nueva o decisiva dentro de la figura.
+
+Structured Outputs.
 
 Por tanto, en esta generación:
 
@@ -4258,6 +4657,528 @@ def construir_json_schema_figuras(
         "additionalProperties": False,
     }
 
+
+def _fragmentos_relacion_explicita_v69(frase, p1, p2, tipo):
+    """
+    V77 · Devuelve SOLO la cláusula que contiene la relación explícita.
+
+    Antes se tomaban hasta 35 caracteres anteriores al aspecto. Eso podía
+    arrastrar vocabulario de la cláusula previa incluso cuando había un ';',
+    provocando falsos positivos como:
+
+        "... obliga a dar sentido a esa incomodidad; y el trígono entre
+        Sol y Quirón permite..."
+
+    En ese caso "obliga" pertenece a la relación anterior, no al trígono.
+
+    La validación semántica queda ahora acotada por los separadores fuertes
+    de cláusula (; y :), además de la separación previa por frases.
+    """
+    if not frase or not p1 or not p2 or not tipo:
+        return []
+
+    p1e = re.escape(str(p1))
+    p2e = re.escape(str(p2))
+    te = re.escape(str(tipo))
+
+    patrones = [
+        rf"\b{te}\s+(?:de|entre)\s+{p1e}\s+(?:con|y)\s+{p2e}\b",
+        rf"\b{te}\s+(?:de|entre)\s+{p2e}\s+(?:con|y)\s+{p1e}\b",
+        rf"\b{p1e}\s+{te}\s+{p2e}\b",
+        rf"\b{p2e}\s+{te}\s+{p1e}\b",
+    ]
+
+    encontrados = []
+
+    for patron in patrones:
+        for m in re.finditer(patron, frase, flags=re.IGNORECASE):
+            # Límite izquierdo: después del último ; o : anterior al aspecto.
+            limites_izq = [
+                frase.rfind(";", 0, m.start()),
+                frase.rfind(":", 0, m.start()),
+            ]
+            ultimo_izq = max(limites_izq)
+            inicio = ultimo_izq + 1 if ultimo_izq >= 0 else 0
+
+            # Límite derecho: antes del siguiente ; o : posterior al aspecto.
+            candidatos_der = [
+                pos for pos in (
+                    frase.find(";", m.end()),
+                    frase.find(":", m.end()),
+                )
+                if pos >= 0
+            ]
+            fin = min(candidatos_der) if candidatos_der else len(frase)
+
+            frag = frase[inicio:fin].strip()
+
+            # Limpieza editorial mínima del arranque de cláusula.
+            frag = re.sub(
+                r"^(?:y|e|pero|aunque|mientras|a la vez)\s+",
+                "",
+                frag,
+                flags=re.IGNORECASE,
+            ).strip()
+
+            encontrados.append(frag)
+
+    # Evita duplicados cuando dos patrones capturan la misma relación.
+    salida = []
+    vistos = set()
+    for frag in encontrados:
+        clave = frag.casefold()
+        if clave not in vistos:
+            vistos.add(clave)
+            salida.append(frag)
+
+    return salida
+
+
+
+def _patrones_mencion_aspecto_v78(p1, p2, tipo):
+    p1e = re.escape(str(p1))
+    p2e = re.escape(str(p2))
+    te = re.escape(str(tipo))
+
+    return [
+        rf"\b{te}\s+(?:de|entre)\s+{p1e}\s+(?:con|y)\s+{p2e}\b",
+        rf"\b{te}\s+(?:de|entre)\s+{p2e}\s+(?:con|y)\s+{p1e}\b",
+        rf"\b{p1e}\s+{te}\s+{p2e}\b",
+        rf"\b{p2e}\s+{te}\s+{p1e}\b",
+    ]
+
+
+def _segmento_predicado_directo_v78(fragmento, p1, p2, tipo):
+    """
+    Extrae solamente el predicado directamente atribuido al aspecto.
+
+    Ejemplo:
+        "El trígono entre Sol y Saturno aporta continuidad y peso,
+         de modo que no todo queda en tensión"
+
+    devuelve:
+        "aporta continuidad y peso"
+
+    Por tanto, "tensión" no contamina semánticamente al trígono porque
+    pertenece a una consecuencia posterior, no al predicado del aspecto.
+
+    Si no puede aislarse con suficiente seguridad, devuelve "" y el
+    validador semántico NO bloquea: los hechos técnicos siguen protegidos
+    por los validadores deterministas de puntos, tipo de aspecto y color.
+    """
+    if not fragmento:
+        return ""
+
+    texto = str(fragmento).strip()
+
+    coincidencias = []
+    for patron in _patrones_mencion_aspecto_v78(p1, p2, tipo):
+        coincidencias.extend(
+            re.finditer(patron, texto, flags=re.IGNORECASE)
+        )
+
+    if not coincidencias:
+        return ""
+
+    # La primera mención explícita de esta relación dentro del fragmento.
+    m = min(coincidencias, key=lambda x: x.start())
+
+    despues = texto[m.end():].strip()
+
+    # Quitamos conectores/copulativos puramente sintácticos que pueden aparecer
+    # inmediatamente después de la mención.
+    despues = re.sub(
+        r"^(?:,?\s*(?:que|y|e)\s+)?",
+        "",
+        despues,
+        flags=re.IGNORECASE,
+    ).strip()
+
+    if not despues:
+        return ""
+
+    # Nos quedamos con la primera proposición predicativa.
+    # Las consecuencias, concesiones o explicaciones posteriores no se usan
+    # para juzgar el significado del aspecto.
+    cortes = []
+
+    # Puntuación fuerte.
+    for sep in (";", ":", ".", "!", "?"):
+        pos = despues.find(sep)
+        if pos >= 0:
+            cortes.append(pos)
+
+    # Coma que introduce una nueva proposición/consecuencia.
+    patron_conector = re.search(
+        r",\s*(?:"
+        r"pero|aunque|mientras|porque|ya que|puesto que|"
+        r"de modo que|de manera que|por lo que|así que|"
+        r"y eso|y por eso|a la vez|sin embargo|en cambio"
+        r")\b",
+        despues,
+        flags=re.IGNORECASE,
+    )
+    if patron_conector:
+        cortes.append(patron_conector.start())
+
+    # Una coma simple suele cerrar ya el predicado principal en este tipo de
+    # redacción. La usamos si aparece después de un mínimo de contenido.
+    coma = despues.find(",")
+    if coma >= 12:
+        cortes.append(coma)
+
+    fin = min(cortes) if cortes else len(despues)
+    segmento = despues[:fin].strip()
+
+    # Si el segmento es excesivamente largo, la atribución deja de ser segura.
+    if len(segmento) > 220:
+        return ""
+
+    return segmento
+
+
+def _polaridad_predicado_v78(segmento):
+    """
+    Clasifica solo atribuciones semánticas DIRECTAS y de alta confianza.
+
+    Devuelve:
+      - "tension"   → presión/fricción/choque/exigencia;
+      - "apoyo"     → facilidad/apoyo/circulación/recurso;
+      - "ajuste"    → calibración/búsqueda/revisión;
+      - None        → no hay evidencia suficientemente clara.
+
+    No intenta comprender todo el castellano. Esa limitación es deliberada:
+    ante ambigüedad, no bloquea el informe.
+    """
+    if not segmento:
+        return None
+
+    s = str(segmento).casefold().strip()
+
+    # Normalización ligera para hacer robustas las raíces.
+    s_norm = unicodedata.normalize("NFD", s)
+    s_norm = "".join(
+        c for c in s_norm
+        if unicodedata.category(c) != "Mn"
+    )
+
+    # Verbos/predicados directos de alta confianza.
+    patrones_tension = (
+        r"\b(?:genera|produce|provoca|crea|introduce|marca|activa|impone|"
+        r"exige|obliga|presiona|tensa|confronta|choca|fricciona)\b"
+        r"[^,;:.!?]{0,90}\b(?:"
+        r"tension|presion|friccion|choque|conflicto|exigencia|obligacion"
+        r")\b",
+
+        r"\b(?:es|constituye|representa|supone)\b"
+        r"[^,;:.!?]{0,70}\b(?:"
+        r"una?\s+)?(?:tension|presion|friccion|choque|conflicto|exigencia"
+        r")\b",
+
+        r"\b(?:obliga|exige|presiona|tensa|confronta)\b",
+    )
+
+    patrones_apoyo = (
+        r"\b(?:aporta|ofrece|genera|produce|crea|introduce|da|abre|"
+        r"facilita|favorece|permite|ayuda|sostiene|estabiliza)\b"
+        r"[^,;:.!?]{0,100}\b(?:"
+        r"facilidad|apoyo|fluidez|recurso|circulacion|estabilidad|"
+        r"continuidad|sosten|margen|via|salida"
+        r")\b",
+
+        r"\b(?:es|constituye|representa|supone)\b"
+        r"[^,;:.!?]{0,70}\b(?:"
+        r"una?\s+)?(?:facilidad|apoyo|recurso|via|salida"
+        r")\b",
+
+        r"\b(?:facilita|favorece|ayuda|permite)\b",
+    )
+
+    patrones_ajuste = (
+        r"\b(?:pide|requiere|introduce|plantea|obliga|exige)\b"
+        r"[^,;:.!?]{0,90}\b(?:"
+        r"ajust|revis|calibr|afinar|buscar|adapt|recoloc|reformular"
+        r")",
+
+        r"\b(?:ajusta|calibra|afina|revisa|reorienta)\b",
+    )
+
+    if any(re.search(p, s_norm) for p in patrones_tension):
+        return "tension"
+
+    if any(re.search(p, s_norm) for p in patrones_apoyo):
+        return "apoyo"
+
+    if any(re.search(p, s_norm) for p in patrones_ajuste):
+        return "ajuste"
+
+    return None
+
+
+def detectar_significado_color_incompatible_v68(texto, aspectos_compactos):
+    """
+    V78 · Valida el significado SOLO cuando existe una atribución directa
+    y semánticamente inequívoca al aspecto mencionado.
+
+    Ya NO se buscan palabras como "tensión", "apoyo" o "facilidad" en toda
+    la cláusula. Ese enfoque producía falsos positivos porque una misma frase
+    puede mencionar, por ejemplo, una tensión que el trígono precisamente
+    reduce o compensa.
+
+    Principio:
+      mención explícita del aspecto
+      → predicado directamente atribuido a esa relación
+      → polaridad semántica de alta confianza.
+
+    Si el predicado es ambiguo o no puede aislarse de forma segura, esta capa
+    NO bloquea. La fidelidad técnica sigue protegida por los validadores
+    deterministas de:
+      - puntos permitidos;
+      - tipo/nombre real del aspecto;
+      - color Huber explícitamente atribuido;
+      - vértices colectivos;
+      - posiciones natales.
+    """
+    if not texto:
+        return []
+
+    incidencias = []
+
+    rojos = {"Cuadratura", "Oposición"}
+    azules = {"Trígono", "Sextil"}
+    verdes = {"Quincuncio", "Semisextil"}
+
+    frases = re.split(r"(?<=[.!?])\s+", str(texto))
+
+    for aspecto in aspectos_compactos or []:
+        p1 = str(aspecto.get("p1") or "").strip()
+        p2 = str(aspecto.get("p2") or "").strip()
+        tipo = str(aspecto.get("tipo") or "").strip()
+
+        if not p1 or not p2 or not tipo:
+            continue
+
+        for frase in frases:
+            f_frase = frase.casefold()
+
+            if p1.casefold() not in f_frase:
+                continue
+            if p2.casefold() not in f_frase:
+                continue
+            if tipo.casefold() not in f_frase:
+                continue
+
+            fragmentos = _fragmentos_relacion_explicita_v69(
+                frase,
+                p1,
+                p2,
+                tipo,
+            )
+
+            for frag in fragmentos:
+                predicado = _segmento_predicado_directo_v78(
+                    frag,
+                    p1,
+                    p2,
+                    tipo,
+                )
+
+                polaridad = _polaridad_predicado_v78(
+                    predicado
+                )
+
+                # Solo hay incidencia cuando la contradicción es directa.
+                problema = None
+
+                if tipo in azules and polaridad == "tension":
+                    problema = "aspecto_azul_descrito_directamente_como_presion"
+
+                elif tipo in rojos and polaridad == "apoyo":
+                    problema = "aspecto_rojo_descrito_directamente_como_facilidad"
+
+                elif tipo in verdes and polaridad in {"apoyo", "tension"}:
+                    # El verde describe búsqueda/ajuste. Solo bloqueamos si se
+                    # le atribuye inequívocamente una facilidad estable o una
+                    # presión propia de rojo.
+                    problema = (
+                        "aspecto_verde_descrito_directamente_con_polaridad_incompatible"
+                    )
+
+                if problema:
+                    incidencias.append({
+                        "p1": p1,
+                        "p2": p2,
+                        "tipo": tipo,
+                        "problema": problema,
+                        "fragmento": frag,
+                        "predicado_directo_v78": predicado,
+                        "polaridad_detectada_v78": polaridad,
+                    })
+
+    unicas = []
+    vistos = set()
+
+    for inc in incidencias:
+        clave = (
+            inc["p1"],
+            inc["p2"],
+            inc["tipo"],
+            inc["problema"],
+            inc.get("predicado_directo_v78", ""),
+        )
+        if clave not in vistos:
+            vistos.add(clave)
+            unicas.append(inc)
+
+    return unicas
+
+
+
+def humanizar_andamio_tecnico_local_v74(texto):
+    """
+    V74 · Fallback editorial determinista.
+
+    No cambia geometría, aspectos, puntos ni significado astrológico.
+    Solo sustituye vocabulario INTERNO que alguna reparación o fallback
+    anterior pueda haber reintroducido después de la llamada OpenAI.
+    """
+    if not texto:
+        return texto
+
+    salida = str(texto)
+
+    sustituciones = (
+        (r"\bpuerta\s+geom[eé]trica\b", "punto de contacto"),
+        (r"\bcomo\s+un\s+[uú]nico\s+v[eé]rtice\s+de\s+la\s+figura\b",
+         "como una sola unidad dentro de la figura"),
+        (r"\bun\s+[uú]nico\s+v[eé]rtice\b", "una sola unidad"),
+        (r"\bel\s+v[eé]rtice\s+colectivo\b", "el bloque conjunto"),
+        (r"\bla\s+v[eé]rtice\s+colectivo\b", "el bloque conjunto"),
+        (r"\bv[eé]rtice\s+colectivo\b", "bloque conjunto"),
+        (r"\bel\s+v[eé]rtice\b", "esa parte"),
+        (r"\bun\s+v[eé]rtice\b", "una parte"),
+        (r"\bv[eé]rtice\b", "parte"),
+        (r"\bgeometr[ií]a\s+de\s+la\s+figura\b", "estructura de la figura"),
+        (r"\bgeometr[ií]a\b", "estructura"),
+        (r"\bandamio\s+t[eé]cnico\b", "base técnica"),
+        (r"\bandamio\b", "base"),
+        (r"\bcapa\s+roja\b", "zona de tensión"),
+        (r"\bcapa\s+azul\b", "zona de apoyo"),
+        (r"\bcapa\s+verde\b", "zona de ajuste"),
+    )
+
+    for patron, reemplazo in sustituciones:
+        salida = re.sub(
+            patron,
+            reemplazo,
+            salida,
+            flags=re.IGNORECASE,
+        )
+
+    return salida
+
+
+
+def detectar_andamio_tecnico_visible_v73(texto):
+    """
+    Detecta lenguaje interno que no debe llegar al PDF.
+    No toca títulos técnicos; se aplica únicamente a la interpretación.
+    """
+    if not texto:
+        return []
+
+    patrones = (
+        r"\bpuerta\s+geom[eé]trica\b",
+        r"\bv[eé]rtice\s+colectivo\b",
+        r"\bv[eé]rtice\b",
+        r"\bgeometr[ií]a\b",
+        r"\bandamio\b",
+        r"\bcapa\s+(?:roja|azul|verde)\b",
+        r"\b(?:rojo|roja|rojos|rojas|azul|azules|verde|verdes)\b",
+    )
+
+    encontrados = []
+    for patron in patrones:
+        mm = re.search(patron, str(texto), flags=re.IGNORECASE)
+        if mm:
+            encontrados.append({
+                "patron": patron,
+                "fragmento": mm.group(0),
+            })
+    return encontrados
+
+
+def detectar_sobrecarga_aspectos_por_parrafo_v73(texto):
+    """
+    V75 · Detector EDITORIAL, no técnico.
+
+    Marca párrafos que nombran dos o más relaciones astrológicas explícitas.
+    Se usa para intentar reparación en la llamada 3, pero NO debe bloquear
+    el informe si la IA no logra reducirlo. La fidelidad técnica sigue
+    protegida por los validadores de puntos, aspectos, colores y colectivos.
+
+    No cuenta 'Conjunción' porque puede ser el nombre técnico necesario
+    de una unidad colectiva.
+    """
+    if not texto:
+        return []
+
+    patron_aspectos = re.compile(
+        r"\b(?:cuadratura|oposici[oó]n|tr[ií]gono|sextil|quincuncio|semisextil)\b",
+        flags=re.IGNORECASE,
+    )
+
+    incidencias = []
+    for indice, parrafo in enumerate(re.split(r"\n\s*\n", str(texto)), start=1):
+        menciones = patron_aspectos.findall(parrafo)
+        if len(menciones) >= 2:
+            incidencias.append({
+                "parrafo": indice,
+                "numero_aspectos_explicitos": len(menciones),
+                "aspectos": menciones,
+                "fragmento": parrafo.strip()[:700],
+            })
+    return incidencias
+
+
+def detectar_primer_parrafo_demasiado_tecnico_v73(texto):
+    """
+    V75 · Detector EDITORIAL.
+
+    El primer párrafo idealmente debe poder leerse sin conocer astrología.
+    Este detector puede activar la reparación, pero no debe bloquear el PDF
+    si el contenido restante es técnicamente correcto.
+    """
+    if not texto:
+        return []
+
+    parrafos = [
+        p.strip()
+        for p in re.split(r"\n\s*\n", str(texto))
+        if p.strip()
+    ]
+    if not parrafos:
+        return []
+
+    primero = parrafos[0]
+
+    patron = re.compile(
+        r"\b(?:cuadratura|oposici[oó]n|tr[ií]gono|sextil|quincuncio|semisextil|"
+        r"puerta\s+geom[eé]trica|v[eé]rtice|geometr[ií]a|capa\s+(?:roja|azul|verde))\b",
+        flags=re.IGNORECASE,
+    )
+
+    hallazgos = patron.findall(primero)
+    if not hallazgos:
+        return []
+
+    return [{
+        "hallazgos": hallazgos,
+        "fragmento": primero[:700],
+    }]
+
+
+
 def corregir_conjunciones_disyuntivas(texto):
     """
     Sustituye la conjunción 'o' por 'u' delante de palabras
@@ -4363,13 +5284,215 @@ def corregir_letras_no_latinas(
 
     return texto
 
-def detectar_neutralizaciones_artificiales(texto):
+
+def _reemplazo_preservando_mayuscula_2026(original, reemplazo):
+    if not original:
+        return reemplazo
+    if original.isupper():
+        return reemplazo.upper()
+    if original[0].isupper():
+        return reemplazo[:1].upper() + reemplazo[1:]
+    return reemplazo
+
+
+def corregir_tratamiento_lector_controlado_2026(texto, valor=None):
+    """V80 · Compatibilidad: Python no modifica ni valida el género del texto."""
+    return texto
+
+
+
+def corregir_genero_gramatical_aspectos_2026(texto):
+    """V80 · Corrección formal técnica de artículos de aspectos; no afecta al tratamiento de la persona."""
+    if not texto:
+        return texto
+
+    # Femeninos: conjunción, oposición, cuadratura.
+    # Masculinos: trígono, sextil, semisextil, quincuncio.
+    femeninos = ("conjunción", "oposición", "cuadratura")
+    masculinos = ("trígono", "sextil", "semisextil", "quincuncio")
+
+    for nombre in femeninos:
+        for malo, bueno in (("el", "la"), ("un", "una"), ("ese", "esa"),
+                            ("este", "esta"), ("aquel", "aquella")):
+            patron = rf"\b{malo}\s+{nombre}\b"
+            texto = re.sub(
+                patron,
+                lambda m, b=bueno: b.capitalize() if m.group(0)[0].isupper() else b,
+                texto,
+                flags=re.IGNORECASE,
+            )
+
+    for nombre in masculinos:
+        for malo, bueno in (("la", "el"), ("una", "un"), ("esa", "ese"),
+                            ("esta", "este"), ("aquella", "aquel")):
+            patron = rf"\b{malo}\s+{nombre}\b"
+            texto = re.sub(
+                patron,
+                lambda m, b=bueno: b.capitalize() if m.group(0)[0].isupper() else b,
+                texto,
+                flags=re.IGNORECASE,
+            )
+
+    return texto
+
+
+V55_BLINDAJE_EDITORIAL_FINAL = True
+
+
+def corregir_espaciado_puntuacion_editorial_2026(texto):
     """
-    V39:
-    Python no corrige el tratamiento lingüístico.
-    La concordancia y el uso de -e quedan bajo responsabilidad de la IA.
+    V55 · Repara uniones accidentales entre frases, por ejemplo
+    ``acción.Saturno`` -> ``acción. Saturno``.
+
+    Solo inserta espacio tras . ! ? cuando el siguiente carácter es una
+    mayúscula española. No toca decimales, grados, abreviaturas ni URLs.
     """
+    if not texto:
+        return texto
+
+    return re.sub(
+        r"([.!?])(?=[A-ZÁÉÍÓÚÜÑ])",
+        r"\1 ",
+        texto,
+    )
+
+
+_PATRONES_METATEXTO_INTERNO_2026 = (
+    r"\bcolor(?:es)?\s+prohibid[oa]s?\b",
+    r"\bpuntos?\s+prohibidos?\b",
+    r"\bpuntos?\s+permitidos?\b",
+    r"\bcontrato_aislamiento_figura_2026\b",
+    r"\bcolores_huber_prohibidos\b",
+    r"\bseg[uú]n\s+(?:las?|estas?)\s+instrucciones\b",
+    r"\bseg[uú]n\s+(?:el|este)\s+prompt\b",
+    r"\b(?:el|este)\s+prompt\b",
+)
+
+
+def eliminar_metatexto_interno_editorial_2026(texto):
+    """
+    V55 · Impide que lenguaje técnico del prompt/validador llegue al PDF.
+
+    Elimina únicamente la oración que contiene una marca interna cerrada.
+    No reinterpreta astrología, no sustituye contenido y no llama a OpenAI.
+    """
+    if not texto:
+        return texto
+
+    patron_interno = re.compile(
+        "|".join(f"(?:{p})" for p in _PATRONES_METATEXTO_INTERNO_2026),
+        flags=re.IGNORECASE,
+    )
+
+    # Conservamos los separadores para no alterar la estructura de párrafos.
+    partes = re.split(r"(?<=[.!?])([ \t]+|\n+)", texto)
+    salida = []
+    i = 0
+    while i < len(partes):
+        frase = partes[i]
+        separador = partes[i + 1] if i + 1 < len(partes) else ""
+        if not patron_interno.search(frase):
+            salida.append(frase)
+            salida.append(separador)
+        elif salida and separador.startswith("\n"):
+            # Si se elimina una oración completa antes de un salto, se
+            # conserva el salto para no fusionar párrafos.
+            salida.append(separador)
+        i += 2
+
+    texto = "".join(salida)
+    texto = re.sub(r"[ \t]{2,}", " ", texto)
+    texto = re.sub(r"[ \t]+\n", "\n", texto)
+    return texto.strip()
+
+
+def detectar_metatexto_interno_editorial_2026(texto):
+    """Devuelve las marcas internas que aún sobrevivan tras el blindaje V55."""
+    if not texto:
+        return []
+    encontrados = []
+    for patron in _PATRONES_METATEXTO_INTERNO_2026:
+        if re.search(patron, texto, flags=re.IGNORECASE):
+            encontrados.append(patron)
+    return encontrados
+
+
+
+def corregir_fugas_tratamiento_y_terminologia_editorial_2026(texto, valor=None):
+    """
+    V59 · Ya no corrige tratamiento de género.
+    Solo evita "oposición interna" como uso coloquial ambiguo.
+    """
+    if not texto:
+        return texto
+
+    return re.sub(
+        r"\bla\s+oposici[oó]n\s+interna\b",
+        "la tensión interna",
+        texto,
+        flags=re.IGNORECASE,
+    )
+
+
+
+def corregir_lenguaje_final_2026(texto, valor=None):
+    """
+    V54 · Blindaje lingüístico determinista.
+
+    1. Ajusta formas neutras controladas al tratamiento femenino/masculino.
+    2. Corrige el género gramatical inequívoco de 'semisextil'.
+
+    Se puede ejecutar varias veces sin cambiar de nuevo un texto ya correcto.
+    """
+    if not texto:
+        return texto
+
+    texto = corregir_tratamiento_lector_controlado_2026(
+        texto,
+        valor=valor,
+    )
+    texto = corregir_genero_gramatical_aspectos_2026(texto)
+    texto = corregir_fugas_tratamiento_y_terminologia_editorial_2026(
+        texto,
+        valor=valor,
+    )
+    # V76 · Léxico editorial: evita fórmulas esotéricas o mecánicas que
+    # aparecieron de forma repetida en figuras sin alterar el dato astrológico.
+    texto = re.sub(
+        r"\bmemoria\s+antigua\b",
+        "patrones conocidos",
+        texto,
+        flags=re.IGNORECASE,
+    )
+    texto = re.sub(
+        r"\buna\s+sola\s+masa\s+de\s+fondo\b",
+        "una misma respuesta de fondo",
+        texto,
+        flags=re.IGNORECASE,
+    )
+    texto = re.sub(
+        r"\bmasa\s+de\s+fondo\b",
+        "respuesta de fondo",
+        texto,
+        flags=re.IGNORECASE,
+    )
+    texto = re.sub(
+        r"\bp[eé]rdida\s+de\s+control\b",
+        "cuestiones de control",
+        texto,
+        flags=re.IGNORECASE,
+    )
+    texto = corregir_espaciado_puntuacion_editorial_2026(texto)
+    texto = eliminar_metatexto_interno_editorial_2026(texto)
+    texto = corregir_construcciones_poco_naturales_local(texto)
+    texto = corregir_redundancias_cercanas_v63(texto)
+    return texto
+
+
+def detectar_neutralizaciones_artificiales(texto, valor=None):
+    """V59 · Desactivado: no se valida género en Python."""
     return []
+
 
 
 def detectar_genero_dirigido_a_lector(texto):
@@ -4754,6 +5877,128 @@ def cargar_guia_estilo_arte_encarnarte():
     return contenido
 
 
+
+def corregir_redundancias_cercanas_v63(texto):
+    """
+    V64 · Versión segura de la limpieza V63.
+
+    IMPORTANTE:
+    - conserva EXACTAMENTE los saltos de línea y la estructura Markdown;
+    - nunca fusiona títulos, etiquetas técnicas ni párrafos;
+    - elimina solo frases narrativas duplicadas dentro del mismo bloque;
+    - no toca líneas que empiezan por #, ** ni etiquetas técnicas de núcleo.
+    """
+    if not texto:
+        return texto
+
+    # Trabajamos por líneas para preservar 100 % la estructura del informe.
+    lineas = str(texto).splitlines(keepends=True)
+    salida = []
+    recientes = []
+
+    def normalizar(frase):
+        s = str(frase).casefold().strip()
+        s = re.sub(r"\s+", " ", s)
+        s = re.sub(r"[,:;()]", "", s)
+        return s
+
+    def es_linea_estructural(contenido):
+        limpia = contenido.strip()
+        if not limpia:
+            return True
+        if limpia.startswith("#"):
+            return True
+        if limpia.startswith("**") and limpia.endswith("**"):
+            return True
+        if re.match(
+            r"^(?:Stellium|Conjunción)\s+.+(?:·|\+).+",
+            limpia,
+            flags=re.IGNORECASE,
+        ):
+            return True
+        return False
+
+    for linea in lineas:
+        # Separar contenido y terminador de línea sin alterarlo.
+        m = re.match(r"^(.*?)(\r\n|\n|\r)?$", linea, flags=re.DOTALL)
+        contenido = m.group(1) if m else linea
+        fin = m.group(2) or "" if m else ""
+
+        if es_linea_estructural(contenido):
+            salida.append(linea)
+            # Una frontera estructural corta la ventana de comparación.
+            if not contenido.strip() or contenido.lstrip().startswith("#"):
+                recientes = []
+            continue
+
+        # Solo intentamos deduplicar una línea narrativa completa si contiene
+        # una única frase o una frase claramente repetida. Nunca reconstruimos
+        # el texto con " ".join(), porque eso destruye Markdown.
+        nf = normalizar(contenido)
+        eliminar = False
+
+        if nf:
+            for previa in recientes[-3:]:
+                np = normalizar(previa)
+                if nf == np:
+                    eliminar = True
+                    break
+
+                a = set(re.findall(r"\b[\wáéíóúüñ]+\b", nf))
+                b = set(re.findall(r"\b[\wáéíóúüñ]+\b", np))
+                if a and b:
+                    sim = len(a & b) / max(len(a), len(b))
+                    # Umbral muy alto: solo redundancias casi idénticas.
+                    if sim >= 0.95:
+                        eliminar = True
+                        break
+
+            # Repetición cercana de la misma retrogradación.
+            if not eliminar and "retrógrad" in nf:
+                planetas = {
+                    p.casefold()
+                    for p in re.findall(
+                        r"\b(Saturno|Urano|Neptuno|Plutón|Júpiter|Mercurio|Venus|Marte)\b",
+                        contenido,
+                        flags=re.IGNORECASE,
+                    )
+                }
+
+                if planetas:
+                    for previa in recientes[-2:]:
+                        np = normalizar(previa)
+                        if "retrógrad" not in np:
+                            continue
+                        planetas_prev = {
+                            p.casefold()
+                            for p in re.findall(
+                                r"\b(Saturno|Urano|Neptuno|Plutón|Júpiter|Mercurio|Venus|Marte)\b",
+                                previa,
+                                flags=re.IGNORECASE,
+                            )
+                        }
+                        claves = ("interior", "revis", "elabor", "proces")
+                        if (
+                            planetas == planetas_prev
+                            and any(k in nf for k in claves)
+                            and any(k in np for k in claves)
+                        ):
+                            eliminar = True
+                            break
+
+        if eliminar:
+            # Conservamos el salto de línea para no pegar dos bloques.
+            salida.append(fin)
+            continue
+
+        salida.append(linea)
+        if contenido.strip():
+            recientes.append(contenido)
+
+    return "".join(salida)
+
+
+
 def corregir_repeticiones_editoriales_local(texto):
     """
     Limpia repeticiones editoriales simples sin llamar a la API.
@@ -4844,6 +6089,12 @@ def corregir_construcciones_poco_naturales_local(texto):
         (r"\ble plantea la necesidad de\b", "plantea la necesidad de"),
         (r"\blo plantea como una necesidad de\b", "plantea la necesidad de"),
         (r"\ble plantea como una necesidad de\b", "plantea la necesidad de"),
+        # V63 · Correcciones editoriales seguras detectadas en informe real.
+        (r"\btu manera de mostrarse\b", "tu manera de mostrarte"),
+        (r"\bmodo de mostrarse\b", "modo de mostrarte"),
+        (r"\bforma de mostrarse\b", "forma de mostrarte"),
+        (r"\btrasfondo de fondo\b", "trasfondo"),
+
     )
 
     for patron, reemplazo in sustituciones:
@@ -4858,8 +6109,12 @@ def corregir_construcciones_poco_naturales_local(texto):
 
 
 def corregir_genero_dirigido_local(texto):
-    """V39: no modifica género; el tratamiento lo resuelve la IA."""
-    return texto
+    """
+    V54 · Corrección local segura del tratamiento lingüístico.
+    Solo actúa sobre una lista cerrada de formas inequívocas y sobre
+    concordancias gramaticales de aspectos que no dependen de la persona.
+    """
+    return corregir_lenguaje_final_2026(texto)
 
 
 def neutralizar_teleologia_editorial_local(texto):
@@ -4872,6 +6127,435 @@ def neutralizar_genero_lector_ampliado_local(texto):
     return texto
 
 
+
+def construir_contrato_auditoria_final_2026(contexto_compacto):
+    """
+    Contrato técnico compacto para la auditoría final.
+    Python sigue siendo la autoridad sobre los hechos astrológicos.
+    """
+    figuras_bloque = contexto_compacto.get("figuras", {}) or {}
+    posiciones = figuras_bloque.get("posiciones_natales", {}) or {}
+    aspectos = figuras_bloque.get("aspectos_relevantes", []) or []
+    arquitectura = figuras_bloque.get("arquitectura", {}) or {}
+
+    posiciones_resumidas = {}
+    for punto, datos in posiciones.items():
+        if not isinstance(datos, dict):
+            continue
+        posiciones_resumidas[str(punto)] = {
+            "signo": datos.get("signo"),
+            "casa": datos.get("casa"),
+            "grado": datos.get("grado"),
+            "retrogrado": _normalizar_bool_retrogrado_2026(datos.get("retrogrado")),
+        }
+
+    aspectos_resumidos = []
+    for aspecto in aspectos:
+        if not isinstance(aspecto, dict):
+            continue
+        aspectos_resumidos.append({
+            "p1": aspecto.get("p1"),
+            "p2": aspecto.get("p2"),
+            "tipo": aspecto.get("tipo"),
+            "simbolo": aspecto.get("simbolo"),
+            "orbe": aspecto.get("orbe"),
+        })
+
+    figuras_resumidas = []
+    for figura in arquitectura.get("figuras", []) or []:
+        if not isinstance(figura, dict):
+            continue
+        paquete = figura.get("paquete_huber_ia") or {}
+        figuras_resumidas.append({
+            "id_figura": figura.get("id_figura"),
+            "tipo": figura.get("tipo"),
+            "nombre_canonico": figura.get("nombre_canonico"),
+            "titulo_salida": figura.get("titulo_salida"),
+            "puntos": figura.get("puntos", []),
+            "puntos_editoriales_permitidos": (
+                paquete.get("puntos_editoriales_permitidos")
+                or figura.get("puntos_editoriales_familia_huber_2026")
+                or figura.get("puntos", [])
+            ),
+            "seleccion_huber_2026": (
+                figura.get("seleccion_huber_2026")
+                or paquete.get("seleccion_huber_2026")
+            ),
+            "fase_seleccion_huber_2026": (
+                figura.get("fase_seleccion_huber_2026")
+                or paquete.get("fase_seleccion_huber_2026")
+            ),
+            "aspectos_nuevos_huber_2026": (
+                figura.get("aspectos_nuevos_huber_2026")
+                or paquete.get("aspectos_nuevos_huber_2026")
+                or []
+            ),
+            "aspectos_reutilizados_huber_2026": (
+                figura.get("aspectos_reutilizados_huber_2026")
+                or paquete.get("aspectos_reutilizados_huber_2026")
+                or []
+            ),
+            "aspectos_nuevos_normalizados_2026": [
+                _describir_clave_aspecto_2026(clave)
+                for clave in sorted(
+                    _claves_huber_serializadas_2026(
+                        figura.get("aspectos_nuevos_huber_2026")
+                        or paquete.get("aspectos_nuevos_huber_2026")
+                        or []
+                    ),
+                    key=str,
+                )
+            ],
+            "aspectos_reutilizados_normalizados_2026": [
+                _describir_clave_aspecto_2026(clave)
+                for clave in sorted(
+                    _claves_huber_serializadas_2026(
+                        figura.get("aspectos_reutilizados_huber_2026")
+                        or paquete.get("aspectos_reutilizados_huber_2026")
+                        or []
+                    ),
+                    key=str,
+                )
+            ],
+        })
+
+    nucleos_resumidos = []
+    for nucleo in arquitectura.get("nucleos", []) or []:
+        if not isinstance(nucleo, dict):
+            continue
+        nucleos_resumidos.append({
+            "tipo": nucleo.get("tipo"),
+            "puntos_nucleo": (
+                nucleo.get("puntos_nucleo")
+                or nucleo.get("puntos")
+                or []
+            ),
+            "posiciones": nucleo.get("posiciones"),
+        })
+
+    return {
+        "version": "auditoria-final-v1",
+        "posiciones_natales": posiciones_resumidas,
+        "aspectos_relevantes": aspectos_resumidos,
+        "figuras": figuras_resumidas,
+        "nucleos": nucleos_resumidos,
+        "regla_autoridad": (
+            "Python manda sobre posiciones, casas, retrogradaciones, aspectos, "
+            "orbes, figuras, núcleos y puntos permitidos."
+        ),
+    }
+
+
+def construir_json_schema_auditoria_parches_2026():
+    """
+    La auditoría final NO devuelve el informe completo.
+    Devuelve únicamente correcciones locales exactas.
+    Esto impide que la cuarta llamada resuma o reescriba el texto.
+    """
+    return {
+        "type": "object",
+        "properties": {
+            "correcciones": {
+                "type": "array",
+                "maxItems": 80,
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "original": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 700,
+                        },
+                        "corregido": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 700,
+                        },
+                        "tipo": {
+                            "type": "string",
+                            "enum": [
+                                "dato_astrologico",
+                                "retrogradacion",
+                                "rescate_huber",
+                                "mezcla_figuras",
+                                "contradiccion",
+                                "gramatica",
+                            ],
+                        },
+                    },
+                    "required": [
+                        "original",
+                        "corregido",
+                        "tipo",
+                    ],
+                    "additionalProperties": False,
+                },
+            },
+        },
+        "required": ["correcciones"],
+        "additionalProperties": False,
+    }
+
+
+def aplicar_parches_auditoria_final_2026(texto, correcciones):
+    """
+    Aplica solo sustituciones locales exactas y únicas.
+
+    Barreras de conservación:
+    - nunca sustituye un fragmento que no exista literalmente;
+    - nunca sustituye un fragmento ambiguo que aparezca más de una vez;
+    - limita el tamaño de cada parche;
+    - impide una reducción/ampliación global significativa.
+    """
+    if not texto:
+        return texto
+
+    original_completo = texto
+    aplicadas = 0
+    omitidas = 0
+
+    for correccion in correcciones or []:
+        if not isinstance(correccion, dict):
+            omitidas += 1
+            continue
+
+        original = str(correccion.get("original") or "")
+        corregido = str(correccion.get("corregido") or "")
+
+        if (
+            not original
+            or not corregido
+            or original == corregido
+            or len(original) > 700
+            or len(corregido) > 700
+        ):
+            omitidas += 1
+            continue
+
+        # La auditoría debe aportar suficiente contexto para que el fragmento
+        # sea único. Si no lo es, Python no adivina dónde tocar.
+        apariciones = texto.count(original)
+        if apariciones != 1:
+            print(
+                "AVISO auditoría final: parche omitido porque el fragmento "
+                f"aparece {apariciones} veces."
+            )
+            omitidas += 1
+            continue
+
+        texto = texto.replace(original, corregido, 1)
+        aplicadas += 1
+
+    # La cuarta llamada es correctora, nunca redactora.
+    # Un cambio global superior al 5 % indica que algo ha intentado reescribir.
+    base = max(1, len(original_completo))
+    variacion = abs(len(texto) - len(original_completo)) / base
+
+    if variacion > 0.05:
+        raise RuntimeError(
+            "La auditoría final intentó modificar demasiado el informe "
+            f"({variacion:.1%}). Se bloquea para conservar el texto original."
+        )
+
+    print(
+        "Auditoría final aplicada: "
+        f"{aplicadas} corrección(es) local(es); "
+        f"{omitidas} omitida(s)."
+    )
+
+    return texto
+
+
+def auditar_informe_completo_final_2026(
+    texto,
+    contexto_compacto,
+):
+    """
+    Cuarta llamada: auditoría semántica mediante PARCHES LOCALES.
+
+    La IA NO devuelve una nueva versión del informe.
+    Solo identifica fragmentos exactos que están mal y propone
+    la mínima corrección necesaria. Python aplica después esos parches.
+    """
+    if not texto:
+        return texto
+
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        raise RuntimeError(
+            "OPENAI_API_KEY no está configurada para la auditoría final."
+        )
+
+    client = OpenAI(api_key=api_key)
+
+    contrato = construir_contrato_auditoria_final_2026(
+        contexto_compacto
+    )
+
+    prompt = f"""
+AUDITORÍA FINAL POR PARCHES · EL ARTE DE ENCARNARTE
+
+Tu tarea es detectar ERRORES CONCRETOS en un informe ya terminado.
+
+NO debes devolver el informe reescrito.
+NO debes resumirlo.
+NO debes mejorarlo por estilo.
+NO debes cambiar párrafos correctos.
+
+Devuelve únicamente una lista estructurada de CORRECCIONES LOCALES.
+
+Cada corrección contiene:
+- "original": fragmento LITERAL del informe;
+- "corregido": el mismo fragmento con la modificación mínima;
+- "tipo": categoría del error.
+
+REGLA DE CONSERVACIÓN ABSOLUTA
+
+Cada "original" debe copiarse LITERALMENTE del informe.
+Incluye suficiente contexto para que aparezca UNA SOLA VEZ.
+La corrección debe cambiar únicamente lo imprescindible.
+
+Si una frase es correcta, NO la incluyas.
+Si una frase simplemente podría gustarte más de otra manera, NO la incluyas.
+Si no hay errores, devuelve:
+{{"correcciones": []}}
+
+AUTORIDAD TÉCNICA
+
+Python manda sobre:
+- signos;
+- casas;
+- grados;
+- retrogradaciones;
+- aspectos y orbes;
+- puntos de cada figura;
+- nombres/tipos de figuras;
+- núcleos;
+- selección Huber;
+- aspectos nuevos y reutilizados de figuras de rescate.
+
+RETROGRADACIÓN
+
+Si "retrogrado": false:
+- no describas al planeta como retrógrado;
+- tampoco uses giros confusos como
+  "Saturno retrógrado no aparece aquí".
+  En ese caso la forma clara es, por ejemplo,
+  "Saturno no está retrógrado".
+
+Si "retrogrado": true:
+- no lo describas como directo;
+- tampoco escribas "X no está retrógrado", "X está directo" ni equivalentes.
+
+Si un mismo planeta aparece descrito a la vez como retrógrado y no retrógrado,
+corrige la afirmación que contradiga el CONTRATO TÉCNICO.
+
+RESCATE HUBER · REGLA CRÍTICA
+
+Para cada figura revisa:
+- "seleccion_huber_2026";
+- "aspectos_nuevos_huber_2026";
+- "aspectos_reutilizados_huber_2026".
+
+Si una figura es "rescate" y
+"aspectos_nuevos_huber_2026" NO está vacío:
+
+ES FALSO escribir:
+- "esta figura no añade una línea nueva";
+- "no incorpora aspectos nuevos";
+- o cualquier equivalente.
+
+La interpretación debe respetar exactamente qué relaciones son nuevas
+y cuáles reutilizadas. Usa como referencia prioritaria los campos
+"aspectos_nuevos_normalizados_2026" y "aspectos_reutilizados_normalizados_2026".
+
+Si hay UNA sola relación en "aspectos_nuevos_normalizados_2026", cualquier frase
+que diga "la relación nueva", "lo nuevo", "la pieza nueva" o equivalente DEBE
+referirse exactamente a esos dos extremos y a ese tipo de aspecto. Si atribuye
+la novedad a otra relación, corrígela localmente.
+
+No inventes relaciones nuevas a partir del nombre de la figura.
+
+MEZCLA ENTRE FIGURAS
+
+Una figura no puede incorporar planetas, colores, aspectos o datos
+pertenecientes únicamente a otra figura.
+
+LENGUA ESPAÑOLA
+
+Corrige solo errores inequívocos:
+- "la trígona" -> "el trígono";
+- "la semisextil" -> "el semisextil";
+- "la sextil" -> "el sextil";
+- "la quincuncio" -> "el quincuncio";
+- "queda choca con" -> "choca con";
+- "es una verde" -> "es una relación verde" cuando "verde" nombra el color Huber de un aspecto;
+- evita usar "una verde", "una azul" o "una roja" como sustantivos para una relación;
+y otros fallos igualmente claros.
+
+PROHIBIDO
+
+- resumir;
+- ampliar;
+- reorganizar;
+- sustituir párrafos completos por otros más breves;
+- eliminar ejemplos correctos;
+- cambiar el tono;
+- cambiar palabras correctas por sinónimos;
+- "mejorar" estilo;
+- cambiar títulos o encabezados correctos;
+- reinterpretar la carta.
+
+CONTRATO TÉCNICO:
+
+{json.dumps(contrato, ensure_ascii=False, indent=2)}
+
+<INFORME_COMPLETO>
+{texto}
+</INFORME_COMPLETO>
+"""
+
+    response = _responses_create_controlado(
+        client,
+        model="gpt-5.4-mini",
+        input=prompt,
+        max_output_tokens=12000,
+        text={
+            "format": {
+                "type": "json_schema",
+                "name": "auditoria_final_por_parches",
+                "strict": True,
+                "schema": construir_json_schema_auditoria_parches_2026(),
+            }
+        },
+    )
+
+    if not response.output_text:
+        raise RuntimeError(
+            "OpenAI no ha devuelto la auditoría final por parches."
+        )
+
+    try:
+        resultado = json.loads(response.output_text)
+    except json.JSONDecodeError as exc:
+        raise RuntimeError(
+            "La auditoría final por parches no contiene JSON válido."
+        ) from exc
+
+    correcciones = resultado.get("correcciones", [])
+
+    if not isinstance(correcciones, list):
+        raise RuntimeError(
+            "La auditoría final por parches devolvió un formato inválido."
+        )
+
+    return aplicar_parches_auditoria_final_2026(
+        texto,
+        correcciones,
+    )
+
+
+
 def cierre_editorial_local_final(texto):
     """
     Última pasada local antes de guardar/maquetar.
@@ -4881,9 +6565,9 @@ def cierre_editorial_local_final(texto):
     - conserva segunda persona;
     - elimina referencias internas;
     - corrige solo cuestiones formales seguras;
-    - NO modifica género, concordancia ni terminaciones -a/-o/-e.
+    - NO modifica ni valida el género del texto.
 
-    El tratamiento lingüístico ya debe venir resuelto por la IA.
+    El tratamiento lingüístico queda a cargo de la IA según la preferencia elegida.
     """
     if not texto:
         return texto
@@ -4896,6 +6580,18 @@ def cierre_editorial_local_final(texto):
     texto = corregir_conjunciones_disyuntivas(texto)
     texto = corregir_letras_no_latinas(None, texto)
     texto = asegurar_puntuacion_final_narrativa(texto)
+    texto = corregir_colores_huber_gramatica_local_2026(texto)
+
+    # V80 · Se conservan únicamente correcciones formales seguras que no
+    # intentan controlar el tratamiento de la persona.
+    texto = corregir_lenguaje_final_2026(texto)
+
+    residuos_metatexto = detectar_metatexto_interno_editorial_2026(texto)
+    if residuos_metatexto:
+        raise RuntimeError(
+            "Queda lenguaje interno de prompt/validador antes de maquetar: "
+            + ", ".join(residuos_metatexto)
+        )
 
     # Segunda barrera antes de devolver el texto que irá a maquetación.
     texto = eliminar_marcadores_citas_internas_local(texto)
@@ -4907,7 +6603,35 @@ def cierre_editorial_local_final(texto):
             + ", ".join(residuos_citas)
         )
 
+    residuos_v58 = detectar_residuos_editoriales_v58_2026(texto)
+    if residuos_v58:
+        raise RuntimeError(
+            "Quedan residuos editoriales V58 antes de maquetar: "
+            + ", ".join(residuos_v58)
+        )
+
     return texto
+
+
+
+def detectar_residuos_editoriales_v58_2026(texto):
+    """Detecta únicamente residuos editoriales cerrados cubiertos por V58."""
+    if not texto:
+        return []
+
+    incidencias = []
+
+    if re.search(r"([.!?])(?=[A-ZÁÉÍÓÚÜÑ])", texto):
+        incidencias.append("falta_espacio_tras_puntuacion")
+
+    if re.search(
+        r"\bla\s+oposici[oó]n\s+interna\b",
+        texto,
+        flags=re.IGNORECASE,
+    ):
+        incidencias.append("oposicion_interna_ambigua")
+
+    return incidencias
 
 
 def detectar_genero_marcado_lector_2026(texto):
@@ -4977,6 +6701,8 @@ def _construir_dato_figura_para_ia_huber(
             "titulo_salida": figura.get("titulo_salida"),
             "tipo": figura.get("tipo"),
             "nombre_canonico": figura.get("nombre_canonico"),
+            "sistema": figura.get("sistema", "Arquitectura Interna"),
+            "es_figura_huber": figura.get("sistema") == "Huber",
             "puntos": figura.get("puntos", []),
             "puntos_geometricos": figura.get(
                 "puntos_geometricos",
@@ -5019,6 +6745,8 @@ def _construir_dato_figura_para_ia_huber(
         "titulo_salida": figura.get("titulo_salida"),
         "tipo": figura.get("tipo"),
         "nombre_canonico": figura.get("nombre_canonico"),
+        "sistema": figura.get("sistema", "Arquitectura Interna"),
+        "es_figura_huber": figura.get("sistema") == "Huber",
         "familia": figura.get("familia"),
         "colores": figura.get("colores", []),
         "dinamica_base": figura.get("dinamica_base"),
@@ -5433,7 +7161,7 @@ def _enriquecer_dato_figura_fase14(dato, figura):
 
 
 # ─── FASE 17: AUDITORÍA DE INFERENCIA ESPECÍFICA POR FIGURA ─────────────────
-HUBER_FASE17_AUDITORIA_INFERENCIA_FIGURAS = True
+HUBER_FASE17_AUDITORIA_INFERENCIA_FIGURAS = False
 
 
 def _fase17_contrato_inferencia_figura(dato):
@@ -5774,7 +7502,7 @@ INTERPRETACIÓN ORIGINAL:
 {interpretacion}
 """
 
-        response = client.responses.create(
+        response = _responses_create_controlado(client, 
             model="gpt-5.4-mini",
             input=prompt,
         )
@@ -5931,28 +7659,175 @@ V38_PROFUNDIDAD_HUBER_COLORES_Y_SIN_TECHO_RIGIDO = True
 V39_TRATAMIENTO_LINGUISTICO_SOLO_IA = True
 V40_SANEADO_CITAS_INTERNAS = True
 V41_BLINDAJE_COLORES_HUBER = True
+V42_RESCATES_RETROGRADACION_DETERMINISTA = True
+V45_ASPECTO_NUEVO_RESCATE_AUTORITATIVO = True
+
+
+def _normalizar_tipo_aspecto_clave_2026(valor):
+    """Devuelve una clave canónica para comparar aspectos aunque vengan como nombre o símbolo."""
+    texto = str(valor or "").strip()
+    cf = texto.casefold()
+    mapa = {
+        "=": "=", "conjunción": "=", "conjuncion": "=", "conjunction": "=",
+        "☍": "☍", "oposición": "☍", "oposicion": "☍", "opposition": "☍",
+        "□": "□", "cuadratura": "□", "square": "□",
+        "△": "△", "trígono": "△", "trigono": "△", "trine": "△",
+        "✶": "✶", "sextil": "✶", "sextile": "✶",
+        "⚻": "⚻", "quincuncio": "⚻", "quincunx": "⚻",
+        "⚺": "⚺", "semisextil": "⚺", "semi-sextil": "⚺", "semisextile": "⚺",
+    }
+    return mapa.get(cf, mapa.get(texto, texto))
 
 
 def _clave_aspecto_interpretativo_2026(aspecto):
-    p1 = str(aspecto.get("p1") or "")
-    p2 = str(aspecto.get("p2") or "")
-    simbolo = str(aspecto.get("simbolo") or aspecto.get("tipo") or "")
-    return (tuple(sorted((p1, p2))), simbolo)
+    p1 = str(aspecto.get("p1") or aspecto.get("a") or aspecto.get("planeta1") or "")
+    p2 = str(aspecto.get("p2") or aspecto.get("b") or aspecto.get("planeta2") or "")
+    tipo = _normalizar_tipo_aspecto_clave_2026(
+        aspecto.get("simbolo") or aspecto.get("tipo") or aspecto.get("aspecto") or aspecto.get("nombre")
+    )
+    return (tuple(sorted((p1, p2))), tipo)
 
 
 def _claves_huber_serializadas_2026(valor):
-    """Normaliza las claves guardadas por Figuras.py a un conjunto comparable."""
+    """Normaliza serializaciones Huber, incluidos extremos colectivos.
+
+    Figuras.py puede representar un aspecto como::
+
+        (("Punto", ("Neptuno",)), "✶", ("Punto", ("Plutón",)))
+        (("Punto", ("Quirón",)), "⚻", ("Stellium", ("Luna", "Venus", "Júpiter")))
+
+    Cuando un extremo es colectivo, generamos todas las parejas posibles.
+    Después ``_relaciones_clave_figura_2026`` conserva únicamente la pareja
+    que exista realmente entre los aspectos compactos de esa figura. Así no
+    se obliga a la IA a adivinar qué miembro del Stellium participa en la
+    línea nueva.
+    """
     resultado = set()
-    for item in valor or []:
-        if isinstance(item, (list, tuple)) and len(item) >= 3:
-            a, b, simbolo = item[0], item[1], item[2]
-            resultado.add((tuple(sorted((str(a), str(b)))), str(simbolo)))
-        elif isinstance(item, (list, tuple)) and len(item) == 2:
-            extremos, simbolo = item
-            if isinstance(extremos, (list, tuple, set, frozenset)) and len(extremos) == 2:
-                a, b = list(extremos)
-                resultado.add((tuple(sorted((str(a), str(b)))), str(simbolo)))
+
+    def miembros_extremo(extremo):
+        """Extrae nombres de un extremo Huber simple o colectivo."""
+        if extremo is None:
+            return []
+
+        if isinstance(extremo, str):
+            texto = extremo.strip()
+            return [texto] if texto else []
+
+        if isinstance(extremo, dict):
+            # Formas explícitas frecuentes.
+            for clave in ("miembros", "puntos", "planetas", "extremos"):
+                valor_miembros = extremo.get(clave)
+                if isinstance(valor_miembros, (list, tuple, set, frozenset)):
+                    salida = []
+                    for sub in valor_miembros:
+                        salida.extend(miembros_extremo(sub))
+                    if salida:
+                        return salida
+
+            for clave in ("punto", "nombre", "planeta", "id"):
+                dato = extremo.get(clave)
+                if isinstance(dato, str) and dato.strip():
+                    return [dato.strip()]
+            return []
+
+        if isinstance(extremo, (list, tuple, set, frozenset)):
+            seq = list(extremo)
+
+            # Forma estructural de Figuras.py:
+            # ("Punto", ("Quirón",)) / ("Stellium", (...)) /
+            # ("Conjunción", (...)). El primer elemento es la clase del
+            # vértice y el segundo contiene sus miembros reales.
+            if (
+                len(seq) == 2
+                and isinstance(seq[0], str)
+                and str(seq[0]).casefold() in {
+                    "punto", "stellium", "conjunción", "conjuncion",
+                    "grupo", "vértice", "vertice",
+                }
+            ):
+                return miembros_extremo(seq[1])
+
+            salida = []
+            for sub in seq:
+                salida.extend(miembros_extremo(sub))
+            return salida
+
+        texto = str(extremo).strip()
+        return [texto] if texto else []
+
+    def agregar(a, b, tipo):
+        miembros_a = miembros_extremo(a)
+        miembros_b = miembros_extremo(b)
+        simbolo = _normalizar_tipo_aspecto_clave_2026(tipo)
+
+        for nombre_a in miembros_a:
+            for nombre_b in miembros_b:
+                nombre_a = str(nombre_a).strip()
+                nombre_b = str(nombre_b).strip()
+                if not nombre_a or not nombre_b or nombre_a == nombre_b:
+                    continue
+                resultado.add((tuple(sorted((nombre_a, nombre_b))), simbolo))
+
+    def visitar(item):
+        if item is None:
+            return
+
+        if isinstance(item, dict):
+            a = item.get("p1") or item.get("a") or item.get("planeta1") or item.get("punto1")
+            b = item.get("p2") or item.get("b") or item.get("planeta2") or item.get("punto2")
+            tipo = item.get("simbolo") or item.get("tipo") or item.get("aspecto") or item.get("nombre")
+            if a is not None and b is not None and tipo is not None:
+                agregar(a, b, tipo)
+                return
+
+            extremos = item.get("extremos")
+            if isinstance(extremos, (list, tuple)) and len(extremos) == 2 and tipo is not None:
+                agregar(extremos[0], extremos[1], tipo)
+                return
+
+            for sub in item.values():
+                visitar(sub)
+            return
+
+        if isinstance(item, (list, tuple, set, frozenset)):
+            seq = list(item)
+
+            # Forma REAL de Figuras.py: (extremo_1, aspecto, extremo_2).
+            if len(seq) == 3:
+                simbolo_central = _normalizar_tipo_aspecto_clave_2026(seq[1])
+                if simbolo_central in {"=", "☍", "□", "△", "✶", "⚻", "⚺"}:
+                    agregar(seq[0], seq[2], simbolo_central)
+                    return
+
+            # Forma simple histórica: (p1, p2, tipo).
+            if len(seq) >= 3 and not isinstance(seq[0], (dict, list, tuple, set, frozenset)):
+                agregar(seq[0], seq[1], seq[2])
+                return
+
+            # Forma: ((p1, p2), tipo).
+            if len(seq) == 2:
+                extremos, tipo = seq
+                if isinstance(extremos, (list, tuple, set, frozenset)) and len(extremos) == 2:
+                    a, b = list(extremos)
+                    agregar(a, b, tipo)
+                    return
+
+            for sub in seq:
+                visitar(sub)
+
+    visitar(valor)
     return resultado
+
+
+def _describir_clave_aspecto_2026(clave):
+    """Convierte una clave canónica en un dict explícito para prompts y auditorías."""
+    extremos, simbolo = clave
+    p1, p2 = list(extremos)
+    nombres = {
+        "=": "conjunción", "☍": "oposición", "□": "cuadratura",
+        "△": "trígono", "✶": "sextil", "⚻": "quincuncio", "⚺": "semisextil",
+    }
+    return {"p1": p1, "p2": p2, "simbolo": simbolo, "tipo": nombres.get(simbolo, simbolo)}
 
 
 def _peso_editorial_aspecto_2026(aspecto, nombre_figura=""):
@@ -6215,6 +8090,284 @@ def detectar_colores_huber_ajenos_2026(
     )
 
 
+
+def _fragmentos_pareja_explicitamente_nombrada_2026(
+    frase,
+    p1,
+    p2,
+    tipo,
+):
+    """
+    V72 · Devuelve la CLÁUSULA concreta donde p1 y p2 aparecen como una
+    misma relación explícita.
+
+    Antes se tomaban ±70 caracteres alrededor de la pareja. Eso podía invadir
+    la cláusula siguiente y mezclar dos colores distintos, por ejemplo:
+
+      "El rojo de Venus con Neptuno y de Urano con Lilith señala...
+       ; el verde entre Venus y Plutón..."
+
+    Para Urano–Lilith, V60 podía alcanzar también "el verde" posterior y
+    generar un falso positivo. V72 limita el análisis a la cláusula delimitada
+    por punto y coma, dos puntos o final de oración.
+    """
+    if not frase:
+        return []
+
+    p1e = re.escape(str(p1).strip())
+    p2e = re.escape(str(p2).strip())
+    tipoe = re.escape(str(tipo or "").strip())
+
+    patrones = []
+
+    if tipoe:
+        patrones.extend([
+            rf"(?<!\w){p1e}(?!\w)\s+(?:en\s+)?{tipoe}\s+(?<!\w){p2e}(?!\w)",
+            rf"(?<!\w){p2e}(?!\w)\s+(?:en\s+)?{tipoe}\s+(?<!\w){p1e}(?!\w)",
+            rf"{tipoe}\s+(?:de|entre)\s+(?<!\w){p1e}(?!\w)\s+(?:con|y)\s+(?<!\w){p2e}(?!\w)",
+            rf"{tipoe}\s+(?:de|entre)\s+(?<!\w){p2e}(?!\w)\s+(?:con|y)\s+(?<!\w){p1e}(?!\w)",
+        ])
+
+    color_palabra = r"(?:roj(?:o|a|os|as)|azul(?:es)?|verde(?:s)?)"
+    patrones.extend([
+        rf"(?:l[ií]nea\s+)?{color_palabra}\s+(?:de|entre)\s+"
+        rf"(?<!\w){p1e}(?!\w)\s+(?:con|y)\s+(?<!\w){p2e}(?!\w)",
+        rf"(?:l[ií]nea\s+)?{color_palabra}\s+(?:de|entre)\s+"
+        rf"(?<!\w){p2e}(?!\w)\s+(?:con|y)\s+(?<!\w){p1e}(?!\w)",
+    ])
+
+    patrones.extend([
+        rf"(?:entre\s+)?(?<!\w){p1e}(?!\w)\s+(?:con|y)\s+(?<!\w){p2e}(?!\w)",
+        rf"(?:entre\s+)?(?<!\w){p2e}(?!\w)\s+(?:con|y)\s+(?<!\w){p1e}(?!\w)",
+    ])
+
+    encontrados = []
+
+    for patron in patrones:
+        for mm in re.finditer(patron, frase, flags=re.IGNORECASE):
+            # Límites de cláusula. Conservamos toda la cláusula porque un color
+            # puede aparecer una sola vez al inicio y gobernar varias parejas
+            # coordinadas: "El rojo de A con B y de C con D...".
+            izquierda = max(
+                frase.rfind(";", 0, mm.start()),
+                frase.rfind(":", 0, mm.start()),
+            )
+            inicio = izquierda + 1 if izquierda >= 0 else 0
+
+            candidatos_fin = [
+                pos for pos in (
+                    frase.find(";", mm.end()),
+                    frase.find(":", mm.end()),
+                )
+                if pos >= 0
+            ]
+            fin = min(candidatos_fin) if candidatos_fin else len(frase)
+
+            frag = frase[inicio:fin].strip(" ,")
+            if frag and frag not in encontrados:
+                encontrados.append(frag)
+
+    return encontrados
+
+
+
+def detectar_atribuciones_color_huber_relacion_incorrectas_2026(
+    texto,
+    aspectos_compactos,
+):
+    """
+    V60 · Valida color Huber SOLO cuando una pareja está explícitamente
+    nombrada como relación.
+
+    No basta con que p1 y p2 aparezcan en la misma frase. Esto evita cruzar
+    dos relaciones diferentes escritas en una sola oración.
+    """
+    if not texto:
+        return []
+
+    frases = re.split(r"(?<=[.!?])\s+", str(texto))
+    patrones_color = {
+        "rojo": r"\broj(?:o|a|os|as)\b",
+        "azul": r"\bazul(?:es)?\b",
+        "verde": r"\bverde(?:s)?\b",
+    }
+
+    incidencias = []
+
+    for aspecto in aspectos_compactos or []:
+        p1 = str(aspecto.get("p1") or "").strip()
+        p2 = str(aspecto.get("p2") or "").strip()
+        tipo = str(aspecto.get("tipo") or "").strip()
+
+        if not p1 or not p2:
+            continue
+
+        color_real = _color_huber_aspecto_2026(aspecto)
+
+        for frase in frases:
+            fragmentos = _fragmentos_pareja_explicitamente_nombrada_2026(
+                frase,
+                p1,
+                p2,
+                tipo,
+            )
+            if not fragmentos:
+                continue
+
+            for fragmento in fragmentos:
+                # Solo analizamos el color que esté cerca de ESTA relación.
+                colores_mencionados = [
+                    color
+                    for color, patron in patrones_color.items()
+                    if re.search(patron, fragmento, flags=re.IGNORECASE)
+                ]
+
+                for color_dicho in colores_mencionados:
+                    if color_dicho != color_real:
+                        incidencias.append({
+                            "p1": p1,
+                            "p2": p2,
+                            "tipo": tipo,
+                            "color_real": color_real,
+                            "atribucion_detectada": color_dicho,
+                            "fragmento": fragmento,
+                        })
+
+                # "X-Y señala/marca/es la presión principal" solo se considera
+                # error cuando ESA pareja está explícitamente identificada.
+                if color_real != "rojo":
+                    patron_presion = (
+                        r"\b(?:señala|marca|constituye|representa|es)\s+"
+                        r"(?:la\s+)?presi[oó]n(?:\s+principal)?\b"
+                    )
+                    if re.search(
+                        patron_presion,
+                        fragmento,
+                        flags=re.IGNORECASE,
+                    ):
+                        incidencias.append({
+                            "p1": p1,
+                            "p2": p2,
+                            "tipo": tipo,
+                            "color_real": color_real,
+                            "atribucion_detectada": "presion_roja",
+                            "fragmento": fragmento,
+                        })
+
+    # Deduplicación estable
+    unicas = []
+    vistas = set()
+    for item in incidencias:
+        clave = (
+            item["p1"],
+            item["p2"],
+            item["color_real"],
+            item["atribucion_detectada"],
+            item["fragmento"],
+        )
+        if clave not in vistas:
+            vistas.add(clave)
+            unicas.append(item)
+
+    return unicas
+
+
+
+def neutralizar_colores_huber_ajenos_local_2026(
+    texto,
+    lectura_colores,
+):
+    """
+    V56 · Fallback determinista para vocabulario cromático Huber ajeno.
+
+    Si una figura NO contiene rojo, azul o verde, elimina únicamente la
+    etiqueta cromática que la IA haya introducido por error, conservando
+    el resto de la frase siempre que sea posible.
+
+    No inventa aspectos, no cambia geometría y no llama a OpenAI.
+    """
+    if not texto:
+        return texto
+
+    presentes = {
+        str(color).strip().casefold()
+        for color in (
+            (lectura_colores or {}).get("colores_presentes", [])
+            or []
+        )
+        if str(color).strip()
+    }
+
+    prohibidos = [
+        color
+        for color in ("rojo", "azul", "verde")
+        if color not in presentes
+    ]
+
+    if not prohibidos:
+        return texto
+
+    variantes = {
+        "rojo": r"roj(?:o|a|os|as)",
+        "azul": r"azul(?:es)?",
+        "verde": r"verde(?:s)?",
+    }
+
+    for color in prohibidos:
+        c = variantes[color]
+
+        # Expresiones nominales frecuentes: se conserva el referente,
+        # pero desaparece la atribución cromática incorrecta.
+        sustituciones = (
+            (rf"\b[Ll]a\s+línea\s+{c}\b", "esa línea"),
+            (rf"\b[Ee]sa\s+línea\s+{c}\b", "esa línea"),
+            (rf"\b[Ll]a\s+pieza\s+{c}\b", "esa pieza"),
+            (rf"\b[Ee]sa\s+pieza\s+{c}\b", "esa pieza"),
+            (rf"\b[Ll]a\s+parte\s+{c}\b", "esa parte"),
+            (rf"\b[Ee]sa\s+parte\s+{c}\b", "esa parte"),
+            (rf"\b[Ll]a\s+relación\s+{c}\b", "esa relación"),
+            (rf"\b[Ee]sa\s+relación\s+{c}\b", "esa relación"),
+            (rf"\b[Ee]l\s+aspecto\s+{c}\b", "ese aspecto"),
+            (rf"\b[Ee]se\s+aspecto\s+{c}\b", "ese aspecto"),
+            (rf"\b[Ll]o\s+{c}\b", "esa parte"),
+            (rf"\b[Ee]l\s+{c}\b", "esa parte"),
+        )
+
+        for patron, reemplazo in sustituciones:
+            texto = re.sub(
+                patron,
+                reemplazo,
+                texto,
+                flags=re.IGNORECASE,
+            )
+
+        # Casos como "presión roja", "trazo azul", "vínculo verde":
+        # retiramos solo el adjetivo cromático.
+        texto = re.sub(
+            rf"(?<=\w)\s+{c}\b",
+            "",
+            texto,
+            flags=re.IGNORECASE,
+        )
+
+        # Última barrera: si queda el color aislado, se elimina sin tocar
+        # ninguna otra palabra de la frase.
+        texto = re.sub(
+            rf"\b{c}\b",
+            "",
+            texto,
+            flags=re.IGNORECASE,
+        )
+
+    # Limpieza mínima tras retirar etiquetas.
+    texto = re.sub(r"[ \t]{2,}", " ", texto)
+    texto = re.sub(r"\s+([,.;:!?])", r"\1", texto)
+    texto = re.sub(r"([(\[])\s+", r"\1", texto)
+    texto = re.sub(r"\s+([)\]])", r"\1", texto)
+
+    return texto.strip()
+
+
 def _profundidad_figura_2026(
     figura,
     aspectos_compactos,
@@ -6452,6 +8605,35 @@ def _plan_editorial_figura_2026(figura, aspectos_compactos, posiciones_figura):
                 "estado_en_seleccion"
             ) == "nueva"
         ],
+        "aspectos_nuevos_autoritativos_2026": [
+            {
+                "p1": relacion.get("p1"),
+                "p2": relacion.get("p2"),
+                "simbolo": relacion.get("simbolo"),
+                "tipo": relacion.get("tipo"),
+            }
+            for relacion in relaciones
+            if relacion.get("estado_en_seleccion") == "nueva"
+        ],
+        "aspecto_nuevo_autoritativo_unico_2026": (
+            [
+                {
+                    "p1": relacion.get("p1"),
+                    "p2": relacion.get("p2"),
+                    "simbolo": relacion.get("simbolo"),
+                    "tipo": relacion.get("tipo"),
+                }
+                for relacion in relaciones
+                if relacion.get("estado_en_seleccion") == "nueva"
+            ][0]
+            if rol == "rescate"
+            and len([
+                relacion
+                for relacion in relaciones
+                if relacion.get("estado_en_seleccion") == "nueva"
+            ]) == 1
+            else None
+        ),
         "relaciones_reutilizadas_contexto": [
             relacion
             for relacion in relaciones
@@ -6567,12 +8749,8 @@ def _stellium_ya_representado_como_nucleo(
     if not puntos_figura:
         return False
 
-    nucleos = (
+    nucleos = obtener_nucleos_globales_robustos(
         contexto_compacto
-        .get("figuras", {})
-        .get("arquitectura", {})
-        .get("nucleos", [])
-        or []
     )
 
     for nucleo in nucleos:
@@ -6621,6 +8799,743 @@ def _figuras_con_bloque_independiente(
 
 
 # ─── FIN CONTROL STELLIUM ────────────────────────────────────────────────────
+
+
+
+def normalizar_nombre_triangulo_aprendizaje_en_interpretacion(
+    figura,
+    texto,
+):
+    """
+    Impide que una interpretación cambie el tamaño técnico de un triángulo
+    de aprendizaje (pequeño / mediano / grande).
+    """
+    if not texto:
+        return texto
+
+    esperado = str(
+        figura.get("nombre_canonico")
+        or figura.get("tipo")
+        or ""
+    ).strip()
+
+    validos = {
+        "Triángulo de aprendizaje pequeño",
+        "Triángulo de aprendizaje mediano",
+        "Triángulo de aprendizaje grande",
+    }
+
+    if esperado not in validos:
+        return texto
+
+    patron = re.compile(
+        r"\btriángulo\s+de\s+aprendizaje\s+"
+        r"(?:pequeño|mediano|grande)\b",
+        flags=re.IGNORECASE,
+    )
+
+    return patron.sub(esperado, texto)
+
+
+
+def _nombre_tipo_aspecto_visible_2026(tipo, simbolo=None):
+    """Nombre español legible de un aspecto ya calculado por Python."""
+    canon = _normalizar_tipo_aspecto_clave_2026(simbolo or tipo)
+    mapa = {
+        "=": "conjunción",
+        "☍": "oposición",
+        "□": "cuadratura",
+        "△": "trígono",
+        "✶": "sextil",
+        "⚻": "quincuncio",
+        "⚺": "semisextil",
+    }
+    return mapa.get(canon, str(tipo or simbolo or "aspecto").strip().casefold())
+
+
+def _unir_descripciones_aspectos_nuevos_2026(descripciones):
+    """Une descripciones técnicas ya calculadas con gramática española."""
+    descripciones = [str(x).strip() for x in (descripciones or []) if str(x).strip()]
+    if not descripciones:
+        return ""
+    if len(descripciones) == 1:
+        return descripciones[0]
+    if len(descripciones) == 2:
+        return descripciones[0] + " y " + descripciones[1]
+    return ", ".join(descripciones[:-1]) + " y " + descripciones[-1]
+
+
+def _frase_aspectos_nuevos_rescate_2026(nuevas):
+    """
+    Construye una frase técnica breve a partir de relaciones NUEVAS reales.
+    Acepta una o varias relaciones y no interpreta nada.
+    """
+    descripciones = []
+    vistas = set()
+
+    for nueva in nuevas or []:
+        if not isinstance(nueva, dict):
+            continue
+        p1 = str(nueva.get("p1") or "").strip()
+        p2 = str(nueva.get("p2") or "").strip()
+        if not p1 or not p2:
+            continue
+        tipo = _nombre_tipo_aspecto_visible_2026(
+            nueva.get("tipo"),
+            nueva.get("simbolo"),
+        )
+        clave = (tuple(sorted((p1, p2))), tipo)
+        if clave in vistas:
+            continue
+        vistas.add(clave)
+        descripciones.append(f"el {tipo} entre {p1} y {p2}")
+
+    if not descripciones:
+        return ""
+    if len(descripciones) == 1:
+        return (
+            "La relación nueva que permite formar este rescate es "
+            + descripciones[0]
+            + "."
+        )
+    return (
+        "Las relaciones nuevas que permiten formar este rescate son "
+        + _unir_descripciones_aspectos_nuevos_2026(descripciones)
+        + "."
+    )
+
+
+def corregir_referencia_aspecto_nuevo_rescate_local_2026(
+    texto,
+    figura,
+    aspectos_compactos,
+    posiciones_figura,
+):
+    """
+    Blinda localmente qué arista o aristas nuevas justifican una figura de rescate.
+    Las relaciones salen de la geometría real de ESA figura y del metadato de
+    selección Huber. No reinterpreta y no llama a OpenAI.
+    """
+    if not texto:
+        return texto
+
+    paquete = figura.get("paquete_huber_ia") or {}
+    rol = (
+        figura.get("seleccion_huber_2026")
+        or paquete.get("seleccion_huber_2026")
+        or ""
+    )
+    if rol != "rescate":
+        return texto
+
+    plan = _plan_editorial_figura_2026(
+        figura,
+        aspectos_compactos,
+        posiciones_figura,
+    )
+    nuevas = plan.get("aspectos_nuevos_autoritativos_2026") or []
+    frase_autoritativa = _frase_aspectos_nuevos_rescate_2026(nuevas)
+    if not frase_autoritativa:
+        return texto
+
+    # Solo sustituimos frases que afirman qué elemento ES la novedad técnica.
+    # Si la IA ya explica bien las relaciones pero no las etiqueta como nuevas,
+    # añadimos una única frase breve sin tocar el resto de la interpretación.
+    patron = re.compile(
+        r"(?is)([^.!?\n]*"
+        r"(?:relaci[oó]n(?:es)?\s+nueva(?:s)?|lo\s+nuevo|pieza(?:s)?\s+nueva(?:s)?|"
+        r"novedad(?:\s+importante)?|rescate\s+nace|"
+        r"nace\s+de\s+esa\s+relaci[oó]n)"
+        r"[^.!?\n]*[.!?])"
+    )
+    coincidencias = list(patron.finditer(texto))
+
+    if coincidencias:
+        salida = texto
+        ya_insertada = False
+        for coincidencia in reversed(coincidencias):
+            reemplazo = "" if ya_insertada else frase_autoritativa
+            salida = (
+                salida[:coincidencia.start()]
+                + reemplazo
+                + salida[coincidencia.end():]
+            )
+            ya_insertada = True
+        salida = re.sub(r"[ \t]{2,}", " ", salida)
+        salida = re.sub(r"\n[ \t]+\n", "\n\n", salida)
+        salida = re.sub(
+            r"(?<=[.!?])(?=[A-ZÁÉÍÓÚÜÑ])",
+            " ",
+            salida,
+        )
+        return salida.strip()
+
+    return texto.rstrip() + " " + frase_autoritativa
+
+
+def blindar_aspectos_nuevos_rescate_interpretaciones_2026(
+    contexto_compacto,
+    interpretaciones_figuras,
+):
+    """
+    Reaplica el dato determinista DESPUÉS de cualquier reparación condicional.
+    Así una tercera llamada no puede borrar ni reasignar la novedad del rescate.
+    """
+    if not isinstance(interpretaciones_figuras, dict):
+        return interpretaciones_figuras
+
+    figuras = (
+        contexto_compacto.get("figuras", {})
+        .get("arquitectura", {})
+        .get("figuras", [])
+        or []
+    )
+    posiciones_natales = (
+        contexto_compacto.get("figuras", {})
+        .get("posiciones_natales", {})
+        or {}
+    )
+    aspectos_relevantes = (
+        contexto_compacto.get("figuras", {})
+        .get("aspectos_relevantes", [])
+        or []
+    )
+
+    for figura in figuras:
+        id_figura = str(figura.get("id_figura") or "").strip()
+        if not id_figura or id_figura not in interpretaciones_figuras:
+            continue
+        paquete = figura.get("paquete_huber_ia") or {}
+        rol = figura.get("seleccion_huber_2026") or paquete.get("seleccion_huber_2026") or ""
+        if rol != "rescate":
+            continue
+
+        aspectos_figura = Figuras.obtener_aspectos_de_figura(figura, aspectos_relevantes)
+        aspectos_compactos = [
+            {
+                "p1": a.get("p1"), "p2": a.get("p2"),
+                "tipo": a.get("tipo"), "simbolo": a.get("simbolo"),
+                "orbe": a.get("orbe"),
+            }
+            for a in aspectos_figura
+        ]
+        puntos = (
+            paquete.get("puntos_editoriales_permitidos")
+            or figura.get("puntos_editoriales_familia_huber_2026")
+            or figura.get("puntos", [])
+            or []
+        )
+        posiciones_figura = {
+            str(p): posiciones_natales.get(p)
+            for p in puntos
+            if isinstance(posiciones_natales.get(p), dict)
+        }
+
+        contenido = interpretaciones_figuras.get(id_figura) or {}
+        interpretacion = str(contenido.get("interpretacion") or "").strip()
+        if not interpretacion:
+            continue
+        contenido["interpretacion"] = corregir_referencia_aspecto_nuevo_rescate_local_2026(
+            interpretacion,
+            figura,
+            aspectos_compactos,
+            posiciones_figura,
+        )
+        interpretaciones_figuras[id_figura] = contenido
+
+    return interpretaciones_figuras
+
+
+def blindar_aspectos_nuevos_rescate_informe_final_2026(texto, contexto_compacto):
+    """
+    Último blindaje, DESPUÉS de la auditoría OpenAI y ANTES de validar/maquetar.
+    Localiza cada bloque por su título técnico y corrige solo su interpretación.
+    No añade ninguna llamada API.
+    """
+    if not texto:
+        return texto
+
+    figuras = (
+        contexto_compacto.get("figuras", {})
+        .get("arquitectura", {})
+        .get("figuras", [])
+        or []
+    )
+    posiciones_natales = (
+        contexto_compacto.get("figuras", {})
+        .get("posiciones_natales", {})
+        or {}
+    )
+    aspectos_relevantes = (
+        contexto_compacto.get("figuras", {})
+        .get("aspectos_relevantes", [])
+        or []
+    )
+
+    salida = texto
+    for figura in figuras:
+        paquete = figura.get("paquete_huber_ia") or {}
+        rol = figura.get("seleccion_huber_2026") or paquete.get("seleccion_huber_2026") or ""
+        if rol != "rescate":
+            continue
+
+        titulo = normalizar_titulo_tecnico_figura(figura.get("titulo_salida") or "")
+        if not titulo:
+            continue
+        marcador = f"**{titulo}**"
+        inicio_titulo = salida.find(marcador)
+        if inicio_titulo < 0:
+            continue
+        inicio = inicio_titulo + len(marcador)
+
+        # El bloque termina ante el siguiente título humano de figura o sección global.
+        candidatos_fin = []
+        for patron in ("\n### ", "\n## "):
+            pos = salida.find(patron, inicio)
+            if pos >= 0:
+                candidatos_fin.append(pos)
+        fin = min(candidatos_fin) if candidatos_fin else len(salida)
+
+        cuerpo = salida[inicio:fin]
+        aspectos_figura = Figuras.obtener_aspectos_de_figura(figura, aspectos_relevantes)
+        aspectos_compactos = [
+            {
+                "p1": a.get("p1"), "p2": a.get("p2"),
+                "tipo": a.get("tipo"), "simbolo": a.get("simbolo"),
+                "orbe": a.get("orbe"),
+            }
+            for a in aspectos_figura
+        ]
+        puntos = (
+            paquete.get("puntos_editoriales_permitidos")
+            or figura.get("puntos_editoriales_familia_huber_2026")
+            or figura.get("puntos", [])
+            or []
+        )
+        posiciones_figura = {
+            str(p): posiciones_natales.get(p)
+            for p in puntos
+            if isinstance(posiciones_natales.get(p), dict)
+        }
+        cuerpo_corregido = corregir_referencia_aspecto_nuevo_rescate_local_2026(
+            cuerpo.strip(),
+            figura,
+            aspectos_compactos,
+            posiciones_figura,
+        )
+        if cuerpo_corregido != cuerpo.strip():
+            prefijo = "\n\n" if cuerpo.startswith("\n\n") else ("\n" if cuerpo.startswith("\n") else "")
+            sufijo = "\n" if cuerpo.endswith("\n") else ""
+            salida = salida[:inicio] + prefijo + cuerpo_corregido + sufijo + salida[fin:]
+
+    return salida
+
+
+def _vertices_colectivos_2026(figura):
+    """
+    V52 · Devuelve todos los vértices colectivos de una figura: Stellium y
+    Conjunción. La fuente principal es ``vertices``; si esa serialización se
+    ha aplanado durante el pipeline, reconstruye el vértice desde las
+    etiquetas técnicas ya calculadas por Python. No inventa miembros.
+    """
+    encontrados = []
+
+    def miembros_desde(valor):
+        if valor is None:
+            return []
+        if isinstance(valor, str):
+            s = valor.strip()
+            return [s] if s else []
+        if isinstance(valor, dict):
+            for clave in ("miembros", "puntos", "componentes", "nombres"):
+                dato = valor.get(clave)
+                if dato:
+                    return miembros_desde(dato)
+            return []
+        if isinstance(valor, (list, tuple, set, frozenset)):
+            salida = []
+            for sub in valor:
+                salida.extend(miembros_desde(sub))
+            return salida
+        return []
+
+    def registrar(tipo, miembros):
+        tipo_cf = str(tipo or "").strip().casefold()
+        if "stellium" in tipo_cf:
+            tipo_canonico = "Stellium"
+        elif "conjunción" in tipo_cf or "conjuncion" in tipo_cf:
+            tipo_canonico = "Conjunción"
+        else:
+            return
+
+        limpios = []
+        for miembro in miembros_desde(miembros):
+            miembro = str(miembro).strip()
+            if not miembro or miembro.casefold() in {
+                "stellium", "punto", "conjunción", "conjuncion"
+            }:
+                continue
+            if miembro not in limpios:
+                limpios.append(miembro)
+        if len(limpios) < 2:
+            return
+
+        clave = (tipo_canonico, tuple(limpios))
+        if any((v.get("tipo"), tuple(v.get("miembros", []))) == clave for v in encontrados):
+            return
+        encontrados.append({
+            "tipo": tipo_canonico,
+            "miembros": limpios,
+            "regla_interpretativa": (
+                "Este vértice es una unidad indivisible. Si un aspecto concreto "
+                "de la figura pasa por uno de sus miembros, ese miembro es solo "
+                "la puerta geométrica de contacto: la interpretación debe explicar "
+                "cómo entra en la figura el conjunto completo."
+            ),
+        })
+
+    # 1) Fuente estructural normal.
+    for vertice in (figura.get("vertices", []) or []):
+        if isinstance(vertice, dict):
+            tipo = (
+                vertice.get("tipo") or vertice.get("clase")
+                or vertice.get("nombre_tipo") or ""
+            )
+            registrar(tipo, vertice)
+        elif isinstance(vertice, (list, tuple)) and len(vertice) >= 2:
+            registrar(vertice[0], vertice[1])
+
+    # 2) Fallback determinista V52. Algunas fases compactan ``vertices`` pero
+    # conservan literalmente la etiqueta técnica calculada por Python, p. ej.
+    # "Stellium (Sol + Mercurio + Marte)" o
+    # "Conjunción (Saturno + Nodo Norte)". La usamos solo para recuperar la
+    # estructura perdida, nunca para deducir geometría nueva.
+    textos_tecnicos = []
+    for clave in ("titulo_salida", "nombre_canonico", "tipo"):
+        valor = figura.get(clave)
+        if valor:
+            textos_tecnicos.append(str(valor))
+    paquete = figura.get("paquete_huber_ia") or {}
+    if isinstance(paquete, dict):
+        for clave in ("titulo_salida", "nombre_canonico", "tipo"):
+            valor = paquete.get(clave)
+            if valor:
+                textos_tecnicos.append(str(valor))
+
+    patron = re.compile(
+        r"\b(Stellium|Conjunci[oó]n)\s*\(([^()]+)\)",
+        flags=re.IGNORECASE,
+    )
+    for texto in textos_tecnicos:
+        for match in patron.finditer(texto):
+            miembros = [
+                parte.strip()
+                for parte in re.split(r"\s*\+\s*|\s*·\s*", match.group(2))
+                if parte.strip()
+            ]
+            registrar(match.group(1), miembros)
+
+    return encontrados
+
+def _vertices_stellium_colectivos_2026(figura):
+    """Compatibilidad V50: devuelve solo Stelliums."""
+    return [
+        vertice
+        for vertice in _vertices_colectivos_2026(figura)
+        if vertice.get("tipo") == "Stellium"
+    ]
+
+
+V60_INTEGRACION_GLOBAL_VERTICES_COLECTIVOS = True
+
+def _contactos_vertices_colectivos_2026(figura, aspectos_figura):
+    """V60 · Explicita qué miembro es puerta geométrica de un contacto externo.
+
+    No crea aspectos: parte exclusivamente de los aspectos reales de la figura.
+    Sirve para que la IA interprete el efecto sobre TODO el vértice colectivo,
+    no como si el miembro-puerta estuviera aislado.
+    """
+    salida = []
+    for vertice in _vertices_colectivos_2026(figura):
+        miembros = [str(x) for x in (vertice.get("miembros") or [])]
+        conjunto = set(miembros)
+        for aspecto in (aspectos_figura or []):
+            p1, p2 = aspecto.get("p1"), aspecto.get("p2")
+            if p1 in conjunto and p2 not in conjunto:
+                puerta, externo = p1, p2
+            elif p2 in conjunto and p1 not in conjunto:
+                puerta, externo = p2, p1
+            else:
+                continue
+            salida.append({
+                "tipo_vertice": vertice.get("tipo"),
+                "miembros_vertice": miembros,
+                "puerta_geometrica": puerta,
+                "punto_externo": externo,
+                "aspecto": aspecto.get("tipo"),
+                "simbolo": aspecto.get("simbolo"),
+                "regla_interpretativa": (
+                    f"{puerta} es solo la puerta geométrica del contacto con {externo}. "
+                    "La interpretación debe explicar cómo ese contacto modifica o activa "
+                    "la combinación funcional de TODOS los miembros del vértice; no basta "
+                    "con nombrarlos ni con interpretar la puerta como planeta aislado."
+                ),
+            })
+    return salida
+
+
+def _posiciones_vertices_colectivos_2026(figura, posiciones_natales):
+    """
+    Mapa autoritativo de signo/casa de cada miembro de cada vértice colectivo.
+    """
+    salida = []
+    posiciones_natales = posiciones_natales or {}
+
+    for vertice in _vertices_colectivos_2026(figura):
+        posiciones_miembros = {}
+
+        for miembro in vertice.get("miembros", []) or []:
+            datos = posiciones_natales.get(miembro)
+            if not isinstance(datos, dict):
+                continue
+            posiciones_miembros[miembro] = {
+                "signo": datos.get("signo"),
+                "casa": datos.get("casa"),
+            }
+
+        signos = {
+            str(datos.get("signo")).strip()
+            for datos in posiciones_miembros.values()
+            if datos.get("signo") not in (None, "")
+        }
+        casas = {
+            str(datos.get("casa")).strip()
+            for datos in posiciones_miembros.values()
+            if datos.get("casa") not in (None, "")
+        }
+
+        salida.append({
+            "tipo": vertice.get("tipo"),
+            "miembros": vertice.get("miembros", []),
+            "posiciones_miembros": posiciones_miembros,
+            "todos_mismo_signo": len(signos) <= 1,
+            "todos_misma_casa": len(casas) <= 1,
+            "signos_presentes": sorted(signos),
+            "casas_presentes": sorted(casas),
+            "regla": (
+                "No atribuir un único signo o una única casa al vértice colectivo "
+                "salvo que todos sus miembros compartan literalmente esa posición."
+            ),
+        })
+
+    return salida
+
+
+def _incumple_vertice_colectivo_2026(figura, interpretacion):
+    """
+    Comprueba que Stellium y Conjunción se mantengan como vértices colectivos.
+    """
+    vertices = _vertices_colectivos_2026(figura)
+    if not vertices:
+        return False, []
+
+    cuerpo = str(interpretacion or "")
+    cuerpo_cf = cuerpo.casefold()
+    faltantes = []
+
+    for vertice in vertices:
+        tipo = str(vertice.get("tipo") or "")
+        miembros = vertice.get("miembros", []) or []
+
+        if tipo == "Stellium":
+            if "stellium" not in cuerpo_cf:
+                faltantes.append("mención explícita del Stellium")
+        elif tipo == "Conjunción":
+            if "conjunción" not in cuerpo_cf and "conjuncion" not in cuerpo_cf:
+                faltantes.append(
+                    "mención explícita de la Conjunción "
+                    + " + ".join(str(m) for m in miembros)
+                )
+
+        for miembro in miembros:
+            if not re.search(
+                rf"(?<!\w){re.escape(str(miembro))}(?!\w)",
+                cuerpo,
+                flags=re.IGNORECASE,
+            ):
+                faltantes.append(str(miembro))
+
+    unicos = []
+    for item in faltantes:
+        if item not in unicos:
+            unicos.append(item)
+
+    return bool(unicos), unicos
+
+
+def blindar_mencion_vertices_colectivos_local_2026(figura, interpretacion):
+    """
+    V53 · Fallback determinista sin llamadas OpenAI.
+
+    Si una reparación de IA sigue reduciendo un Stellium o una Conjunción
+    a uno de sus miembros, antepone una frase mínima que conserva el vértice
+    colectivo completo. No interpreta aspectos ni inventa posiciones: solo
+    explicita la unidad estructural ya calculada por Python.
+    """
+    texto = str(interpretacion or "").strip()
+    vertices = _vertices_colectivos_2026(figura)
+    if not vertices:
+        return texto
+
+    cuerpo_cf = texto.casefold()
+    prefijos = []
+
+    for vertice in vertices:
+        tipo = str(vertice.get("tipo") or "").strip()
+        miembros = [str(m).strip() for m in (vertice.get("miembros") or []) if str(m).strip()]
+        if len(miembros) < 2:
+            continue
+
+        falta_tipo = False
+        if tipo == "Stellium":
+            falta_tipo = "stellium" not in cuerpo_cf
+        elif tipo == "Conjunción":
+            falta_tipo = ("conjunción" not in cuerpo_cf and "conjuncion" not in cuerpo_cf)
+
+        faltan_miembros = [
+            m for m in miembros
+            if not re.search(rf"(?<!\w){re.escape(m)}(?!\w)", texto, flags=re.IGNORECASE)
+        ]
+
+        if not falta_tipo and not faltan_miembros:
+            continue
+
+        if tipo == "Stellium":
+            etiqueta = "El Stellium de " + ", ".join(miembros[:-1]) + (" y " + miembros[-1] if len(miembros) > 1 else miembros[0])
+        elif tipo == "Conjunción":
+            etiqueta = "La Conjunción de " + ", ".join(miembros[:-1]) + (" y " + miembros[-1] if len(miembros) > 1 else miembros[0])
+        else:
+            continue
+
+        # V76 · El fallback sigue protegiendo la integridad técnica del vértice,
+        # pero evita la fórmula mecánica que se repetía literalmente en el PDF.
+        # Es una mención mínima; la interpretación humana debe venir de la IA.
+        if tipo == "Stellium":
+            frase = etiqueta + " tiende a activarse como un bloque conjunto."
+        else:
+            frase = etiqueta + " actúa aquí de forma conjunta."
+        prefijos.append(frase)
+
+    if not prefijos:
+        return texto
+
+    return (" ".join(prefijos) + (" " if texto else "") + texto).strip()
+
+
+def _incumple_stellium_colectivo_2026(figura, interpretacion):
+    """Compatibilidad V50: desde V51 valida todos los vértices colectivos."""
+    return _incumple_vertice_colectivo_2026(figura, interpretacion)
+
+
+def _incumple_posicion_vertice_colectivo_2026(
+    figura,
+    interpretacion,
+    posiciones_natales,
+):
+    """
+    Detecta atribuciones inequívocas de un único signo/casa a un Stellium o
+    Conjunción cuyos miembros no comparten esa posición.
+    """
+    cuerpo = str(interpretacion or "")
+    if not cuerpo:
+        return False, []
+
+    incidencias = []
+    vertices = _posiciones_vertices_colectivos_2026(
+        figura,
+        posiciones_natales,
+    )
+
+    signos_zodiaco = (
+        "Aries", "Tauro", "Géminis", "Geminis", "Cáncer", "Cancer",
+        "Leo", "Virgo", "Libra", "Escorpio", "Sagitario",
+        "Capricornio", "Acuario", "Piscis",
+    )
+    patron_signos = "|".join(re.escape(signo) for signo in signos_zodiaco)
+    frases = re.split(r"(?<=[.!?])\s+|\n+", cuerpo)
+
+    for vertice in vertices:
+        tipo = vertice.get("tipo") or ""
+        etiqueta = "stellium" if tipo == "Stellium" else r"conjunci[oó]n"
+
+        for frase in frases:
+            frase = frase.strip()
+            if not frase:
+                continue
+            if not re.search(rf"\b{etiqueta}\b", frase, re.IGNORECASE):
+                continue
+
+            # Si la frase explicita una excepción/distribución, es válida.
+            if re.search(
+                r"\b(?:la mayor parte|mayoritariamente|mientras|excepto|salvo|"
+                r"aunque|pero|por su parte|en cambio)\b",
+                frase,
+                re.IGNORECASE,
+            ):
+                continue
+
+            if not vertice.get("todos_mismo_signo", True):
+                if re.search(
+                    rf"\b{etiqueta}\b[^.!?]{{0,180}}"
+                    rf"(?:est[aá]|se encuentra|se sit[uú]a|se concentra|"
+                    rf"concentrad[oa]|ubicad[oa])?[^.!?]{{0,50}}"
+                    rf"\ben\s+(?:el\s+signo\s+de\s+)?(?:{patron_signos})\b",
+                    frase,
+                    re.IGNORECASE,
+                ):
+                    signos_reales_mencionados = [
+                        signo
+                        for signo in vertice.get("signos_presentes", [])
+                        if re.search(
+                            rf"(?<!\w){re.escape(signo)}(?!\w)",
+                            frase,
+                            re.IGNORECASE,
+                        )
+                    ]
+                    if len(set(signos_reales_mencionados)) < 2:
+                        incidencias.append(
+                            f"{tipo}: signo colectivo incorrecto o incompleto → {frase}"
+                        )
+
+            if not vertice.get("todos_misma_casa", True):
+                if re.search(
+                    rf"\b{etiqueta}\b[^.!?]{{0,180}}"
+                    rf"(?:est[aá]|se encuentra|se sit[uú]a|se concentra|"
+                    rf"concentrad[oa]|ubicad[oa])?[^.!?]{{0,50}}"
+                    rf"\ben\s+(?:la\s+)?casa\s+\d+\b",
+                    frase,
+                    re.IGNORECASE,
+                ):
+                    casas_reales_mencionadas = [
+                        casa
+                        for casa in vertice.get("casas_presentes", [])
+                        if re.search(
+                            rf"\bcasa\s+{re.escape(str(casa))}\b",
+                            frase,
+                            re.IGNORECASE,
+                        )
+                    ]
+                    if len(set(casas_reales_mencionadas)) < 2:
+                        incidencias.append(
+                            f"{tipo}: casa colectiva incorrecta o incompleta → {frase}"
+                        )
+
+    unicas = []
+    for item in incidencias:
+        if item not in unicas:
+            unicas.append(item)
+
+    return bool(unicas), unicas
 
 
 def generar_interpretaciones_figuras_estructuradas(
@@ -6730,15 +9645,17 @@ def generar_interpretaciones_figuras_estructuradas(
             })
 
         paquete_figura = figura.get("paquete_huber_ia") or {}
-        puntos_editoriales_figura = (
-            paquete_figura.get("puntos_editoriales_permitidos")
-            or figura.get("puntos_editoriales_familia_huber_2026")
-            or figura.get("puntos", [])
-            or []
+
+        # V57 · Para la interpretación INDIVIDUAL de una figura, las posiciones
+        # y relaciones visibles deben pertenecer a su geometría real. La familia
+        # editorial no puede ampliar los puntos técnicos de este bloque.
+        puntos_geometricos_figura = _puntos_geometricos_reales_figura_2026(
+            figura
         )
+        puntos_editoriales_figura = list(puntos_geometricos_figura)
 
         posiciones_figura = {}
-        for punto in puntos_editoriales_figura:
+        for punto in puntos_geometricos_figura:
             datos_posicion = posiciones_natales.get(punto)
             if datos_posicion:
                 posiciones_figura[punto] = {
@@ -6752,6 +9669,14 @@ def generar_interpretaciones_figuras_estructuradas(
             figura=figura,
             aspectos_compactos=aspectos_compactos,
             posiciones_figura=posiciones_figura,
+        )
+        # V57 · Este campo pasa a significar literalmente "puntos que pueden
+        # nombrarse dentro de ESTA figura". No incluye variantes de la familia.
+        dato["puntos_editoriales_permitidos"] = list(
+            puntos_geometricos_figura
+        )
+        dato["puntos_geometricos_reales_2026"] = list(
+            puntos_geometricos_figura
         )
         dato = _enriquecer_dato_figura_fase13(
             dato,
@@ -6768,6 +9693,24 @@ def generar_interpretaciones_figuras_estructuradas(
             figura,
             aspectos_compactos,
             posiciones_figura,
+        )
+        dato["vertices_colectivos_obligatorios_2026"] = (
+            _vertices_colectivos_2026(figura)
+        )
+        dato["posiciones_vertices_colectivos_2026"] = (
+            _posiciones_vertices_colectivos_2026(
+                figura,
+                posiciones_natales,
+            )
+        )
+        dato["contactos_vertices_colectivos_2026"] = (
+            _contactos_vertices_colectivos_2026(
+                figura,
+                aspectos_compactos,
+            )
+        )
+        dato["vertices_stellium_colectivos_obligatorios_2026"] = (
+            _vertices_stellium_colectivos_2026(figura)
         )
         dato["orden_editorial_arte_encarnarte_2026"] = {
             "posicion": (
@@ -6786,14 +9729,12 @@ def generar_interpretaciones_figuras_estructuradas(
         # Refuerzo determinista del aislamiento: además de los puntos
         # permitidos, indicamos qué nombres de puntos de ESTA carta
         # están expresamente fuera de la figura.
+        # V57 · Contrato técnico cerrado sobre la geometría REAL.
+        # Los puntos de variantes de la misma familia editorial quedan fuera.
         puntos_permitidos = {
             str(punto)
-            for punto in (
-                dato.get("puntos_editoriales_permitidos")
-                or puntos_editoriales_figura
-                or figura.get("puntos", [])
-                or []
-            )
+            for punto in puntos_geometricos_figura
+            if str(punto).strip()
         }
         dato["puntos_permitidos"] = sorted(
             puntos_permitidos
@@ -6804,9 +9745,120 @@ def generar_interpretaciones_figuras_estructuradas(
             if str(punto) not in puntos_permitidos
         )
 
+        # V44 · CONTRATO ESTANCO POR FIGURA
+        # Esta capa resume, junto al propio id_figura, los únicos hechos
+        # técnicos que la IA puede reutilizar al redactar ESTE bloque.
+        # Evita contaminación entre figuras que comparten uno o más vértices.
+        lectura_colores_contrato = _lectura_colores_huber_2026(
+            aspectos_compactos
+        )
+
+        aspectos_permitidos_contrato = []
+        for aspecto in aspectos_compactos:
+            aspectos_permitidos_contrato.append({
+                "p1": aspecto.get("p1"),
+                "p2": aspecto.get("p2"),
+                "tipo": aspecto.get("tipo"),
+                "simbolo": aspecto.get("simbolo"),
+                "orbe": aspecto.get("orbe"),
+                "color_huber": _color_huber_aspecto_2026(aspecto),
+            })
+
+        dato["contrato_aislamiento_figura_2026"] = {
+            "id_figura": figura.get("id_figura"),
+            "puntos_permitidos": sorted(puntos_permitidos),
+            "puntos_geometricos_reales_2026": sorted(puntos_permitidos),
+            "puntos_editoriales_familia_solo_contexto_2026": sorted(
+                {
+                    str(p)
+                    for p in (
+                        paquete_figura.get("puntos_editoriales_permitidos")
+                        or figura.get("puntos_editoriales_familia_huber_2026")
+                        or []
+                    )
+                    if str(p).strip() and str(p) not in puntos_permitidos
+                }
+            ),
+            "puntos_prohibidos": dato["puntos_prohibidos"],
+            "aspectos_permitidos": aspectos_permitidos_contrato,
+            "colores_huber_presentes": lectura_colores_contrato.get(
+                "colores_presentes",
+                [],
+            ),
+            "relaciones_rojas": (
+                lectura_colores_contrato.get("rojo", {})
+                .get("relaciones", [])
+            ),
+            "relaciones_azules": (
+                lectura_colores_contrato.get("azul", {})
+                .get("relaciones", [])
+            ),
+            "relaciones_verdes": (
+                lectura_colores_contrato.get("verde", {})
+                .get("relaciones", [])
+            ),
+            "vertices_colectivos_obligatorios_2026": (
+                _vertices_colectivos_2026(figura)
+            ),
+            "posiciones_vertices_colectivos_2026": (
+                _posiciones_vertices_colectivos_2026(
+                    figura,
+                    posiciones_natales,
+                )
+            ),
+            "vertices_stellium_colectivos_obligatorios_2026": (
+                _vertices_stellium_colectivos_2026(figura)
+            ),
+            "regla": (
+                "CONTRATO CERRADO. Para este id_figura no se puede importar "
+                "ningún punto, aspecto, color, signo, casa o retrogradación de "
+                "otro id_figura, aunque ambas figuras compartan vértices. "
+                "Los datos de otras figuras solo pueden servir para evitar "
+                "repeticiones editoriales, nunca como evidencia astrológica "
+                "dentro de este bloque."
+            ),
+        }
+
         datos_figuras.append(dato)
 
     datos_figuras = _anotar_solapamientos_editoriales_2026(datos_figuras)
+
+    # V44 · El contrato de cada figura también queda pegado a su campo de
+    # Structured Output. No cambia el formato de salida, pero reduce la
+    # posibilidad de que el modelo traslade hechos de un id_figura a otro.
+    datos_por_id_para_schema = {
+        str(dato.get("id_figura") or "").strip(): dato
+        for dato in datos_figuras
+        if str(dato.get("id_figura") or "").strip()
+    }
+
+    for id_schema, propiedad in propiedades_schema.items():
+        dato_schema = datos_por_id_para_schema.get(id_schema, {})
+        contrato_schema = dato_schema.get(
+            "contrato_aislamiento_figura_2026",
+            {},
+        ) or {}
+
+        puntos_schema = ", ".join(
+            contrato_schema.get("puntos_permitidos", []) or []
+        )
+        colores_schema = ", ".join(
+            contrato_schema.get("colores_huber_presentes", []) or []
+        ) or "ninguno"
+
+        propiedad["description"] = (
+            f"Bloque aislado {id_schema}. Puntos permitidos: {puntos_schema}. "
+            f"Colores Huber presentes: {colores_schema}. No importar puntos, "
+            "aspectos ni colores de otro id_figura."
+        )
+        propiedad["properties"]["titulo_humano"]["description"] = (
+            f"Título humano exclusivo de {id_schema}; no mencionar puntos "
+            "prohibidos ni datos de otra figura."
+        )
+        propiedad["properties"]["interpretacion"]["description"] = (
+            f"Interpretación exclusiva de {id_schema}. Debe respetar literalmente "
+            "contrato_aislamiento_figura_2026 de este bloque."
+        )
 
     instrucciones_biblioteca = instrucciones_biblioteca_astrologica(
         "figuras"
@@ -6846,6 +9898,63 @@ las mismas relaciones. El rol principal/rescate/complementaria es una
 herramienta EDITORIAL de representación geométrica, no una jerarquía
 psicológica.
 
+REGLA V67 · LA FIGURA SE EXPLICA POR LO QUE APORTA A LA PERSONA
+
+El informe debe incluir TODAS las figuras seleccionadas, pero el cuerpo de
+cada bloque NO debe ser una narración técnica de cómo está construida la figura.
+La geometría, los aspectos, los colores Huber, las puertas geométricas y los
+vértices son la BASE INTERNA para razonar; no son el contenido principal que
+debe leer la persona.
+
+Para cada figura responde sobre todo a estas preguntas:
+- ¿qué mecanismo humano concreto añade esta figura a la comprensión de la carta?
+- ¿cómo puede reconocerse ese mecanismo en una situación cotidiana?
+- ¿qué contradicción, recurso, facilidad o forma de respuesta aparece por la
+  combinación COMPLETA de sus puntos?
+- ¿qué aporta esta figura que no haya quedado explicado ya en otra?
+
+ESTRUCTURA NARRATIVA PREFERENTE
+
+1. Abre con la idea humana central. No abras enumerando planetas ni aspectos.
+2. Desarrolla esa idea en dos o tres párrafos claros y concretos.
+3. Incluye una manifestación cotidiana cuando realmente ayude a reconocerla.
+4. Si hace falta situar técnicamente la figura, usa como máximo UNA frase breve
+   de apoyo. Esa frase puede nombrar sus puntos o la relación decisiva, pero no
+   debe iniciar un recorrido línea por línea.
+5. Termina cuando la aportación propia de la figura esté clara. No añadas una
+   moraleja ni vuelvas a resumir la geometría.
+
+EXTENSIÓN EDITORIAL ORIENTATIVA
+
+- figura principal/complementaria con aportación propia amplia: 2–3 párrafos,
+  normalmente unas 140–230 palabras;
+- figura de rescate: normalmente 80–140 palabras y centrada en lo nuevo;
+- si una figura posterior repite gran parte de un mecanismo ya explicado, puede
+  ser más breve, pero NUNCA debe desaparecer.
+
+Estas cifras son orientativas. Prima la claridad y la diferencia real entre
+figuras.
+
+PROHIBIDO COMO FORMA DE REDACCIÓN
+
+No hagas un inventario del tipo:
+"Venus hace cuadratura con..., después Marte hace..., la línea azul..., la verde...".
+No recorras todos los aspectos para demostrar que la figura existe. Python ya
+lo ha demostrado.
+
+Puedes nombrar un aspecto cuando sea imprescindible para entender el mecanismo,
+pero inmediatamente tradúcelo a experiencia humana. El objetivo no es que quien
+lee aprenda la geometría de la figura, sino que entienda PARA QUÉ le sirve saber
+que esa figura está en su carta.
+
+IMPORTANTE SOBRE VÉRTICES COLECTIVOS
+
+Las reglas V51/V60 siguen siendo obligatorias. Simplificar la exposición técnica
+NO autoriza a reducir un Stellium o una Conjunción colectiva al miembro que hace
+contacto geométrico. Usa internamente toda la unidad para construir el significado.
+Si nombras la puerta geométrica, hazlo solo cuando aporte claridad y explica la
+repercusión sobre el bloque completo sin convertirlo en una clase técnica.
+
 ORDEN EDITORIAL OBLIGATORIO
 
 DATOS_DE_LAS_FIGURAS ya está ordenado según el orden editorial maestro
@@ -6858,6 +9967,56 @@ Ese orden debe influir también en la coordinación del texto:
 - principal/rescate NO cambia la posición física de la figura;
 - el Stellium complementario queda después de la secuencia de 46 porque
   no forma parte de ese catálogo.
+
+REGLA V51 · STELLIUMS Y CONJUNCIONES COMO VÉRTICES COLECTIVOS
+
+En cada elemento de DATOS_DE_LAS_FIGURAS consulta obligatoriamente:
+- vertices_colectivos_obligatorios_2026
+- posiciones_vertices_colectivos_2026
+- contactos_vertices_colectivos_2026
+
+Si aparece un Stellium o una Conjunción:
+- interpreta SIEMPRE el conjunto completo como vértice;
+- no sustituyas el conjunto por el miembro que sostiene geométricamente una línea;
+- ese miembro puede precisarse solo como punto de entrada, por ejemplo "a través de Venus";
+  NO uses las expresiones "puerta geométrica" ni "vértice colectivo" en el texto visible;
+- debe quedar claro que la relación afecta al bloque completo;
+- integra todos los miembros del conjunto en el bloque.
+
+REGLA V60 · IMPACTO GLOBAL DEL VÉRTICE COLECTIVO
+
+Consulta contactos_vertices_colectivos_2026. Cuando un aspecto llega al Stellium
+o a una Conjunción a través de uno de sus miembros, NO interpretes ese aspecto
+como si afectara solo a ese planeta. El miembro indicado como puerta_geometrica
+explica por dónde entra el contacto, pero el significado debe construirse con la
+combinación completa de funciones de TODOS los miembros del vértice.
+
+No basta con enumerar los otros miembros al principio o al final. Debes explicar
+qué cambia en el mecanismo conjunto. Por ejemplo, Venus dentro de un Stellium
+Venus + Marte + Mercurio + Nodo Sur no equivale a Venus aislado: un contacto que
+entre por Venus debe leerse también por cómo repercute en deseo/vínculo, acción,
+pensamiento y patrón nodal actuando conjuntamente, ajustado siempre a los
+planetas reales de ESE Stellium. No uses este ejemplo si esos puntos no están
+en la figura.
+
+POSICIÓN:
+- no atribuyas al Stellium o a la Conjunción un único signo o una única casa
+  salvo que todos sus miembros compartan literalmente esa posición;
+- si los miembros atraviesan signos o casas, describe la distribución real
+  o indica la concentración mayoritaria y la excepción;
+- posiciones_vertices_colectivos_2026 es autoritativo.
+
+REGLA CRÍTICA · NOMBRE Y TAMAÑO DEL TRIÁNGULO
+
+Si la figura actual es "Triángulo de aprendizaje pequeño",
+"Triángulo de aprendizaje mediano" o "Triángulo de aprendizaje grande",
+cuando menciones su tipo dentro de la interpretación debes usar EXACTAMENTE
+ese mismo nombre canónico.
+
+Nunca llames "pequeño" a un triángulo mediano o grande.
+Nunca llames "mediano" a uno pequeño o grande.
+Nunca llames "grande" a uno pequeño o mediano.
+Python corregirá además esta denominación de forma determinista antes del PDF.
 
 PROFUNDIDAD DIFERENCIAL OBLIGATORIA
 
@@ -7010,10 +10169,19 @@ como foco del bloque.
 
 Si contiene UNA sola relación nueva:
 - esa relación es la razón de existir del bloque;
+- el campo plan_interpretativo_huber_2026.aspecto_nuevo_autoritativo_unico_2026
+  es el dato cerrado y prioritario para identificar QUÉ aspecto es nuevo;
+- identifica sus DOS extremos y su TIPO de aspecto exactamente como aparecen en
+  plan_interpretativo_huber_2026.aspectos_nuevos_autoritativos_2026;
+- incluye una frase inequívoca equivalente a:
+  "La relación nueva que permite formar este rescate es el [TIPO] entre [P1] y [P2]."
+  usando SOLO los valores autoritativos de Python;
+- está PROHIBIDO llamar "nuevo", "nueva", "lo nuevo", "pieza nueva" o "relación nueva"
+  a cualquier otro aspecto de la figura, aunque forme parte de su geometría;
 - explica qué añade esa relación a lo ya contado;
 - las relaciones reutilizadas solo sirven para situarla;
 - no vuelvas a recorrer todos los vértices;
-- no vuelvas a explicar el Stellium si ya funciona como vértice conocido;
+- no repitas desde cero la definición general de un vértice colectivo, pero CONSÉRVALO siempre completo: esto se aplica tanto a Stellium como a Conjunción; si la relación nueva pasa por uno de sus miembros, explica que el conjunto completo entra en esa relación a través de ese miembro;
 - no cierres con el mismo consejo que una figura anterior.
 
 El lector debería poder terminar el bloque pensando:
@@ -7028,6 +10196,25 @@ En un rescate con UNA sola línea nueva:
 No vuelvas a describir uno por uno los demás vértices reutilizados.
 
 La extensión de rescate es deliberadamente menor.
+
+FIGURAS PROPIAS DE ARQUITECTURA INTERNA
+
+El campo "sistema" distingue las figuras Huber canónicas de las
+estructuras complementarias propias de Arquitectura Interna.
+
+Si sistema != "Huber" o es_figura_huber == false:
+- NO atribuyas esa figura a Huber;
+- NO escribas "Huber entiende", "Huber describe", "Huber considera",
+  "según Huber" ni equivalentes;
+- no presentes su nombre como una figura del catálogo Huber;
+- interpreta únicamente la geometría y los aspectos reales calculados
+  por Python;
+- puedes usar la biblioteca para comprender los planetas, aspectos,
+  signos y casas implicados, pero no para convertir la estructura
+  complementaria en una figura Huber inexistente;
+- si además seleccion_huber_2026 == "rescate", trata el bloque como
+  aportación complementaria y céntrate en la relación nueva que justifica
+  su aparición.
 
 FUENTES AUTORITATIVAS
 
@@ -7162,14 +10349,48 @@ STELLIUMS Y CONJUNCIONES COMO VÉRTICES COLECTIVOS
 Cuando "vertices" contenga un elemento con tipo "Stellium" o
 "Conjunción", ese vértice se interpreta como UNA UNIDAD.
 
+REGLA DE POSICIÓN DEL VÉRTICE COLECTIVO
+
+No presupongas que todos los integrantes de un Stellium o Conjunción
+comparten signo y casa. Comprueba las posiciones individuales incluidas
+en los datos de la figura/contexto. Solo puedes decir que TODO el bloque
+está en un signo y una casa si TODOS sus integrantes comparten ambos.
+
+Si el bloque atraviesa signos o casas, descríbelo con precisión: indica
+dónde se concentra la mayoría y nombra los miembros que quedan en otra
+posición. Nunca extiendas al conjunto el signo/casa del planeta que actuó
+como representante geométrico.
+
 No reduzcas el vértice al planeta concreto que permitió detectar
 geométricamente la figura.
+
+REGLA V50 · EL STELLIUM VA SIEMPRE JUNTO
+
+Cuando una figura tenga un Stellium como vértice colectivo:
+- el Stellium completo es el vértice REAL de la interpretación;
+- el planeta concreto que forma una línea con otro vértice es solo la
+  PUERTA GEOMÉTRICA por la que ese Stellium entra en esa relación;
+- primero explica qué aporta el bloque completo a ESA figura;
+- después puedes precisar: "a través de Venus...", "a través de Marte...",
+  etc., para describir el aspecto técnico concreto;
+- nunca sustituyas el Stellium por ese miembro;
+- nunca construyas la tesis de la figura únicamente con el miembro
+  que sostiene la línea;
+- menciona en el cuerpo de la interpretación a TODOS los integrantes
+  del Stellium al menos una vez y deja claro que actúan como una unidad.
 
 Ejemplo:
 si el vértice es:
 Stellium [Mercurio, Venus, Marte, Nodo Sur]
 
-no interpretes Venus como si estuviera sola.
+y la línea técnica es Venus–Neptuno, NO interpretes:
+"Venus se relaciona con Neptuno..." como si Venus fuera el vértice entero.
+
+Formula:
+"El Stellium de Mercurio, Venus, Marte y Nodo Sur entra en esta parte
+de la figura a través de Venus, que forma [aspecto] con Neptuno..."
+y explica cómo esa relación afecta al bloque completo.
+
 Explica cómo Mercurio, Venus, Marte y Nodo Sur forman juntos
 ese vértice de la figura.
 
@@ -7227,16 +10448,43 @@ La IA traduce SOLO esos datos a una experiencia humana comprensible.
 
 AISLAMIENTO ESTRICTO
 
-Cada figura se interpreta con aislamiento ASTROLÓGICO: solo puede usar sus
-propios puntos y datos. Pero la redacción debe estar COORDINADA editorialmente
-con las demás figuras para no repetir el mismo aspecto o la misma idea central.
+Cada figura se interpreta con aislamiento ASTROLÓGICO absoluto: solo puede usar
+sus propios puntos y datos. La coordinación con las demás figuras es EXCLUSIVAMENTE
+editorial (evitar repeticiones de enfoque o de redacción) y NUNCA autoriza a tomar
+de otra figura un planeta, nodo, ángulo, aspecto, color, signo, casa, retrogradación
+o relación técnica.
 
-Cada figura se interpreta exclusivamente con los puntos incluidos en ella.
+REGLA DE COMPARTIMENTOS ESTANCOS
+
+Trabaja cada id_figura como si los datos astrológicos de los demás id_figura no
+existieran. Si dos figuras comparten uno, dos o más vértices, NO completes la figura
+actual con el punto distinto de la otra. No reutilices tampoco sus aspectos o colores.
+
+El campo "contrato_aislamiento_figura_2026" es la autoridad inmediata y cerrada
+para ESA figura. Antes de redactar titulo_humano e interpretacion:
+- lee su id_figura;
+- usa solo "puntos_permitidos";
+- si nombras un aspecto, debe estar en "aspectos_permitidos";
+- si nombras rojo, azul o verde, ese color debe estar en
+  "colores_huber_presentes" y la relación concreta debe figurar en la lista de
+  relaciones de ese color;
+- todo nombre incluido en "puntos_prohibidos" queda fuera de ese bloque, aunque
+  aparezca en una figura anterior o posterior de esta misma petición.
+
+No arrastres una relación porque dos figuras se parezcan. Por ejemplo, si una figura
+contiene A–B–C y otra A–B–D, al redactar la segunda C está prohibido y al redactar
+la primera D está prohibido. Compartir A y B no fusiona las figuras.
+
+Cada figura se interpreta exclusivamente con los puntos incluidos en ella o, cuando
+Python lo indique expresamente, con los puntos editoriales permitidos de su mismo
+bloque estructural.
 
 Para CADA figura:
-- "puntos_permitidos" es la lista cerrada de nombres que sí puedes mencionar;
-  cuando exista una familia estructural, esta lista incluye también los puntos
-  de sus variantes integradas porque forman parte del MISMO bloque editorial;
+- "puntos_permitidos" es la lista cerrada de nombres que sí puedes mencionar
+  dentro de ESA figura individual y coincide con su geometría real;
+- una familia editorial NO autoriza a importar puntos de una variante distinta;
+  esos puntos pueden existir como contexto interno de familia, pero NO pueden
+  aparecer como vértices, aspectos, líneas ni relaciones de ESTA figura;
 - "puntos_prohibidos" contiene nombres presentes en la carta que NO pertenecen
   a esa figura y que NO deben aparecer ni en titulo_humano ni en interpretacion.
 
@@ -7245,8 +10493,32 @@ No menciones ningún planeta, ángulo, nodo o punto fuera de
 Antes de devolver cada objeto, comprueba literalmente que ninguno de los
 nombres de "puntos_prohibidos" aparece en sus dos campos de salida.
 
+AUDITORÍA CRUZADA OBLIGATORIA ANTES DE CERRAR CADA id_figura
+1. Extrae mentalmente todos los nombres astrológicos que has escrito.
+2. Comprueba que todos están en puntos_permitidos de ESE id_figura.
+3. Comprueba cada pareja/aspecto citado contra aspectos_permitidos de ESE id_figura.
+4. Comprueba cada palabra rojo/azul/verde contra colores_huber_presentes y contra
+   la relación concreta asignada a ese color.
+5. Si recuerdas un dato procedente de otra figura pero no aparece en este contrato,
+   elimínalo antes de devolver el JSON.
+
 No inventes aspectos, casas, relaciones, profesiones, acontecimientos,
 traumas, pareja, historia familiar ni conductas habituales.
+
+REGLA TÉCNICA CRÍTICA SOBRE ASPECTOS
+
+Los nombres y tipos de aspecto incluidos en DATOS_DE_LAS_FIGURAS son
+AUTORITATIVOS. Si mencionas un aspecto entre dos puntos, debes usar EXACTAMENTE
+el tipo que aparece en los datos de esa relación. No sustituyas un aspecto por
+otro parecido ni completes de memoria un nombre técnico.
+
+En este programa las figuras trabajan únicamente con los aspectos que Python
+ha calculado y enviado. No introduzcas por iniciativa propia semicuadratura,
+sesquicuadratura ni ningún otro aspecto que no figure expresamente en los
+datos de la figura.
+
+Ejemplo: si los datos dicen Venus–Nodo Sur = Quincuncio, escribe
+"quincuncio entre Venus y Nodo Sur". Nunca lo renombres como semicuadratura.
 
 GEOMETRÍA
 
@@ -7279,20 +10551,6 @@ No hables de quien recibe el informe como "esta persona",
 "la persona" o "parece una persona que...".
 
 {instruccion_tratamiento_linguistico()}
-
-RECORDATORIO DE CONCORDANCIA PARA FIGURAS
-
-No conviertas a -e un adjetivo porque aparezca cerca de "te", "tu" o "ti".
-Primero identifica qué palabra modifica.
-
-Ejemplos:
-"la respuesta queda concentrada"
-"la energía está orientada"
-"la figura está integrada"
-"puedes quedarte concentrade"
-"puedes sentirte orientade"
-
-Solo los dos últimos ejemplos describen directamente a quien lee.
 
 Nunca menciones la biblioteca, los libros, File Search, autores,
 fuentes, documentos consultados ni material recuperado.
@@ -7328,6 +10586,10 @@ Si el tipo es "Stellium":
 - nombra sus integrantes;
 - explica qué aporta cada uno sin separarlos en cuatro lecturas;
 - usa casa y signo cuando estén disponibles;
+- NO digas que todo el Stellium está en un mismo signo/casa sin comprobar
+  primero la posición individual de TODOS sus integrantes;
+- si atraviesa signos o casas, indica con precisión la concentración
+  principal y las excepciones;
 - explica que otras figuras pueden apoyarse en este stellium como
   vértice colectivo.
 
@@ -7741,6 +11003,8 @@ No recorras aspectos como una lista técnica.
 Traduce la geometría, pero NO escondas la astrología hasta volverla superficial.
 
 
+{instrucciones_autocontrol_en_misma_llamada("figuras")}
+
 DATOS_DE_LAS_FIGURAS:
 
 {json.dumps(datos_figuras, ensure_ascii=False, indent=2)}
@@ -7750,7 +11014,7 @@ DATOS_DE_LAS_FIGURAS:
 
     vector_store_id = cargar_vector_store_biblioteca_astrologica()
 
-    response = client.responses.create(
+    response = _responses_create_controlado(client, 
         model="gpt-5.4-mini",
         input=prompt_figuras,
         tools=[
@@ -7845,6 +11109,17 @@ DATOS_DE_LAS_FIGURAS:
         )
 
     # Postprocesado exclusivamente local.
+    figura_por_id = {
+        str(figura.get("id_figura") or "").strip(): figura
+        for figura in figuras
+        if str(figura.get("id_figura") or "").strip()
+    }
+    dato_figura_por_id = {
+        str(dato.get("id_figura") or "").strip(): dato
+        for dato in datos_figuras
+        if str(dato.get("id_figura") or "").strip()
+    }
+
     for id_figura in ids_esperados:
         contenido = resultado.get(id_figura) or {}
 
@@ -7869,6 +11144,19 @@ DATOS_DE_LAS_FIGURAS:
 
         titulo = corregir_genero_dirigido_local(titulo)
         interpretacion = corregir_genero_dirigido_local(interpretacion)
+
+        interpretacion = normalizar_nombre_triangulo_aprendizaje_en_interpretacion(
+            figura_por_id.get(id_figura, {}),
+            interpretacion,
+        )
+
+        dato_figura_actual = dato_figura_por_id.get(id_figura, {}) or {}
+        interpretacion = corregir_referencia_aspecto_nuevo_rescate_local_2026(
+            interpretacion,
+            figura_por_id.get(id_figura, {}),
+            dato_figura_actual.get("aspectos", []) or [],
+            dato_figura_actual.get("posiciones", {}) or {},
+        )
 
         interpretacion = neutralizar_teleologia_residual(
             interpretacion
@@ -8025,6 +11313,56 @@ def convertir_bloques_figuras_a_markdown(
     ).strip()
 
 
+
+def _puntos_geometricos_reales_figura_2026(figura):
+    """
+    V57 · Lista cerrada de puntos que pertenecen REALMENTE a la geometría
+    de una figura individual.
+
+    No usa ``puntos_editoriales_permitidos`` ni
+    ``puntos_editoriales_familia_huber_2026`` porque esos campos pueden
+    contener puntos de variantes integradas de una misma familia editorial.
+
+    Para una interpretación individual:
+      - la familia editorial puede aportar contexto narrativo;
+      - pero NO puede ampliar los vértices, puntos, aspectos ni líneas reales.
+
+    No llama a OpenAI.
+    """
+    puntos = []
+
+    def registrar(valor):
+        if valor is None:
+            return
+        nombre = str(valor).strip()
+        if nombre and nombre not in puntos:
+            puntos.append(nombre)
+
+    # Fuente principal: la función geométrica de Figuras.py, si está disponible.
+    fn_puntos_reales = getattr(Figuras, "puntos_reales_figura", None)
+    if callable(fn_puntos_reales):
+        try:
+            for punto in fn_puntos_reales(figura) or []:
+                registrar(punto)
+        except Exception:
+            pass
+
+    # Compatibilidad con estructuras donde ``puntos`` ya contiene los vértices
+    # reales de la figura.
+    for punto in figura.get("puntos", []) or []:
+        registrar(punto)
+
+    # Blindaje para vértices colectivos: sus miembros pertenecen a la figura
+    # aunque el contenedor técnico los represente como Stellium/Conjunción.
+    for vertice in _vertices_colectivos_2026(figura) or []:
+        if not isinstance(vertice, dict):
+            continue
+        for miembro in vertice.get("miembros", []) or []:
+            registrar(miembro)
+
+    return puntos
+
+
 def detectar_puntos_ajenos_en_figura(
     texto,
     puntos_permitidos,
@@ -8068,25 +11406,319 @@ def detectar_puntos_ajenos_en_figura(
 
     return encontrados_ajenos
 
+
+def eliminar_puntos_ajenos_local_2026(texto, puntos_ajenos):
+    """
+    V62 · Fallback determinista tras la reparación en lote.
+
+    Si la única llamada de reparación sigue mencionando un punto que no
+    pertenece a la geometría real de la figura, elimina SOLO la oración que
+    contiene ese nombre. No inventa contenido, no sustituye un planeta por otro
+    y no consume otra llamada OpenAI.
+
+    Se usa únicamente después de que OpenAI ya haya intentado reparar la figura.
+    """
+    if not texto or not puntos_ajenos:
+        return texto
+
+    patrones = [
+        re.compile(
+            r"(?<!\w)" + re.escape(str(punto)) + r"(?!\w)",
+            flags=re.IGNORECASE,
+        )
+        for punto in puntos_ajenos
+        if str(punto or "").strip()
+    ]
+
+    if not patrones:
+        return texto
+
+    # Conserva separadores y párrafos. Las frases que no contienen el punto
+    # ajeno permanecen literalmente iguales.
+    partes = re.split(r"(?<=[.!?])([ \t]+|\n+)", str(texto))
+    salida = []
+    i = 0
+
+    while i < len(partes):
+        frase = partes[i]
+        separador = partes[i + 1] if i + 1 < len(partes) else ""
+
+        contiene_ajeno = any(p.search(frase) for p in patrones)
+
+        if not contiene_ajeno:
+            salida.append(frase)
+            salida.append(separador)
+        elif separador.startswith("\n"):
+            # Conservamos el salto para no fusionar dos párrafos.
+            salida.append(separador)
+
+        i += 2
+
+    resultado = "".join(salida)
+    resultado = re.sub(r"[ \t]{2,}", " ", resultado)
+    resultado = re.sub(r"[ \t]+\n", "\n", resultado)
+    resultado = re.sub(r"\n{3,}", "\n\n", resultado)
+    return resultado.strip()
+
+
+def limpiar_titulo_de_puntos_ajenos_local_2026(titulo, puntos_ajenos):
+    """
+    V62 · El título humano no necesita nombres planetarios.
+    Si excepcionalmente contiene un punto ajeno, elimina solo ese nombre y
+    limpia separadores residuales. Si quedara vacío, usa un título neutro.
+    """
+    if not titulo or not puntos_ajenos:
+        return titulo
+
+    salida = str(titulo)
+    for punto in puntos_ajenos:
+        salida = re.sub(
+            r"(?<!\w)" + re.escape(str(punto)) + r"(?!\w)",
+            "",
+            salida,
+            flags=re.IGNORECASE,
+        )
+
+    salida = re.sub(r"\s*([·,/|–—-])\s*(?=\1|$)", " ", salida)
+    salida = re.sub(r"\s{2,}", " ", salida)
+    salida = re.sub(r"^[\s·,/|–—-]+|[\s·,/|–—-]+$", "", salida).strip()
+
+    return salida or "Una tensión que pide una respuesta más precisa"
+
+
+
+
+def detectar_nombre_aspecto_incorrecto_en_figura_v66(texto, aspectos_compactos):
+    """
+    Detecta un nombre técnico de aspecto incorrecto SOLO cuando la pareja
+    está expresada de forma explícita dentro de la interpretación de esa figura.
+
+    Devuelve el aspecto dicho, el aspecto real y el fragmento. No corrige aquí:
+    la incidencia debe enviarse a la reparación IA para que se corrija también
+    el SIGNIFICADO, no solo la etiqueta.
+    """
+    if not texto:
+        return []
+
+    incidencias = []
+
+    for aspecto in aspectos_compactos or []:
+        p1 = str(aspecto.get("p1") or "").strip()
+        p2 = str(aspecto.get("p2") or "").strip()
+        real = str(aspecto.get("tipo") or "").strip()
+
+        if not p1 or not p2 or not real:
+            continue
+
+        p1e = re.escape(p1)
+        p2e = re.escape(p2)
+
+        for dicho in _ASPECTOS_TECNICOS_V61:
+            if _normalizar_nombre_aspecto_v61(dicho) == _normalizar_nombre_aspecto_v61(real):
+                continue
+
+            de = re.escape(dicho)
+            patrones = [
+                rf"\b{de}\s+(?:de|entre)\s+{p1e}\s+(?:con|y)\s+{p2e}\b",
+                rf"\b{de}\s+(?:de|entre)\s+{p2e}\s+(?:con|y)\s+{p1e}\b",
+                rf"\b{p1e}\s+{de}\s+{p2e}\b",
+                rf"\b{p2e}\s+{de}\s+{p1e}\b",
+            ]
+
+            for patron in patrones:
+                m = re.search(patron, str(texto), flags=re.IGNORECASE)
+                if m:
+                    incidencias.append({
+                        "p1": p1,
+                        "p2": p2,
+                        "aspecto_dicho": dicho,
+                        "aspecto_real": real,
+                        "fragmento": m.group(0),
+                    })
+                    break
+
+    return incidencias
+
+
+
+def _familia_semantica_aspecto_v70(nombre):
+    """
+    Agrupa aspectos por función general/color para decidir si una corrección
+    determinista de etiqueta puede hacerse sin cambiar el significado del texto.
+    """
+    n = _normalizar_nombre_aspecto_v61(nombre)
+
+    if n in {
+        _normalizar_nombre_aspecto_v61("Trígono"),
+        _normalizar_nombre_aspecto_v61("Sextil"),
+    }:
+        return "azul"
+
+    if n in {
+        _normalizar_nombre_aspecto_v61("Cuadratura"),
+        _normalizar_nombre_aspecto_v61("Oposición"),
+    }:
+        return "rojo"
+
+    if n in {
+        _normalizar_nombre_aspecto_v61("Quincuncio"),
+        _normalizar_nombre_aspecto_v61("Semisextil"),
+    }:
+        return "verde"
+
+    if n == _normalizar_nombre_aspecto_v61("Conjunción"):
+        return "conjuncion"
+
+    return ""
+
+
+def corregir_nombre_aspecto_misma_familia_v70(
+    texto,
+    aspectos_compactos,
+):
+    """
+    Fallback determinista y conservador.
+
+    Solo corrige el NOMBRE del aspecto cuando:
+    - la pareja está nombrada explícitamente;
+    - Python conoce el aspecto real;
+    - el aspecto dicho y el real pertenecen a la MISMA familia semántica.
+
+    Ejemplo seguro:
+      sextil Sol-Neptuno -> trígono Sol-Neptuno
+      ambos azules, por lo que no cambia la lógica interpretativa.
+
+    Ejemplo NO seguro:
+      oposición Sol-Júpiter -> cuadratura sería rojo->rojo y sí puede
+      corregirse como etiqueta general de tensión;
+      pero sextil -> cuadratura (azul->rojo) NO se corrige aquí.
+    """
+    if not texto:
+        return texto
+
+    salida = str(texto)
+
+    incidencias = detectar_nombre_aspecto_incorrecto_en_figura_v66(
+        salida,
+        aspectos_compactos,
+    )
+
+    for inc in incidencias:
+        dicho = str(inc.get("aspecto_dicho") or "").strip()
+        real = str(inc.get("aspecto_real") or "").strip()
+        p1 = str(inc.get("p1") or "").strip()
+        p2 = str(inc.get("p2") or "").strip()
+
+        if not dicho or not real or not p1 or not p2:
+            continue
+
+        fam_dicho = _familia_semantica_aspecto_v70(dicho)
+        fam_real = _familia_semantica_aspecto_v70(real)
+
+        if not fam_dicho or fam_dicho != fam_real:
+            continue
+
+        de = re.escape(dicho)
+        p1e = re.escape(p1)
+        p2e = re.escape(p2)
+
+        patrones = [
+            (rf"\b{de}\s+(de|entre)\s+{p1e}\s+(con|y)\s+{p2e}\b",
+             lambda m, r=real: f"{r} {m.group(1)} {p1} {m.group(2)} {p2}"),
+            (rf"\b{de}\s+(de|entre)\s+{p2e}\s+(con|y)\s+{p1e}\b",
+             lambda m, r=real: f"{r} {m.group(1)} {p2} {m.group(2)} {p1}"),
+            (rf"\b{p1e}\s+{de}\s+{p2e}\b",
+             lambda m, r=real: f"{p1} {r} {p2}"),
+            (rf"\b{p2e}\s+{de}\s+{p1e}\b",
+             lambda m, r=real: f"{p2} {r} {p1}"),
+        ]
+
+        for patron, repl in patrones:
+            salida = re.sub(
+                patron,
+                repl,
+                salida,
+                flags=re.IGNORECASE,
+            )
+
+    return corregir_genero_gramatical_aspectos_2026(salida)
+
+
+def validar_nombre_y_significado_aspecto_figura_v70(
+    texto,
+    aspectos_compactos,
+    id_figura="figura",
+):
+    """
+    V70:
+    1) corrige localmente nombres incorrectos si la familia semántica coincide;
+    2) si queda cualquier error, conserva la barrera dura de V66.
+    """
+    corregido = corregir_nombre_aspecto_misma_familia_v70(
+        texto,
+        aspectos_compactos,
+    )
+
+    errores = detectar_nombre_aspecto_incorrecto_en_figura_v66(
+        corregido,
+        aspectos_compactos,
+    )
+
+    if errores:
+        detalle = "; ".join(
+            f"{e['fragmento']} → real: {e['aspecto_real']}"
+            for e in errores[:8]
+        )
+        raise RuntimeError(
+            f"V70: {id_figura} sigue usando un aspecto incompatible "
+            f"después del fallback seguro: {detalle}"
+        )
+
+    return corregido
+
+
+def validar_nombre_y_significado_aspecto_figura_v66(
+    texto,
+    aspectos_compactos,
+    id_figura="figura",
+):
+    errores = detectar_nombre_aspecto_incorrecto_en_figura_v66(
+        texto,
+        aspectos_compactos,
+    )
+    if errores:
+        detalle = "; ".join(
+            f"{e['fragmento']} → real: {e['aspecto_real']}"
+            for e in errores[:8]
+        )
+        raise RuntimeError(
+            f"V66: {id_figura} sigue usando un nombre de aspecto incorrecto "
+            f"después de la reparación semántica: {detalle}"
+        )
+    return True
+
+
 def corregir_puntos_ajenos_interpretaciones_figuras(
     contexto_compacto,
     interpretaciones_figuras,
 ):
     """
-    V32 · Reparación única y condicional de la salida de figuras.
+    Reparación única y condicional de la salida de figuras.
 
-    La generación normal sigue usando dos llamadas:
+    Flujo normal:
     1) informe global;
     2) todas las figuras.
 
     Solo si la segunda llamada devuelve alguna incidencia se hace UNA
-    tercera llamada en lote.
+    tercera llamada EN LOTE para corregir exclusivamente las figuras afectadas.
 
-    Se reparan conjuntamente:
+    Se comprueban y reparan conjuntamente:
     - títulos o interpretaciones vacíos/incompletos;
-    - menciones a puntos astrológicos ajenos a la figura.
+    - menciones a puntos astrológicos ajenos a la geometría real de la figura;
+    - atribuciones de color Huber que no pertenecen a la geometría real.
 
-    Esto evita perder una generación completa por un único campo vacío.
+    Después de la reparación, Python vuelve a validar puntos y colores.
+    La auditoría final del informe, si corresponde, permanece como cuarta llamada.
     """
 
     figuras = (
@@ -8116,9 +11748,7 @@ def corregir_puntos_ajenos_interpretaciones_figuras(
         or []
     )
 
-    puntos_catalogo = list(
-        posiciones_natales.keys()
-    )
+    puntos_catalogo = list(posiciones_natales.keys())
 
     figuras_por_id = {
         (figura.get("id_figura") or "").strip(): figura
@@ -8129,32 +11759,18 @@ def corregir_puntos_ajenos_interpretaciones_figuras(
     incidencias = {}
 
     for id_figura, figura in figuras_por_id.items():
-        datos_ia = interpretaciones_figuras.get(
-            id_figura,
-            {},
-        ) or {}
+        datos_ia = interpretaciones_figuras.get(id_figura, {}) or {}
 
-        titulo = str(
-            datos_ia.get("titulo_humano", "")
-            or ""
-        ).strip()
-
-        interpretacion = str(
-            datos_ia.get("interpretacion", "")
-            or ""
-        ).strip()
+        titulo = str(datos_ia.get("titulo_humano", "") or "").strip()
+        interpretacion = str(datos_ia.get("interpretacion", "") or "").strip()
 
         paquete = figura.get("paquete_huber_ia") or {}
 
-        puntos_permitidos = [
-            str(punto)
-            for punto in (
-                paquete.get("puntos_editoriales_permitidos")
-                or figura.get("puntos_editoriales_familia_huber_2026")
-                or figura.get("puntos", [])
-                or []
-            )
-        ]
+        # V57 · Un punto de una variante editorial NO pertenece por ello a esta
+        # figura. La barrera de puntos ajenos trabaja con geometría estricta.
+        puntos_permitidos = _puntos_geometricos_reales_figura_2026(
+            figura
+        )
 
         motivos = []
         puntos_ajenos = []
@@ -8165,21 +11781,18 @@ def corregir_puntos_ajenos_interpretaciones_figuras(
         if not interpretacion:
             motivos.append("interpretacion_vacia")
 
-        texto_completo = ""
+        texto_completo = (
+            titulo
+            + ("\n" if titulo and interpretacion else "")
+            + interpretacion
+        )
 
-        if titulo or interpretacion:
-            texto_completo = (
-                titulo
-                + ("\n" if titulo and interpretacion else "")
-                + interpretacion
-            )
-
+        if texto_completo:
             puntos_ajenos = detectar_puntos_ajenos_en_figura(
                 texto_completo,
                 puntos_permitidos,
                 puntos_catalogo,
             )
-
             if puntos_ajenos:
                 motivos.append("puntos_ajenos")
 
@@ -8188,15 +11801,34 @@ def corregir_puntos_ajenos_interpretaciones_figuras(
             aspectos_relevantes,
         )
 
-        aspectos_compactos = []
-        for aspecto in aspectos_figura:
-            aspectos_compactos.append({
+        aspectos_compactos = [
+            {
                 "p1": aspecto.get("p1"),
                 "p2": aspecto.get("p2"),
                 "tipo": aspecto.get("tipo"),
                 "simbolo": aspecto.get("simbolo"),
                 "orbe": aspecto.get("orbe"),
-            })
+            }
+            for aspecto in aspectos_figura
+        ]
+
+        nombres_aspecto_incorrectos = (
+            detectar_nombre_aspecto_incorrecto_en_figura_v66(
+                texto_completo,
+                aspectos_compactos,
+            )
+        )
+        if nombres_aspecto_incorrectos:
+            motivos.append("nombre_aspecto_incorrecto")
+
+        significado_color_incompatible_v68 = (
+            detectar_significado_color_incompatible_v68(
+                texto_completo,
+                aspectos_compactos,
+            )
+        )
+        if significado_color_incompatible_v68:
+            motivos.append("significado_color_incompatible")
 
         lectura_colores_real = _lectura_colores_huber_2026(
             aspectos_compactos
@@ -8209,6 +11841,52 @@ def corregir_puntos_ajenos_interpretaciones_figuras(
 
         if colores_huber_ajenos:
             motivos.append("color_huber_ajeno")
+
+        atribuciones_color_relacion_incorrectas = (
+            detectar_atribuciones_color_huber_relacion_incorrectas_2026(
+                texto_completo,
+                aspectos_compactos,
+            )
+        )
+        if atribuciones_color_relacion_incorrectas:
+            motivos.append("color_huber_relacion_incorrecta")
+
+        incumple_stellium, faltantes_stellium = (
+            _incumple_vertice_colectivo_2026(
+                figura,
+                interpretacion,
+            )
+        )
+        if incumple_stellium:
+            motivos.append("vertice_colectivo_reducido")
+
+        incumple_posicion_colectiva, errores_posicion_colectiva = (
+            _incumple_posicion_vertice_colectivo_2026(
+                figura,
+                interpretacion,
+                posiciones_natales,
+            )
+        )
+        if incumple_posicion_colectiva:
+            motivos.append("posicion_vertice_colectivo_incorrecta")
+
+        andamio_visible_v73 = detectar_andamio_tecnico_visible_v73(
+            interpretacion
+        )
+        if andamio_visible_v73:
+            motivos.append("andamio_tecnico_visible")
+
+        sobrecarga_aspectos_v73 = detectar_sobrecarga_aspectos_por_parrafo_v73(
+            interpretacion
+        )
+        if sobrecarga_aspectos_v73:
+            motivos.append("sobrecarga_aspectos_por_parrafo")
+
+        primer_parrafo_tecnico_v73 = detectar_primer_parrafo_demasiado_tecnico_v73(
+            interpretacion
+        )
+        if primer_parrafo_tecnico_v73:
+            motivos.append("primer_parrafo_demasiado_tecnico")
 
         if not motivos:
             continue
@@ -8229,10 +11907,56 @@ def corregir_puntos_ajenos_interpretaciones_figuras(
             "puntos_permitidos": puntos_permitidos,
             "puntos_ajenos_detectados": puntos_ajenos,
             "colores_huber_ajenos_detectados": colores_huber_ajenos,
+            "atribuciones_color_relacion_incorrectas_2026": (
+                atribuciones_color_relacion_incorrectas
+            ),
+            "nombres_aspecto_incorrectos_v66": (
+                nombres_aspecto_incorrectos
+            ),
+            "significado_color_incompatible_v68": (
+                significado_color_incompatible_v68
+            ),
+            "vertice_colectivo_faltante_o_reducido": (
+                faltantes_stellium if incumple_stellium else []
+            ),
+            "errores_posicion_vertice_colectivo": (
+                errores_posicion_colectiva
+                if incumple_posicion_colectiva
+                else []
+            ),
+            "andamio_tecnico_visible_v73": andamio_visible_v73,
+            "sobrecarga_aspectos_por_parrafo_v73": sobrecarga_aspectos_v73,
+            "primer_parrafo_demasiado_tecnico_v73": primer_parrafo_tecnico_v73,
+            "vertices_colectivos_obligatorios_2026": (
+                _vertices_colectivos_2026(figura)
+            ),
+            "posiciones_vertices_colectivos_2026": (
+                _posiciones_vertices_colectivos_2026(
+                    figura,
+                    posiciones_natales,
+                )
+            ),
+            "contactos_vertices_colectivos_2026": (
+                _contactos_vertices_colectivos_2026(
+                    figura,
+                    aspectos_compactos,
+                )
+            ),
+            "vertices_stellium_colectivos_obligatorios_2026": (
+                _vertices_stellium_colectivos_2026(figura)
+            ),
             "colores_huber_reales": lectura_colores_real.get(
                 "colores_presentes",
                 [],
             ),
+            "colores_huber_prohibidos": [
+                color
+                for color in ("rojo", "azul", "verde")
+                if color not in set(
+                    lectura_colores_real.get("colores_presentes", []) or []
+                )
+            ],
+            "lectura_colores_huber_2026": lectura_colores_real,
             "titulo_humano_original": titulo,
             "interpretacion_original": interpretacion,
             "tipo": figura.get("tipo"),
@@ -8258,6 +11982,23 @@ def corregir_puntos_ajenos_interpretaciones_figuras(
     if not incidencias:
         return interpretaciones_figuras
 
+    # Diagnóstico útil, pero la ejecución NO se detiene aquí:
+    # se intenta una única reparación en lote.
+    try:
+        with open(
+            "diagnostico_validacion_figuras.json",
+            "w",
+            encoding="utf-8",
+        ) as archivo:
+            json.dump(
+                incidencias,
+                archivo,
+                ensure_ascii=False,
+                indent=2,
+            )
+    except Exception:
+        pass
+
     print(
         "Reparando en lote salida de figuras: "
         + ", ".join(
@@ -8273,17 +12014,12 @@ def corregir_puntos_ajenos_interpretaciones_figuras(
         )
 
     propiedades = {}
-
     for id_figura in incidencias:
         propiedades[id_figura] = {
             "type": "object",
             "properties": {
-                "titulo_humano": {
-                    "type": "string",
-                },
-                "interpretacion": {
-                    "type": "string",
-                },
+                "titulo_humano": {"type": "string"},
+                "interpretacion": {"type": "string"},
             },
             "required": [
                 "titulo_humano",
@@ -8302,80 +12038,155 @@ def corregir_puntos_ajenos_interpretaciones_figuras(
     prompt = f"""
 REPARACIÓN ESTRUCTURADA EN LOTE · FIGURAS
 
-Corrige exclusivamente las figuras incluidas en INCIDENCIAS.
+Corrige EXCLUSIVAMENTE las figuras incluidas en INCIDENCIAS.
+No rehagas las figuras que ya han pasado la validación.
 
-Cada incidencia puede deberse a una o varias causas:
+Cada incidencia puede deberse a:
 - "titulo_humano_vacio";
 - "interpretacion_vacia";
 - "puntos_ajenos";
-- "color_huber_ajeno".
+- "color_huber_ajeno";
+- "color_huber_relacion_incorrecta";
+- "nombre_aspecto_incorrecto";
+- "significado_color_incompatible";
+- "vertice_colectivo_reducido";
+- "posicion_vertice_colectivo_incorrecta";
+- "andamio_tecnico_visible";
+- "sobrecarga_aspectos_por_parrafo";
+- "primer_parrafo_demasiado_tecnico".
 
 OBJETIVO
 
-Para CADA id_figura devuelve SIEMPRE:
-- titulo_humano: breve, humano, claro y NO vacío;
-- interpretacion: completa, clara y NO vacía.
+Para cada id_figura devuelve:
+- titulo_humano: breve, humano, claro y no vacío;
+- interpretacion: completa, clara y no vacía.
 
-Si el campo original estaba vacío:
-- genera únicamente ese contenido a partir de los datos técnicos de ESA figura;
-- conserva el otro campo si ya era correcto;
-- respeta la extensión y foco de plan_interpretativo_huber_2026.
+REGLAS
 
-Si había puntos ajenos:
-- elimina esas menciones;
-- no las sustituyas por otro punto ajeno;
-- conserva el sentido válido del resto.
-
-Si había "color_huber_ajeno":
-- conserva la interpretación válida;
-- corrige únicamente las atribuciones cromáticas falsas;
-- usa SOLO los colores incluidos en "colores_huber_reales";
-- no llames verde/azul/rojo a una relación que no figure en la lista
-  correspondiente de lectura_colores_huber_2026;
-- si una frase usaba el color solo como metáfora, reescríbela sin ese color.
-
-REGLAS ESTRICTAS
-
-1. Solo puedes mencionar puntos incluidos exactamente en
+1. Solo puedes mencionar los nombres incluidos exactamente en
    "puntos_permitidos" de ESA figura.
 
-2. Respeta tipo, geometría, aspectos, signos, casas, retrogradaciones,
-   ápice, base, oposición y vértices suministrados.
+2. Usa exclusivamente los aspectos incluidos en "aspectos" de ESA figura.
+   No traigas relaciones de otra figura aunque comparta vértices.
 
-3. Si la figura es de rescate, el foco debe estar en las relaciones
-   nuevas señaladas por plan_interpretativo_huber_2026, pero desarrolla
-   suficientemente cómo esa relación modifica el circuito completo.
-   No existe un máximo de 70-110 palabras.
+3. Si existe "puntos_ajenos":
+   elimina esas menciones y reconstruye únicamente el fragmento necesario
+   con los datos válidos de ESTA figura.
 
-3.b. Respeta lectura_colores_huber_2026 y profundidad_interpretativa.
-     Si hay rojo/azul/verde, conserva la explicación de qué función cumple
-     cada color en ESTA figura. Solo puedes usar un color Huber si aparece
-     en colores_presentes y solo para las relaciones listadas bajo ese color.
-     No uses colores como metáfora de funciones psicológicas.
-     No repares una incidencia convirtiendo una interpretación profunda en
-     una versión resumida.
+4. Si existe "color_huber_ajeno" o "color_huber_relacion_incorrecta":
+   - consulta "colores_huber_reales" y "colores_huber_prohibidos" de ESA figura;
+   - está TERMINANTEMENTE PROHIBIDO escribir cualquier forma léxica de los
+     colores incluidos en "colores_huber_prohibidos":
+     rojo/roja/rojos/rojas, azul/azules, verde/verdes;
+   - usa SOLO los colores incluidos en "colores_huber_reales" y únicamente
+     para las relaciones que aparecen en la lista correspondiente de
+     "lectura_colores_huber_2026";
+   - si tienes la menor duda sobre un color, NO nombres ningún color Huber:
+     explica directamente la tensión, el apoyo, la estabilidad, la búsqueda
+     o el reajuste a partir del TIPO DE ASPECTO real.
+   - no uses rojo, azul o verde como metáfora libre, ni siquiera en títulos.
 
-4. No introduzcas datos de otras figuras ni de la carta global.
+   REGLA V59 · COLOR POR RELACIÓN:
+   Si "atribuciones_color_relacion_incorrectas_2026" contiene incidencias,
+   corrige ESA relación concreta usando el color real de
+   "lectura_colores_huber_2026". Un trígono o sextil azul no puede presentarse
+   como la presión principal; una cuadratura u oposición roja no puede
+   presentarse como vía azul; un quincuncio o semisextil verde no puede
+   presentarse como rojo o azul.
 
-5. No inventes aspectos, casas, biografía, profesión, trauma,
-   acontecimientos ni relaciones concretas.
+   REGLA DE SEGURIDAD PARA LA REPARACIÓN:
+   si el motivo es "color_huber_ajeno", es preferible OMITIR POR COMPLETO
+   el vocabulario cromático Huber antes que volver a introducir un color
+   prohibido. La interpretación debe seguir siendo completa usando aspectos,
+   signos, casas y geometría reales.
 
-6. Mantén segunda persona y español de España.
-   Aplica exactamente el tratamiento lingüístico indicado más abajo.
-   En modo neutro, la terminación -e SOLO se usa cuando la palabra se refiere
-   directamente a quien lee. Conserva la concordancia gramatical normal de
-   sustantivos como energía, respuesta, figura, carta, dinámica, relación, etc.
-   Ejemplo: "esa energía aparece muy concentrada", nunca "concentrade".
+5. REGLA V66 · NOMBRE Y SIGNIFICADO DEL ASPECTO:
+   si existe "nombre_aspecto_incorrecto", NO basta con sustituir una palabra.
+   Debes reescribir el fragmento afectado usando el aspecto REAL incluido en
+   "aspectos" y ajustar también SU SIGNIFICADO dentro de la figura.
 
-7. No menciones biblioteca, libros, autores, File Search, fuentes
-   ni material recuperado.
+   Ejemplo de criterio:
+   - trígono/sextil: facilidad, apoyo, circulación o vía disponible;
+   - cuadratura/oposición: fricción, presión, contraste o polarización;
+   - quincuncio/semisextil: ajuste, búsqueda, incompatibilidad parcial o
+     necesidad de calibración;
+   - conjunción: concentración/fusión de funciones según el contexto.
 
-8. {instruccion_tratamiento_linguistico()}
+   Estas descripciones son orientativas: la interpretación concreta debe salir
+   de los puntos, signos, casas y geometría REAL de ESA figura.
 
-8. No añadas Markdown, comentarios ni explicaciones externas.
+   PROHIBIDO:
+   - conservar una interpretación de sextil y cambiar solo la palabra a trígono;
+   - conservar una lectura de apoyo si el aspecto real es rojo;
+   - conservar una lectura de presión si el aspecto real es azul;
+   - conservar una lectura de fluidez si el aspecto real es verde.
 
-9. El título y la interpretación deben contener texto real.
-   No devuelvas cadenas vacías ni espacios.
+   Si existe "significado_color_incompatible", reescribe el fragmento afectado.
+   No basta con cambiar "presión" por "apoyo" de forma mecánica: revisa el sentido
+   entero de esa frase para que sea coherente con la función real del aspecto
+   dentro de la figura.
+
+   "nombres_aspecto_incorrectos_v66" indica exactamente qué pareja fue nombrada
+   con un tipo incorrecto. Reescribe ese pasaje de forma coherente con el tipo
+   real y con su función dentro del conjunto.
+
+6. Respeta exactamente:
+   tipo, nombre canónico, geometría, posiciones, casas, retrogradaciones,
+   ápice, base, oposición, vértices y selección Huber recibidos.
+
+   REGLA V51 · VÉRTICES COLECTIVOS:
+   si "vertices_colectivos_obligatorios_2026" contiene un Stellium o una
+   Conjunción, el bloque completo es la unidad interpretativa. Un miembro individual puede
+   ser el punto exacto por el que entra un aspecto, pero NUNCA sustituye al
+   conjunto. Menciona e integra todos sus integrantes sin usar lenguaje de
+   geometría interna en el texto visible.
+
+   POSICIÓN DEL VÉRTICE COLECTIVO:
+   usa "posiciones_vertices_colectivos_2026" como dato cerrado.
+   NO atribuyas un único signo o una única casa al Stellium/Conjunción salvo
+   que todos sus miembros compartan literalmente esa posición. Si atraviesa
+   signos o casas, indica la distribución real o la mayoría con su excepción.
+   Si hace falta, formula "el Stellium/la Conjunción..., a través de
+   Venus/Marte/etc., forma...".
+
+   REGLA V60 · IMPACTO GLOBAL:
+   si existe "contactos_vertices_colectivos_2026", el miembro marcado como
+   "puerta_geometrica" NO se interpreta de forma aislada. Reescribe el pasaje
+   explicando cómo ese contacto repercute en la combinación funcional de TODOS
+   los miembros de "miembros_vertice". Nombrarlos sin integrar sus funciones
+   no es suficiente.
+
+6. Si la figura es de rescate, mantén el foco en lo que añade esa figura,
+   sin importar planetas o aspectos de otras figuras.
+
+7. No inventes biografía, profesión, trauma, acontecimientos ni relaciones
+   concretas.
+
+8. REGLA V73 · REDACCIÓN FINAL PARA LA PERSONA:
+   - el primer párrafo debe ser enteramente comprensible sin conocimientos
+     astrológicos y NO debe nombrar aspectos;
+   - máximo UNA relación astrológica explícita por párrafo;
+   - NO escribas "puerta geométrica", "vértice colectivo", "vértice",
+     "geometría", "andamio", "capa roja", "capa azul", "capa verde";
+   - NO nombres colores Huber en el texto visible, aunque sean correctos;
+   - conserva internamente la lógica del Stellium/Conjunción completos, pero
+     tradúcela a funcionamiento humano;
+   - no conviertas la reparación en una enumeración técnica.
+
+   Si el motivo es "andamio_tecnico_visible", elimina ese lenguaje y reescribe
+   la frase en lenguaje humano.
+   Si el motivo es "sobrecarga_aspectos_por_parrafo", conserva como máximo la
+   relación técnica más útil y traduce las demás a significado.
+   Si el motivo es "primer_parrafo_demasiado_tecnico", reescribe por completo
+   ese primer párrafo empezando por la experiencia.
+
+9. Mantén segunda persona y español de España. No hagas correcciones
+   específicas de género durante esta reparación técnica.
+
+10. No menciones biblioteca, libros, autores, File Search, fuentes,
+   datos recibidos ni instrucciones internas.
+
+11. Devuelve únicamente el JSON exigido por el esquema.
 
 INCIDENCIAS:
 
@@ -8384,7 +12195,9 @@ INCIDENCIAS:
 
     client = OpenAI(api_key=api_key)
 
-    response = client.responses.create(
+    # Tercera llamada: únicamente se alcanza si ha habido incidencias.
+    response = _responses_create_controlado(
+        client,
         model="gpt-5.4-mini",
         input=prompt,
         max_output_tokens=12000,
@@ -8404,9 +12217,7 @@ INCIDENCIAS:
         )
 
     try:
-        reparadas = json.loads(
-            response.output_text
-        )
+        reparadas = json.loads(response.output_text)
     except json.JSONDecodeError as exc:
         raise RuntimeError(
             "La reparación de figuras no contiene JSON válido."
@@ -8447,23 +12258,17 @@ INCIDENCIAS:
             interpretacion
         )
 
-        titulo = neutralizar_genero_lector_ampliado_local(
-            titulo
-        )
+        titulo = neutralizar_genero_lector_ampliado_local(titulo)
         interpretacion = neutralizar_genero_lector_ampliado_local(
             interpretacion
         )
 
-        titulo = neutralizar_tercera_persona_lector_local(
-            titulo
-        )
+        titulo = neutralizar_tercera_persona_lector_local(titulo)
         interpretacion = neutralizar_tercera_persona_lector_local(
             interpretacion
         )
 
-        titulo = eliminar_referencias_internas_fuentes_local(
-            titulo
-        )
+        titulo = eliminar_referencias_internas_fuentes_local(titulo)
         interpretacion = eliminar_referencias_internas_fuentes_local(
             interpretacion
         )
@@ -8476,29 +12281,218 @@ INCIDENCIAS:
             interpretacion
         )
 
+        # V53 · Si la única reparación pendiente es que la IA ha vuelto a
+        # reducir un vértice colectivo, Python explicita localmente el bloque
+        # completo. No consume otra llamada OpenAI ni altera la geometría.
+        figura_actual = figuras_por_id.get(id_figura)
+        if figura_actual is not None:
+            interpretacion = blindar_mencion_vertices_colectivos_local_2026(
+                figura_actual,
+                interpretacion,
+            )
+
         if not titulo.strip() or not interpretacion.strip():
             raise RuntimeError(
                 f"La reparación local de {id_figura} ha dejado "
                 "algún campo vacío."
             )
 
+        # V56 · Si la reparación de OpenAI conserva por error un color Huber
+        # que no existe en la figura, Python retira solo esa etiqueta cromática
+        # antes de la validación final. No consume una nueva llamada.
+        lectura_colores_reparacion = incidencia["lectura_colores_huber_2026"]
+
+        titulo = neutralizar_colores_huber_ajenos_local_2026(
+            titulo,
+            lectura_colores_reparacion,
+        )
+        interpretacion = neutralizar_colores_huber_ajenos_local_2026(
+            interpretacion,
+            lectura_colores_reparacion,
+        )
+
+        texto_reparado = titulo + "\n" + interpretacion
+
         puntos_restantes = detectar_puntos_ajenos_en_figura(
-            titulo + "\n" + interpretacion,
+            texto_reparado,
             incidencia["puntos_permitidos"],
             puntos_catalogo,
         )
 
         if puntos_restantes:
-            raise RuntimeError(
-                f"La reparación de {id_figura} sigue mencionando "
-                "puntos ajenos: "
-                + ", ".join(puntos_restantes)
+            # V62 · La IA ya ha consumido la única reparación en lote.
+            # En vez de abortar el informe por una mención residual, Python
+            # elimina únicamente la oración/título donde aparece el punto ajeno.
+            titulo = limpiar_titulo_de_puntos_ajenos_local_2026(
+                titulo,
+                puntos_restantes,
             )
+            interpretacion = eliminar_puntos_ajenos_local_2026(
+                interpretacion,
+                puntos_restantes,
+            )
+
+            if not titulo.strip() or not interpretacion.strip():
+                raise RuntimeError(
+                    f"V62: la limpieza determinista de {id_figura} "
+                    "ha dejado algún campo vacío."
+                )
+
+            texto_reparado = titulo + "\n" + interpretacion
+
+            puntos_restantes = detectar_puntos_ajenos_en_figura(
+                texto_reparado,
+                incidencia["puntos_permitidos"],
+                puntos_catalogo,
+            )
+
+            if puntos_restantes:
+                raise RuntimeError(
+                    f"V62: {id_figura} sigue mencionando puntos ajenos "
+                    "después del fallback determinista: "
+                    + ", ".join(puntos_restantes)
+                )
+
+            print(
+                f"V62: {id_figura} limpiada localmente de puntos ajenos "
+                "sin nueva llamada OpenAI."
+            )
+
+        colores_restantes = detectar_colores_huber_ajenos_2026(
+            texto_reparado,
+            lectura_colores_reparacion,
+        )
+
+        if colores_restantes:
+            raise RuntimeError(
+                f"La reparación de {id_figura} sigue atribuyendo "
+                "colores Huber ajenos: "
+                + ", ".join(colores_restantes)
+            )
+
+        aspectos_figura_reparacion = (
+            Figuras.obtener_aspectos_de_figura(
+                figura_actual,
+                aspectos_relevantes,
+            )
+            if figura_actual is not None
+            else []
+        )
+        aspectos_compactos_reparacion = [
+            {
+                "p1": a.get("p1"),
+                "p2": a.get("p2"),
+                "tipo": a.get("tipo"),
+                "simbolo": a.get("simbolo"),
+                "orbe": a.get("orbe"),
+            }
+            for a in aspectos_figura_reparacion
+        ]
+        texto_reparado = validar_nombre_y_significado_aspecto_figura_v70(
+            texto_reparado,
+            aspectos_compactos_reparacion,
+            id_figura=id_figura,
+        )
+
+        errores_significado_color_v68 = (
+            detectar_significado_color_incompatible_v68(
+                texto_reparado,
+                aspectos_compactos_reparacion,
+            )
+        )
+        if errores_significado_color_v68:
+            detalle_v68 = "; ".join(
+                e.get("fragmento", "")
+                for e in errores_significado_color_v68[:6]
+            )
+            raise RuntimeError(
+                f"V78: {id_figura} sigue atribuyendo de forma directa un significado "
+                f"incompatible al tipo de aspecto después de la reparación: {detalle_v68}"
+            )
+
+        texto_reparado = humanizar_andamio_tecnico_local_v74(
+            texto_reparado
+        )
+
+        errores_andamio_v73 = detectar_andamio_tecnico_visible_v73(
+            texto_reparado
+        )
+        if errores_andamio_v73:
+            raise RuntimeError(
+                f"V73: {id_figura} sigue mostrando lenguaje técnico interno "
+                f"después de la reparación: {errores_andamio_v73}"
+            )
+
+        errores_sobrecarga_v73 = detectar_sobrecarga_aspectos_por_parrafo_v73(
+            texto_reparado
+        )
+        if errores_sobrecarga_v73:
+            print(
+                f"V75 aviso editorial: {id_figura} mantiene más de un aspecto "
+                f"técnico en algún párrafo tras la reparación. No se bloquea "
+                f"el informe porque es un criterio de estilo, no de fidelidad técnica."
+            )
+
+        errores_primer_parrafo_v73 = detectar_primer_parrafo_demasiado_tecnico_v73(
+            texto_reparado
+        )
+        if errores_primer_parrafo_v73:
+            print(
+                f"V75 aviso editorial: {id_figura} mantiene un primer párrafo "
+                f"más técnico de lo deseado tras la reparación. No se bloquea "
+                f"el informe porque es un criterio editorial."
+            )
+
+        errores_color_relacion_restantes = (
+            detectar_atribuciones_color_huber_relacion_incorrectas_2026(
+                texto_reparado,
+                aspectos_compactos_reparacion,
+            )
+        )
+        if errores_color_relacion_restantes:
+            raise RuntimeError(
+                f"La reparación de {id_figura} sigue atribuyendo mal "
+                "el color Huber a una relación concreta: "
+                + json.dumps(
+                    errores_color_relacion_restantes,
+                    ensure_ascii=False,
+                )
+            )
+
+        # V53 · La reparación no se considera validada hasta comprobar también
+        # los vértices colectivos y sus posiciones, igual que hará la barrera final.
+        figura_actual = figuras_por_id.get(id_figura)
+        if figura_actual is not None:
+            incumple_colectivo, faltantes_colectivo = _incumple_vertice_colectivo_2026(
+                figura_actual,
+                interpretacion,
+            )
+            if incumple_colectivo:
+                raise RuntimeError(
+                    f"La reparación de {id_figura} sigue reduciendo un vértice colectivo. "
+                    "Falta integrar: " + ", ".join(faltantes_colectivo)
+                )
+
+            incumple_posicion, errores_posicion = _incumple_posicion_vertice_colectivo_2026(
+                figura_actual,
+                interpretacion,
+                posiciones_natales,
+            )
+            if incumple_posicion:
+                raise RuntimeError(
+                    f"La reparación de {id_figura} sigue atribuyendo mal la posición "
+                    "de un vértice colectivo: " + ", ".join(errores_posicion)
+                )
 
         interpretaciones_figuras[id_figura] = {
             "titulo_humano": titulo,
             "interpretacion": interpretacion,
         }
+
+    print(
+        "Reparación condicional completada y validada. "
+        "La auditoría final podrá utilizar la cuarta llamada OpenAI."
+    )
 
     return interpretaciones_figuras
 
@@ -8564,6 +12558,7 @@ ALIAS_ORDEN_EDITORIAL_ARTE_ENCARNARTE = {
     "Ojo pequeño": "Figura de información (ojo)",
     "Triángulo de aprendizaje": "Triángulo dominante",
 }
+
 
 
 def _validar_orden_editorial_46_arte_encarnarte():
@@ -8976,10 +12971,11 @@ def construir_bloques_figuras(
 
         texto_a_validar = titulo_humano + "\n" + interpretacion
         paquete_figura = figura.get("paquete_huber_ia") or {}
-        puntos_permitidos = (
-            paquete_figura.get("puntos_editoriales_permitidos")
-            or figura.get("puntos_editoriales_familia_huber_2026")
-            or figura.get("puntos", [])
+
+        # V57 · Última barrera: solo los puntos geométricos reales pueden
+        # aparecer en la interpretación individual.
+        puntos_permitidos = _puntos_geometricos_reales_figura_2026(
+            figura
         )
         puntos_ajenos = detectar_puntos_ajenos_en_figura(
             texto_a_validar,
@@ -9713,7 +13709,7 @@ Mantén aproximadamente la misma extensión.
 Devuelve únicamente el fragmento corregido.
 """
 
-        response = client.responses.create(
+        response = _responses_create_controlado(client, 
             model="gpt-5.4-mini",
             input=prompt_correccion,
         )
@@ -9896,11 +13892,8 @@ def obtener_nucleos_autorizados(
     núcleos autorizados para el informe.
     """
 
-    nucleos = (
+    nucleos = obtener_nucleos_globales_robustos(
         contexto_compacto
-        .get("figuras", {})
-        .get("arquitectura", {})
-        .get("nucleos", [])
     )
 
     resultado = []
@@ -10154,6 +14147,291 @@ def normalizar_encabezados_secciones(texto):
 
 
 
+
+def obtener_nucleos_globales_robustos(contexto_compacto):
+    """
+    Devuelve los núcleos estructurales que deben llegar a la lectura global.
+
+    Fuente principal:
+    - arquitectura["nucleos"], calculada por Figuras.py.
+
+    Respaldo determinista:
+    - vértices colectivos Stellium/Conjunción repetidos en las figuras
+      seleccionadas;
+    - Stelliums que aparecen como figura complementaria independiente.
+
+    Este respaldo evita que la sección "Los núcleos que organizan tu carta"
+    quede vacía cuando el resumen estructural ha filtrado un núcleo colectivo
+    por jerarquía aunque ese mismo núcleo siga organizando varias figuras.
+    No inventa parejas atómicas ni descompone Stelliums.
+    """
+    arquitectura = (
+        contexto_compacto
+        .get("figuras", {})
+        .get("arquitectura", {})
+        or {}
+    )
+
+    nucleos_base = list(
+        arquitectura.get("nucleos", [])
+        or []
+    )
+    figuras = list(
+        arquitectura.get("figuras", [])
+        or []
+    )
+
+    unicos = {}
+
+    def registrar(
+        tipo_nucleo,
+        puntos,
+        apariciones=None,
+        puntuacion=None,
+        jerarquia=None,
+        origen="arquitectura",
+    ):
+        tipo = str(tipo_nucleo or "pareja").strip().casefold()
+        if tipo == "conjuncion":
+            tipo = "conjunción"
+
+        puntos_limpios = tuple(
+            Figuras.ordenar_puntos(
+                list(dict.fromkeys(
+                    str(p).strip()
+                    for p in (puntos or [])
+                    if str(p).strip()
+                ))
+            )
+        )
+
+        if len(puntos_limpios) < 2:
+            return
+
+        clave = (tipo, puntos_limpios)
+
+        try:
+            apariciones_num = int(apariciones or 0)
+        except (TypeError, ValueError):
+            apariciones_num = 0
+
+        try:
+            puntuacion_num = float(puntuacion or 0)
+        except (TypeError, ValueError):
+            puntuacion_num = 0.0
+
+        candidato = {
+            "tipo_nucleo": tipo,
+            "puntos_nucleo": list(puntos_limpios),
+            "apariciones": apariciones_num,
+            "puntuacion_nucleo": puntuacion_num,
+            "jerarquia_nucleo": jerarquia or "",
+            "origen_nucleo_global": origen,
+        }
+
+        actual = unicos.get(clave)
+        if actual is None:
+            unicos[clave] = candidato
+            return
+
+        criterio_nuevo = (
+            candidato.get("puntuacion_nucleo", 0),
+            candidato.get("apariciones", 0),
+        )
+        criterio_actual = (
+            actual.get("puntuacion_nucleo", 0),
+            actual.get("apariciones", 0),
+        )
+
+        if criterio_nuevo > criterio_actual:
+            unicos[clave] = candidato
+
+    for nucleo in nucleos_base:
+        registrar(
+            nucleo.get("tipo_nucleo") or nucleo.get("tipo"),
+            nucleo.get("puntos_nucleo") or nucleo.get("puntos"),
+            nucleo.get("apariciones"),
+            nucleo.get("puntuacion_nucleo") or nucleo.get("puntuacion"),
+            nucleo.get("jerarquia_nucleo") or nucleo.get("jerarquia"),
+            origen="arquitectura",
+        )
+
+    colectivos = {}
+
+    for figura in figuras:
+        for vertice in (figura.get("vertices", []) or []):
+            tipo_vertice = str(
+                vertice.get("tipo") or ""
+            ).strip()
+
+            if tipo_vertice not in ("Stellium", "Conjunción"):
+                continue
+
+            puntos = tuple(
+                Figuras.ordenar_puntos(
+                    list(dict.fromkeys(
+                        str(p).strip()
+                        for p in (vertice.get("puntos", []) or [])
+                        if str(p).strip()
+                    ))
+                )
+            )
+
+            if len(puntos) < 2:
+                continue
+
+            clave = (tipo_vertice.casefold(), puntos)
+            datos = colectivos.setdefault(
+                clave,
+                {
+                    "tipo_nucleo": tipo_vertice.casefold(),
+                    "puntos_nucleo": list(puntos),
+                    "apariciones": 0,
+                    "puntuacion_nucleo": 0.0,
+                },
+            )
+            datos["apariciones"] += 1
+            try:
+                datos["puntuacion_nucleo"] += float(
+                    figura.get("puntuacion_jerarquia", 0)
+                    or 0
+                )
+            except (TypeError, ValueError):
+                pass
+
+        # Un Stellium independiente debe recuperarse por su TIPO interno.
+        # ``nombre_canonico`` puede contener una etiqueta editorial distinta,
+        # por lo que no debe tener prioridad sobre ``tipo`` para esta decisión.
+        tipo_figura = str(
+            figura.get("tipo")
+            or ""
+        ).strip().casefold()
+
+        nombre_canonico = str(
+            figura.get("nombre_canonico")
+            or ""
+        ).strip().casefold()
+
+        if (
+            tipo_figura == "stellium"
+            or nombre_canonico == "stellium"
+        ):
+            puntos = (
+                figura.get("puntos_geometricos")
+                or figura.get("puntos")
+                or []
+            )
+            registrar(
+                "stellium",
+                puntos,
+                apariciones=max(
+                    1,
+                    int(figura.get("apariciones", 0) or 0),
+                ),
+                puntuacion=figura.get("puntuacion_jerarquia", 0),
+                jerarquia=figura.get("jerarquia", ""),
+                origen="stellium_complementario",
+            )
+
+    for datos in colectivos.values():
+        if datos.get("apariciones", 0) < 2:
+            continue
+
+        puntuacion = (
+            datos.get("puntuacion_nucleo", 0)
+            + max(0, datos.get("apariciones", 0) - 1) * 2
+            + 4
+        )
+
+        if puntuacion >= 26:
+            jerarquia = "dominante"
+        elif puntuacion >= 20:
+            jerarquia = "relevante"
+        else:
+            jerarquia = "secundario"
+
+        registrar(
+            datos.get("tipo_nucleo"),
+            datos.get("puntos_nucleo"),
+            datos.get("apariciones"),
+            puntuacion,
+            jerarquia,
+            origen="vertices_colectivos",
+        )
+
+    resultado = list(unicos.values())
+    resultado.sort(
+        key=lambda n: (
+            -float(n.get("puntuacion_nucleo", 0) or 0),
+            -int(n.get("apariciones", 0) or 0),
+            -len(n.get("puntos_nucleo", []) or []),
+            tuple(n.get("puntos_nucleo", []) or []),
+        )
+    )
+    return resultado
+
+
+def _hay_evidencia_colectiva_para_nucleos(contexto_compacto):
+    """
+    Detecta si la arquitectura contiene evidencia inequívoca de al menos
+    un núcleo colectivo (Stellium o Conjunción), aunque la lista resumida
+    ``arquitectura["nucleos"]`` haya quedado vacía.
+
+    Se usa como barrera de integridad: una sección de núcleos vacía no puede
+    considerarse válida si el propio motor conserva un vértice colectivo o
+    un Stellium independiente.
+    """
+    arquitectura = (
+        contexto_compacto
+        .get("figuras", {})
+        .get("arquitectura", {})
+        or {}
+    )
+
+    for figura in arquitectura.get("figuras", []) or []:
+        tipo_figura = str(
+            figura.get("tipo") or ""
+        ).strip().casefold()
+
+        nombre_canonico = str(
+            figura.get("nombre_canonico") or ""
+        ).strip().casefold()
+
+        if (
+            tipo_figura == "stellium"
+            or nombre_canonico == "stellium"
+        ):
+            puntos = (
+                figura.get("puntos_geometricos")
+                or figura.get("puntos")
+                or []
+            )
+            if len([p for p in puntos if str(p).strip()]) >= 3:
+                return True
+
+        for vertice in figura.get("vertices", []) or []:
+            if not isinstance(vertice, dict):
+                continue
+
+            tipo_vertice = str(
+                vertice.get("tipo") or ""
+            ).strip().casefold()
+
+            puntos = [
+                p
+                for p in (vertice.get("puntos", []) or [])
+                if str(p).strip()
+            ]
+
+            if (
+                tipo_vertice in {"stellium", "conjunción", "conjuncion"}
+                and len(puntos) >= 2
+            ):
+                return True
+
+    return False
+
+
 def construir_esquema_nucleos_global(contexto_compacto):
     """
     Convierte los núcleos calculados por Python en una lista canónica.
@@ -10166,12 +14444,9 @@ def construir_esquema_nucleos_global(contexto_compacto):
     Un stellium no se divide aquí en Mercurio-Venus,
     Mercurio-Marte, Venus-Marte, etc.
     """
-    nucleos = (
+    nucleos = obtener_nucleos_globales_robustos(
         contexto_compacto
-        .get("figuras", {})
-        .get("arquitectura", {})
-        .get("nucleos", [])
-    ) or []
+    )
 
     unicos = {}
 
@@ -10262,6 +14537,16 @@ def construir_esquema_nucleos_global(contexto_compacto):
         ),
     )
 
+    # Posiciones natales autoritativas de cada integrante.
+    # Un núcleo colectivo puede atravesar signos y/o casas; por tanto,
+    # nunca se asigna al conjunto la posición de uno de sus miembros.
+    posiciones_natales = (
+        contexto_compacto
+        .get("figuras", {})
+        .get("posiciones_natales", {})
+        or {}
+    )
+
     salida = []
 
     for indice, (
@@ -10296,6 +14581,15 @@ def construir_esquema_nucleos_global(contexto_compacto):
             ),
             "tipo_nucleo": tipo_nucleo,
             "puntos": list(puntos),
+            "posiciones_miembros": {
+                punto: {
+                    "signo": (posiciones_natales.get(punto, {}) or {}).get("signo"),
+                    "casa": (posiciones_natales.get(punto, {}) or {}).get("casa"),
+                    "grado": (posiciones_natales.get(punto, {}) or {}).get("grado"),
+                    "retrogrado": (posiciones_natales.get(punto, {}) or {}).get("retrogrado"),
+                }
+                for punto in puntos
+            },
             "etiqueta_tecnica": (
                 etiqueta_tecnica
             ),
@@ -10315,6 +14609,20 @@ def construir_esquema_nucleos_global(contexto_compacto):
                 )
             ),
         })
+
+    # Barrera de integridad. Si el motor conserva evidencia colectiva pero
+    # no hemos conseguido construir ningún núcleo, no permitimos que el fallo
+    # se convierta silenciosamente en una sección vacía.
+    if (
+        not salida
+        and _hay_evidencia_colectiva_para_nucleos(contexto_compacto)
+    ):
+        raise RuntimeError(
+            "La arquitectura contiene un Stellium o una Conjunción colectiva, "
+            "pero construir_esquema_nucleos_global() no ha recuperado ningún "
+            "núcleo. Revisa la conservación de 'vertices'/'tipo' en el "
+            "contexto compacto."
+        )
 
     return salida
 
@@ -10519,6 +14827,15 @@ def validar_nucleos_unicos_en_texto(texto, contexto_compacto):
         contexto_compacto
     )
 
+    if (
+        not esquema
+        and _hay_evidencia_colectiva_para_nucleos(contexto_compacto)
+    ):
+        raise RuntimeError(
+            "La sección de núcleos ha quedado vacía pese a existir evidencia "
+            "colectiva en la arquitectura."
+        )
+
     errores = []
 
     for nucleo in esquema:
@@ -10650,24 +14967,46 @@ def validar_interpretaciones_figuras_finales(
                 f"interpretacion={'OK' if interpretacion else 'VACÍA'}."
             )
         texto_completo = titulo + "\n" + interpretacion
-        genero = detectar_genero_dirigido_a_lector(texto_completo)
-        if genero:
-            print(
-                f"AVISO FINAL {id_figura}: lenguaje de genero: "
-                + ", ".join(genero)
-            )
-        neutralizaciones = detectar_neutralizaciones_artificiales(texto_completo)
-        if neutralizaciones:
-            print(
-                f"AVISO FINAL {id_figura}: neutralizaciones artificiales: "
-                + ", ".join(neutralizaciones)
-            )
+
         letras = detectar_letras_no_latinas(texto_completo)
         if letras:
             print(
                 f"AVISO FINAL {id_figura}: letras no latinas: "
                 + ", ".join(letras)
             )
+        incumple_stellium_final, faltantes_stellium_final = (
+            _incumple_vertice_colectivo_2026(
+                figura,
+                interpretacion,
+            )
+        )
+        if incumple_stellium_final:
+            raise RuntimeError(
+                f"La validación final de {id_figura} ha detectado que un "
+                "vértice colectivo (Stellium/Conjunción) fue reducido a uno "
+                "de sus miembros. Falta integrar: "
+                + ", ".join(faltantes_stellium_final)
+            )
+
+        posiciones_natales_final = (
+            contexto_compacto.get("figuras", {})
+            .get("posiciones_natales", {})
+            or {}
+        )
+        incumple_posicion_final, errores_posicion_final = (
+            _incumple_posicion_vertice_colectivo_2026(
+                figura,
+                interpretacion,
+                posiciones_natales_final,
+            )
+        )
+        if incumple_posicion_final:
+            raise RuntimeError(
+                f"La validación final de {id_figura} ha detectado una "
+                "atribución incorrecta de signo/casa a un vértice colectivo: "
+                + " | ".join(errores_posicion_final)
+            )
+
         puntos_ajenos = detectar_puntos_ajenos_en_figura(
             texto_completo,
             figura.get("puntos", []),
@@ -10678,6 +15017,42 @@ def validar_interpretaciones_figuras_finales(
                 f"La validación final de {id_figura} ha detectado "
                 "puntos ajenos: " + ", ".join(puntos_ajenos)
             )
+
+        aspectos_relevantes_final = (
+            contexto_compacto.get("figuras", {})
+            .get("aspectos_relevantes", [])
+            or []
+        )
+        aspectos_figura_final = Figuras.obtener_aspectos_de_figura(
+            figura,
+            aspectos_relevantes_final,
+        )
+        aspectos_compactos_final = [
+            {
+                "p1": a.get("p1"),
+                "p2": a.get("p2"),
+                "tipo": a.get("tipo"),
+                "simbolo": a.get("simbolo"),
+                "orbe": a.get("orbe"),
+            }
+            for a in aspectos_figura_final
+        ]
+        errores_color_relacion_final = (
+            detectar_atribuciones_color_huber_relacion_incorrectas_2026(
+                texto_completo,
+                aspectos_compactos_final,
+            )
+        )
+        if errores_color_relacion_final:
+            raise RuntimeError(
+                f"La validación final de {id_figura} ha detectado "
+                "una atribución cromática Huber incorrecta: "
+                + json.dumps(
+                    errores_color_relacion_final,
+                    ensure_ascii=False,
+                )
+            )
+
         coletillas = detectar_coletillas_conversacionales(texto_completo)
         if coletillas:
             print(
@@ -10696,6 +15071,395 @@ def corregir_calidad_semantica_final(
     return texto
 
 
+def corregir_colores_huber_gramatica_local_2026(texto):
+    """Corrige nominalizaciones inequívocas del color Huber sin reinterpretar."""
+    if not texto:
+        return texto
+    texto = re.sub(r"\bEs una verde\b", "Es una relación verde", texto)
+    texto = re.sub(r"\bes una verde\b", "es una relación verde", texto)
+    texto = re.sub(r"\bEs una azul\b", "Es una relación azul", texto)
+    texto = re.sub(r"\bes una azul\b", "es una relación azul", texto)
+    texto = re.sub(r"\bEs una roja\b", "Es una relación roja", texto)
+    texto = re.sub(r"\bes una roja\b", "es una relación roja", texto)
+    return texto
+
+
+def corregir_contradicciones_retrogradacion_local_2026(texto, contexto_compacto):
+    """
+    Corrige de forma determinista contradicciones explícitas directo/retrógrado
+    DESPUÉS de la auditoría IA y ANTES de la validación final.
+
+    Python conoce el estado real. No reinterpreta la carta y no llama a OpenAI.
+    Si una frase contiene una afirmación técnicamente contraria, sustituye esa
+    frase por una formulación mínima y segura con el estado correcto.
+    """
+    if not texto:
+        return texto
+
+    posiciones = (
+        (contexto_compacto.get("figuras", {}) or {})
+        .get("posiciones_natales", {})
+        or {}
+    )
+
+    salida = texto
+    correcciones = 0
+
+    for planeta, datos in posiciones.items():
+        if not isinstance(datos, dict):
+            continue
+
+        nombre_literal = str(planeta).strip()
+        if not nombre_literal:
+            continue
+
+        nombre = re.escape(nombre_literal)
+        retro = _normalizar_bool_retrogrado_2026(datos.get("retrogrado"))
+
+        if retro:
+            patrones_contrarios = [
+                rf"\b{nombre}\s+no\s+est[aá]\s+retr[oó]grad[oa]\b",
+                rf"\b{nombre}\s+no\s+es\s+retr[oó]grad[oa]\b",
+                rf"\b{nombre}\s+(?:est[aá]\s+)?direct[oa]\b",
+            ]
+            frase_segura = (
+                f"{nombre_literal} está retrógrado; este matiz favorece una "
+                "expresión más ligada a revisión y reelaboración interna."
+            )
+        else:
+            patrones_contrarios = [
+                rf"\b{nombre}\s+est[aá]\s+retr[oó]grad[oa]\b",
+                rf"\b{nombre}\s+retr[oó]grad[oa]\b",
+            ]
+            frase_segura = f"{nombre_literal} no está retrógrado."
+
+        for patron in patrones_contrarios:
+            # Sustituimos la frase completa para no conservar una explicación
+            # construida sobre el estado técnico equivocado.
+            patron_frase = re.compile(
+                rf"(?im)(?<!\w)[^.!?\n]*{patron}[^.!?\n]*[.!?]",
+                flags=re.IGNORECASE,
+            )
+            while True:
+                coincidencia = patron_frase.search(salida)
+                if not coincidencia:
+                    break
+                salida = (
+                    salida[:coincidencia.start()]
+                    + frase_segura
+                    + salida[coincidencia.end():]
+                )
+                correcciones += 1
+
+            # Por seguridad, si la afirmación aparece en una línea sin cierre
+            # de frase, corregimos al menos la expresión contradictoria.
+            nuevo, n = re.subn(
+                patron,
+                (f"{nombre_literal} está retrógrado" if retro else f"{nombre_literal} no está retrógrado"),
+                salida,
+                flags=re.IGNORECASE,
+            )
+            if n:
+                salida = nuevo
+                correcciones += n
+
+    if correcciones:
+        print(
+            "Retrogradación: "
+            f"{correcciones} contradicción(es) técnica(s) corregida(s) localmente."
+        )
+
+    salida = re.sub(r"[ \t]{2,}", " ", salida)
+    salida = re.sub(r"\n[ \t]+", "\n", salida)
+    return salida
+
+
+def validar_retrogradaciones_deterministas_2026(texto, contexto_compacto):
+    """Impide maquetar contradicciones explícitas sobre directo/retrógrado."""
+    posiciones = ((contexto_compacto.get("figuras", {}) or {}).get("posiciones_natales", {}) or {})
+    errores = []
+    for planeta, datos in posiciones.items():
+        if not isinstance(datos, dict):
+            continue
+        nombre = re.escape(str(planeta))
+        retro = _normalizar_bool_retrogrado_2026(datos.get("retrogrado"))
+        if retro:
+            patrones = [
+                rf"\b{nombre}\s+no\s+est[aá]\s+retr[oó]grad[oa]\b",
+                rf"\b{nombre}\s+(?:est[aá]\s+)?direct[oa]\b",
+                rf"\b{nombre}\s+no\s+es\s+retr[oó]grad[oa]\b",
+            ]
+        else:
+            patrones = [
+                rf"\b{nombre}\s+est[aá]\s+retr[oó]grad[oa]\b",
+                rf"\b{nombre}\s+retr[oó]grad[oa]\b",
+            ]
+        for patron in patrones:
+            if re.search(patron, texto, flags=re.IGNORECASE):
+                errores.append(f"{planeta}: contradicción con retrogrado={retro}")
+                break
+    if errores:
+        raise RuntimeError(
+            "Contradicciones deterministas de retrogradación antes del PDF:\n- "
+            + "\n- ".join(errores)
+        )
+    return True
+
+
+def validar_aspectos_nuevos_rescate_2026(contexto_compacto):
+    """Comprueba que todo rescate conserve al menos una relación nueva reconocible."""
+    arquitectura = ((contexto_compacto.get("figuras", {}) or {}).get("arquitectura", {}) or {})
+    errores = []
+    for figura in arquitectura.get("figuras", []) or []:
+        paquete = figura.get("paquete_huber_ia") or {}
+        rol = figura.get("seleccion_huber_2026") or paquete.get("seleccion_huber_2026") or ""
+        if rol != "rescate":
+            continue
+        raw = figura.get("aspectos_nuevos_huber_2026") or paquete.get("aspectos_nuevos_huber_2026") or []
+        claves = _claves_huber_serializadas_2026(raw)
+        if raw and not claves:
+            errores.append(
+                f"{figura.get('id_figura') or figura.get('tipo')}: aspectos_nuevos_huber_2026 existe pero no se pudo normalizar"
+            )
+        elif not raw:
+            # El diagnóstico de Figuras.py puede haber resuelto correctamente el
+            # rescate aunque contexto_ia.py no haya propagado este campo concreto.
+            # No bloqueamos un PDF válido por ausencia de metadato; la selección
+            # geométrica ya fue realizada por Figuras.py. Esto NO llama a OpenAI.
+            print(
+                "AVISO rescate Huber: "
+                f"{figura.get('id_figura') or figura.get('tipo')} no conserva "
+                "aspectos_nuevos_huber_2026 en contexto_compacto; se omite "
+                "esta validación local."
+            )
+    if errores:
+        raise RuntimeError(
+            "Inconsistencias en aspectos nuevos de figuras de rescate:\n- "
+            + "\n- ".join(errores)
+        )
+    return True
+
+
+# ─── V61 · NOMBRE TÉCNICO DEL ASPECTO POR PAREJA EXPLÍCITA ────────────────
+
+_ASPECTOS_TECNICOS_V61 = (
+    "Conjunción", "Oposición", "Cuadratura", "Trígono",
+    "Sextil", "Quincuncio", "Semisextil",
+)
+
+
+def _normalizar_nombre_aspecto_v61(valor):
+    if not valor:
+        return ""
+    s = unicodedata.normalize("NFD", str(valor))
+    s = "".join(ch for ch in s if unicodedata.category(ch) != "Mn")
+    return s.strip().casefold()
+
+
+def _mapa_aspectos_autoritativos_v61(contexto_compacto):
+    """Pareja no ordenada -> aspecto calculado por Python."""
+    aspectos = (
+        (contexto_compacto.get("figuras", {}) or {})
+        .get("aspectos_relevantes", [])
+        or []
+    )
+    mapa = {}
+    ambiguas = set()
+
+    for a in aspectos:
+        if not isinstance(a, dict):
+            continue
+        p1 = str(a.get("p1") or "").strip()
+        p2 = str(a.get("p2") or "").strip()
+        tipo = str(a.get("tipo") or "").strip()
+        if not p1 or not p2 or not tipo:
+            continue
+        clave = frozenset((p1.casefold(), p2.casefold()))
+        anterior = mapa.get(clave)
+        if anterior and _normalizar_nombre_aspecto_v61(anterior["tipo"]) != _normalizar_nombre_aspecto_v61(tipo):
+            ambiguas.add(clave)
+        else:
+            mapa[clave] = {"p1": p1, "p2": p2, "tipo": tipo}
+
+    for clave in ambiguas:
+        mapa.pop(clave, None)
+    return mapa
+
+
+def detectar_nombres_aspecto_pareja_incorrectos_v61(texto, contexto_compacto):
+    """
+    Detecta nombres técnicos incompatibles SOLO cuando la pareja aparece
+    explícitamente unida en la misma expresión.
+    """
+    if not texto:
+        return []
+
+    mapa = _mapa_aspectos_autoritativos_v61(contexto_compacto)
+    incidencias = []
+
+    for datos in mapa.values():
+        p1, p2, real = datos["p1"], datos["p2"], datos["tipo"]
+        p1e, p2e = re.escape(p1), re.escape(p2)
+
+        for dicho in _ASPECTOS_TECNICOS_V61:
+            if _normalizar_nombre_aspecto_v61(dicho) == _normalizar_nombre_aspecto_v61(real):
+                continue
+
+            te = re.escape(dicho)
+            patrones = [
+                rf"\b{te}\s+(?:de|entre)\s+{p1e}\s+(?:con|y)\s+{p2e}\b",
+                rf"\b{te}\s+(?:de|entre)\s+{p2e}\s+(?:con|y)\s+{p1e}\b",
+                rf"\b{p1e}\s+{te}\s+{p2e}\b",
+                rf"\b{p2e}\s+{te}\s+{p1e}\b",
+            ]
+            for patron in patrones:
+                m = re.search(patron, str(texto), flags=re.IGNORECASE)
+                if m:
+                    incidencias.append({
+                        "p1": p1, "p2": p2,
+                        "dicho": dicho, "real": real,
+                        "fragmento": m.group(0),
+                    })
+                    break
+
+    return incidencias
+
+
+def neutralizar_demostrativo_aspecto_ambiguo_v61(texto, contexto_compacto):
+    """
+    Si una frase enumera varias relaciones de tipos distintos y la siguiente
+    las resume como 'esa oposición/cuadratura/...', elimina el falso nombre
+    técnico y conserva la función narrativa como 'esa tensión' o 'ese ajuste'.
+    """
+    if not texto:
+        return texto
+
+    mapa = _mapa_aspectos_autoritativos_v61(contexto_compacto)
+    partes = re.split(r"(?<=[.!?])(\s+)", str(texto))
+    indices = list(range(0, len(partes), 2))
+
+    for pos in range(1, len(indices)):
+        i_prev, i_cur = indices[pos - 1], indices[pos]
+        previa, actual = partes[i_prev], partes[i_cur]
+
+        relaciones = []
+        for datos in mapa.values():
+            p1, p2, tipo = datos["p1"], datos["p2"], datos["tipo"]
+            p1e, p2e = re.escape(p1), re.escape(p2)
+            if (
+                re.search(rf"\b{p1e}\b.{{0,45}}\b{p2e}\b", previa, re.IGNORECASE)
+                or re.search(rf"\b{p2e}\b.{{0,45}}\b{p1e}\b", previa, re.IGNORECASE)
+            ):
+                relaciones.append(tipo)
+
+        tipos = {_normalizar_nombre_aspecto_v61(t) for t in relaciones}
+        if len(relaciones) < 2 or len(tipos) < 2:
+            continue
+
+        patron = re.compile(
+            r"\b(Esa|Esta)\s+(oposición|cuadratura|conjunción|trígono|sextil|quincuncio|semisextil)\b",
+            re.IGNORECASE,
+        )
+
+        def repl(m):
+            tipo = _normalizar_nombre_aspecto_v61(m.group(2))
+            palabra = "ajuste" if tipo in {"quincuncio", "semisextil"} else "tensión"
+            return f"{m.group(1)} {palabra}"
+
+        partes[i_cur] = patron.sub(repl, actual)
+
+    return "".join(partes)
+
+
+
+def corregir_nombres_aspecto_pareja_v65(texto, contexto_compacto):
+    """
+    V65 · Corrige determinísticamente el NOMBRE del aspecto cuando:
+    - la pareja está escrita de forma explícita;
+    - Python conoce el aspecto real de esa pareja;
+    - la IA ha usado otro nombre técnico.
+
+    Ejemplo:
+        "sextil de Luna y Marte"
+        -> "trígono de Luna y Marte"
+
+    No cambia la pareja, no inventa geometría y no consume OpenAI.
+    """
+    if not texto:
+        return texto
+
+    mapa = _mapa_aspectos_autoritativos_v61(contexto_compacto)
+    salida = str(texto)
+
+    for datos in mapa.values():
+        p1 = str(datos["p1"]).strip()
+        p2 = str(datos["p2"]).strip()
+        real = str(datos["tipo"]).strip()
+
+        if not p1 or not p2 or not real:
+            continue
+
+        p1e = re.escape(p1)
+        p2e = re.escape(p2)
+
+        for dicho in _ASPECTOS_TECNICOS_V61:
+            if _normalizar_nombre_aspecto_v61(dicho) == _normalizar_nombre_aspecto_v61(real):
+                continue
+
+            de = re.escape(dicho)
+
+            # "sextil de Luna y Marte" / "sextil entre Luna y Marte"
+            patrones = [
+                (
+                    rf"\b{de}\s+(de|entre)\s+{p1e}\s+(con|y)\s+{p2e}\b",
+                    lambda m, r=real: f"{r.lower()} {m.group(1)} {p1} {m.group(2)} {p2}",
+                ),
+                (
+                    rf"\b{de}\s+(de|entre)\s+{p2e}\s+(con|y)\s+{p1e}\b",
+                    lambda m, r=real: f"{r.lower()} {m.group(1)} {p2} {m.group(2)} {p1}",
+                ),
+                # "Luna sextil Marte"
+                (
+                    rf"\b{p1e}\s+{de}\s+{p2e}\b",
+                    lambda m, r=real: f"{p1} {r.lower()} {p2}",
+                ),
+                (
+                    rf"\b{p2e}\s+{de}\s+{p1e}\b",
+                    lambda m, r=real: f"{p2} {r.lower()} {p1}",
+                ),
+            ]
+
+            for patron, repl in patrones:
+                salida = re.sub(
+                    patron,
+                    repl,
+                    salida,
+                    flags=re.IGNORECASE,
+                )
+
+    # Ajusta el artículo/demostrativo si la sustitución cambia el género
+    # gramatical del aspecto.
+    salida = corregir_genero_gramatical_aspectos_2026(salida)
+    return salida
+
+
+def validar_nombres_aspecto_pareja_v61(texto, contexto_compacto):
+    incidencias = detectar_nombres_aspecto_pareja_incorrectos_v61(
+        texto, contexto_compacto
+    )
+    if incidencias:
+        detalle = "; ".join(
+            f"{x['fragmento']} → Python calcula {x['real']}"
+            for x in incidencias[:8]
+        )
+        raise RuntimeError(
+            "V61 · Nombre técnico de aspecto incompatible con la pareja calculada: "
+            + detalle
+        )
+    return True
+
+# ─── FIN V61 ───────────────────────────────────────────────────────────────
+
 def validar_informe_final(texto, contexto_compacto):
     """
     Barrera final antes del PDF.
@@ -10706,6 +15470,10 @@ def validar_informe_final(texto, contexto_compacto):
     """
     if not texto:
         raise RuntimeError("El informe final está vacío.")
+
+    validar_aspectos_nuevos_rescate_2026(contexto_compacto)
+    validar_retrogradaciones_deterministas_2026(texto, contexto_compacto)
+    validar_nombres_aspecto_pareja_v61(texto, contexto_compacto)
 
     secciones_faltantes = detectar_secciones_faltantes(texto)
     if secciones_faltantes:
@@ -10944,6 +15712,8 @@ def generar_interpretacion_arte_encarnarte(
         instrucciones_biblioteca
         + "\n\n"
         + prompt
+        + "\n\n"
+        + instrucciones_autocontrol_en_misma_llamada("global")
         + """
 
 
@@ -10969,7 +15739,7 @@ texto libre, subtítulos breves cuando realmente ayuden a la lectura.
 
     vector_store_id = cargar_vector_store_biblioteca_astrologica()
 
-    response = client.responses.create(
+    response = _responses_create_controlado(client, 
         model="gpt-5.4-mini",
         input=prompt_estructurado,
         tools=[
@@ -11129,6 +15899,26 @@ texto libre, subtítulos breves cuando realmente ayuden a la lectura.
         )
 
     return texto
+
+
+# ─── AUDITORÍA FINAL IA · TRATAMIENTO + FIDELIDAD DE ASPECTOS ───────────────
+V42_AUDITORIA_FINAL_GENERO_Y_ASPECTOS_IA = False  # retirada definitivamente en V80
+
+
+def auditar_genero_y_aspectos_finales_ia(
+    texto,
+    contexto_compacto,
+    tratamiento=None,
+):
+    """
+    V80 · Compatibilidad.
+    La auditoría específica de género queda retirada. El tratamiento se decide
+    en la generación mediante la preferencia elegida por la persona.
+    """
+    return texto
+
+# ─── FIN AUDITORÍA FINAL IA · TRATAMIENTO + ASPECTOS ────────────────────────
+
 
 def limpiar_markdown_para_pdf(texto):
     """
@@ -11438,10 +16228,16 @@ def generar_pdf_arte_encarnarte(
         )
     )
 
+    estilo_nombre_portada = estilos["centro"].clone("NombrePortada")
+    estilo_nombre_portada.fontName = "Times-Roman"
+    estilo_nombre_portada.fontSize = 24
+    estilo_nombre_portada.leading = 29
+    estilo_nombre_portada.textColor = colors.HexColor("#8C5A00")
+
     elementos.append(
         Paragraph(
-            f"<b>{nombre}</b>",
-            estilos["centro"],
+            nombre,
+            estilo_nombre_portada,
         )
     )
 
@@ -11658,7 +16454,7 @@ def generar_pdf_arte_encarnarte(
         # al final de una página.
 
         if re.match(
-            r"^Núcleo\s+",
+            r"^(?:Núcleo|Stellium|Conjunción)\s+",
             linea,
             flags=re.IGNORECASE,
         ):
@@ -11918,21 +16714,100 @@ def generar_pdf_arte_encarnarte(
     return ruta_pdf
 
 
-if __name__ == "__main__":
+def generar_carta_api(
+    nombre,
+    fecha,
+    hora,
+    lugar,
+    lat=None,
+    lon=None,
+    tz_name=None,
+    tratamiento=None,
+):
+    """
+    Genera El Arte de Encarnarte con datos recibidos desde la web.
 
-    nombre = "ELAIA"
-    fecha = "18/07/2015"
-    hora = "01:04"
-    lugar = "PAMPLONA, ESPAÑA"
-    lat = 42.8157
-    lon = -1.6522
-    tz_name = "Europe/Madrid"
+    No solicita ningún dato por consola.
+    Wix/Render deben enviar:
+    - nombre
+    - fecha
+    - hora
+    - lugar
+    - latitud / longitud
+    - tz_name, si está disponible
+    - tratamiento: femenino / masculino / neutro
+    """
+    global TRATAMIENTO_LINGUISTICO
 
-    # ── TRATAMIENTO LINGÜÍSTICO ───────────────────────
-    # Se elige al introducir los datos de cada persona.
-    TRATAMIENTO_LINGUISTICO = (
-        elegir_tratamiento_linguistico()
+    _reiniciar_contador_llamadas_openai()
+
+    # ── VALIDACIÓN DE DATOS RECIBIDOS DESDE WEB ─────────
+    nombre = str(nombre or "").strip()
+    fecha = str(fecha or "").strip()
+    hora = str(hora or "").strip()
+    lugar = str(lugar or "").strip()
+
+    if not nombre:
+        raise ValueError("Falta el nombre.")
+    if not fecha:
+        raise ValueError("Falta la fecha de nacimiento.")
+    if not hora:
+        raise ValueError("Falta la hora de nacimiento.")
+    if not lugar:
+        raise ValueError("Falta el lugar de nacimiento.")
+    if lat is None or lon is None:
+        raise ValueError(
+            "Faltan las coordenadas del lugar de nacimiento."
+        )
+
+    try:
+        lat = float(lat)
+        lon = float(lon)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(
+            "Las coordenadas del lugar de nacimiento no son válidas."
+        ) from exc
+
+    tz_name = (
+        str(tz_name).strip()
+        if tz_name not in (None, "")
+        else None
     )
+
+    # ── TRATAMIENTO LINGÜÍSTICO RECIBIDO DESDE WIX ──────
+    tratamiento_normalizado = str(
+        tratamiento or ""
+    ).strip().casefold()
+
+    if tratamiento_normalizado not in {
+        "femenino",
+        "masculino",
+        "neutro",
+    }:
+        raise ValueError(
+            "El tratamiento lingüístico debe ser "
+            "'femenino', 'masculino' o 'neutro'."
+        )
+
+    TRATAMIENTO_LINGUISTICO = tratamiento_normalizado
+
+    print(
+        "Datos recibidos desde web:",
+        {
+            "nombre": nombre,
+            "fecha": fecha,
+            "hora": hora,
+            "lugar": lugar,
+            "lat": lat,
+            "lon": lon,
+            "tz_name": tz_name,
+            "tratamiento": TRATAMIENTO_LINGUISTICO,
+        },
+        flush=True,
+    )
+
+    # ── PRIORIDAD HUBER EN RESCATES ───────────────────
+    instalar_prioridad_maestra_en_rescate_huber_2026()
 
     # ── CONTEXTO ASTROLÓGICO ──────────────────────────
 
@@ -11951,6 +16826,11 @@ if __name__ == "__main__":
         construir_contexto_compacto_arte_encarnarte(
             contexto_completo
         )
+    )
+
+    contexto_compacto = propagar_metadatos_rescate_huber_2026(
+        contexto_completo,
+        contexto_compacto,
     )
 
     print(
@@ -12092,8 +16972,9 @@ if __name__ == "__main__":
             indent=2,
         )
 
-    # La IA debe mantener cada figura aislada. Si excepcionalmente
-    # mezcla puntos de otra figura, se repara EN LOTE antes de validar.
+    # Validación sin coste adicional. Si la segunda llamada mezcla puntos,
+    # deja campos vacíos o atribuye mal un color Huber, se activa la reparación
+    # condicional en lote ya prevista. El máximo total sigue siendo 4 llamadas.
     interpretaciones_figuras = (
         corregir_puntos_ajenos_interpretaciones_figuras(
             contexto_compacto,
@@ -12101,7 +16982,15 @@ if __name__ == "__main__":
         )
     )
 
-    # Guardamos también la versión ya reparada/normalizada.
+    # V46 · La reparación condicional puede reescribir un bloque de rescate.
+    # Reaplicamos después, de forma determinista, qué relación o relaciones
+    # nuevas justifican cada rescate. No consume llamadas OpenAI.
+    interpretaciones_figuras = blindar_aspectos_nuevos_rescate_interpretaciones_2026(
+        contexto_compacto,
+        interpretaciones_figuras,
+    )
+
+    # Guardamos también la versión que ha superado la validación.
     with open(
         "diagnostico_figuras_finales.json",
         "w",
@@ -12151,10 +17040,62 @@ if __name__ == "__main__":
         interpretacion
     )
 
+    # ── CONTROL DE LLAMADAS ──────────────────────────
+    # Las dos primeras llamadas siguen siendo global + figuras.
+    # La tercera solo repara figuras si Python detecta incidencias.
+    # La auditoría final se ejecuta después sobre el informe completo.
+
+    # ── AUDITORÍA FINAL IA POR PARCHES ─────────────────
+    # La IA NO devuelve un informe nuevo: solo correcciones locales exactas.
+    # Así no puede resumir ni reescribir contenido correcto.
+    # Si no hubo reparación de figuras será la llamada 3/4.
+    # Si hubo reparación condicional será la llamada 4/4.
+    print("Auditando informe completo por parches antes de maquetar...")
+    interpretacion = auditar_informe_completo_final_2026(
+        interpretacion,
+        contexto_compacto,
+    )
+
+    # Cierre determinista después de la auditoría.
+    interpretacion = cierre_editorial_local_final(
+        interpretacion
+    )
+
+    # V46 · OpenAI nunca tiene la última palabra sobre qué aspecto es nuevo.
+    # Este blindaje se ejecuta en el texto FINAL, después de cualquier parche IA
+    # y antes de la validación/PDF. Admite uno o varios aspectos nuevos reales.
+    interpretacion = blindar_aspectos_nuevos_rescate_informe_final_2026(
+        interpretacion,
+        contexto_compacto,
+    )
+
+    # V47 · Python corrige cualquier contradicción explícita de retrogradación
+    # que haya sobrevivido a la auditoría por parches. No consume API.
+    interpretacion = corregir_contradicciones_retrogradacion_local_2026(
+        interpretacion,
+        contexto_compacto,
+    )
+
+    # V61 · Evita adjudicar un nombre técnico a un conjunto ambiguo de
+    # relaciones distintas. No consume OpenAI ni reinterpreta la figura.
+    interpretacion = neutralizar_demostrativo_aspecto_ambiguo_v61(
+        interpretacion,
+        contexto_compacto,
+    )
+
+    # V58 · ÚLTIMO cierre editorial después de TODOS los parches deterministas.
+    # Evita que una corrección posterior vuelva a introducir:
+    # - uniones como "tiempo.Saturno";
+    # - fugas de tratamiento inequívocas;
+    # - terminología ambigua como "oposición interna".
+    # No consume ninguna llamada OpenAI.
+    interpretacion = cierre_editorial_local_final(
+        interpretacion
+    )
+
     # ── REVISIÓN SEMÁNTICA FINAL ─────────────────────
-    # Una sola pasada editorial, acotada a problemas
-    # claros. No funciona como una lista creciente de
-    # palabras prohibidas.
+    # Python valida después de la auditoría para que la IA
+    # nunca tenga la última palabra sobre la estructura técnica.
 
     # Guardamos siempre el texto de esta ejecución antes de
     # validarlo. Así, si aparece un error, el diagnóstico no
@@ -12168,6 +17109,10 @@ if __name__ == "__main__":
             interpretacion
         )
 
+    # V66 · NO corregimos aquí un nombre de aspecto por sustitución textual.
+    # Si llegara hasta este punto un aspecto mal nombrado, la validación final
+    # debe detener el informe: cambiar solo la etiqueta podría ocultar una
+    # interpretación semánticamente construida sobre el aspecto equivocado.
     validar_informe_final(
         interpretacion,
         contexto_compacto,
@@ -12224,3 +17169,11 @@ if __name__ == "__main__":
             ruta_pdf
         )
     )
+
+    return {
+        "ok": True,
+        "ruta_pdf": os.path.abspath(ruta_pdf),
+        "pdf_path": os.path.abspath(ruta_pdf),
+        "archivo": os.path.basename(ruta_pdf),
+    }
+

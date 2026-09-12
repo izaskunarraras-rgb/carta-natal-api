@@ -5000,22 +5000,77 @@ def validar_geometria_huber_detectada(figura):
 # atómicamente pero completa una estructura solo al considerar el stellium
 # como unidad.
 
-def _token_colectivo_global_stellium(carta):
+def _mapa_colectivo_global_cierres_stellium(carta, aspectos):
+    """
+    Construye el mismo lenguaje de vértices colectivos que usa el motor
+    principal al asignar Stelliums y Conjunciones.
+
+    Prioridad:
+    1. Stellium (>= 3 puntos);
+    2. Conjunción que no esté completamente contenida en un Stellium;
+    3. Punto atómico.
+
+    Un punto ya absorbido por un Stellium no se reasigna a una conjunción.
+    Esto replica la prioridad de ``asignar_vertices_stellium`` y evita que
+    el rescate colectivo trate, por ejemplo, Urano y Ascendente como dos
+    vértices separados cuando el resto del motor ya los representa como una
+    Conjunción colectiva.
+    """
     stelliums = [
         tuple(ordenar_puntos(f.get("puntos", [])))
         for f in detectar_stelliums(carta)
         if len(f.get("puntos", [])) >= 3
     ]
-
-    # Si hubiera solapamientos anómalos, preferimos el grupo mayor y después
-    # el orden estable del motor.
     stelliums.sort(key=lambda g: (-len(g), tuple(g)))
+
     mapa = {}
+
+    # Primero Stelliums: son la agrupación colectiva prioritaria.
     for grupo in stelliums:
         token = ("Stellium", grupo)
         for punto in grupo:
             mapa.setdefault(punto, token)
+
+    # Después conjunciones, exactamente con la misma fuente que
+    # ``asignar_vertices_stellium``.
+    grupos_conjuncion = []
+    vistos = set()
+
+    for grupo in mapa_conjunciones(aspectos).values():
+        grupo = tuple(ordenar_puntos(list(grupo)))
+        if len(grupo) < 2 or grupo in vistos:
+            continue
+        vistos.add(grupo)
+
+        # Una conjunción completamente incluida en un Stellium no constituye
+        # un segundo vértice colectivo.
+        if any(
+            set(grupo).issubset(set(stellium))
+            for stellium in stelliums
+        ):
+            continue
+
+        grupos_conjuncion.append(grupo)
+
+    grupos_conjuncion.sort(key=lambda g: (-len(g), tuple(g)))
+
+    for grupo in grupos_conjuncion:
+        token = ("Conjunción", grupo)
+        for punto in grupo:
+            # No deshacer la prioridad de un Stellium ya asignado.
+            mapa.setdefault(punto, token)
+
     return mapa
+
+
+# Alias interno conservado por compatibilidad con parches o diagnósticos
+# anteriores. A partir de ahora necesita también ``aspectos`` para reconocer
+# conjunciones colectivas de forma coherente con el motor principal.
+def _token_colectivo_global_stellium(carta, aspectos=None):
+    return _mapa_colectivo_global_cierres_stellium(
+        carta,
+        aspectos or [],
+    )
 
 
 def _token_punto_global_stellium(punto, mapa):
@@ -5030,16 +5085,75 @@ def _par_tokens_colectivos(aspecto, mapa):
     t1 = _token_punto_global_stellium(p1, mapa)
     t2 = _token_punto_global_stellium(p2, mapa)
     if t1 == t2:
+        # Aspecto interno al mismo vértice colectivo.
         return None
     return tuple(sorted((t1, t2), key=repr))
 
 
+def _token_desde_vertice_explicito(vertice):
+    if not isinstance(vertice, dict):
+        return None
+
+    puntos = tuple(
+        ordenar_puntos(
+            list(vertice.get("puntos", []) or [])
+        )
+    )
+    if not puntos:
+        return None
+
+    tipo = str(
+        vertice.get("tipo")
+        or "Punto"
+    ).strip()
+
+    return (tipo, puntos)
+
+
 def _vertices_colectivos_globales_figura(figura, mapa):
+    """
+    Firma colectiva real de una figura seleccionada.
+
+    Si la figura ya trae ``vertices`` (caso normal después de
+    ``asignar_vertices_stellium``), esos vértices son la autoridad. Solo se
+    reconstruye desde puntos atómicos como compatibilidad para figuras antiguas.
+
+    Esta diferencia es crítica para no perder conjunciones colectivas como
+    Urano+Ascendente al comprobar duplicación o contención.
+    """
+    vertices_explicitos = []
+    for vertice in figura.get("vertices", []) or []:
+        token = _token_desde_vertice_explicito(vertice)
+        if token is not None:
+            vertices_explicitos.append(token)
+
+    if vertices_explicitos:
+        return frozenset(vertices_explicitos)
+
     tokens = {
         _token_punto_global_stellium(p, mapa)
         for p in puntos_reales_figura(figura)
     }
     return frozenset(tokens)
+
+
+def _trio_contenido_en_figura_seleccionada(
+    trio,
+    vertices_existentes,
+):
+    """
+    Un cierre colectivo no merece bloque propio si sus tres vértices ya están
+    incluidos en una figura seleccionada mayor.
+
+    Se usa inclusión de vértices colectivos, no igualdad estricta. Así una
+    figura de cuatro o más vértices puede absorber un triángulo colectivo
+    interno aunque este aparezca por representantes atómicos distintos.
+    """
+    return any(
+        trio.issubset(vertices_figura)
+        for vertices_figura in vertices_existentes
+        if vertices_figura
+    )
 
 
 def rescatar_cierres_colectivos_stellium(
@@ -5050,15 +5164,24 @@ def rescatar_cierres_colectivos_stellium(
 ):
     """
     Rescata únicamente aristas natales totalmente huérfanas que cierran una
-    estructura al considerar un stellium como vértice colectivo.
+    estructura al considerar un Stellium como vértice colectivo.
 
-    No crea figuras Huber canónicas nuevas: el resultado se marca como
-    estructura propia de Arquitectura Interna porque sus tres lados pueden
-    proceder de miembros distintos de un mismo stellium y, por tanto, no
-    corresponden necesariamente a una geometría Huber atómica única.
+    Reglas de seguridad:
+    - no redetecta toda la carta;
+    - solo parte de una arista que no pertenece a ninguna geometría atómica;
+    - respeta Stelliums Y Conjunciones como vértices colectivos;
+    - no crea un cierre si sus tres vértices ya están contenidos en una figura
+      seleccionada mayor;
+    - crea como máximo un cierre por arista huérfana;
+    - el resultado es Arquitectura Interna, no una figura Huber canónica.
     """
-    mapa = _token_colectivo_global_stellium(carta)
-    if not mapa:
+    mapa = _mapa_colectivo_global_cierres_stellium(
+        carta,
+        aspectos,
+    )
+
+    # Esta función existe específicamente para expansión por Stellium.
+    if not any(token[0] == "Stellium" for token in mapa.values()):
         return []
 
     # 1) Aspectos que ya pertenecen a cualquier geometría atómica detectada.
@@ -5084,18 +5207,21 @@ def rescatar_cierres_colectivos_stellium(
             actual = soporte_por_par.get(par)
             if (
                 actual is None
-                or float(asp.get("orbe", 999.0)) < float(actual.get("orbe", 999.0))
+                or float(asp.get("orbe", 999.0))
+                < float(actual.get("orbe", 999.0))
             ):
                 soporte_por_par[par] = asp
 
     if len(soporte_por_par) < 2:
         return []
 
-    vertices_existentes = {
+    # Autoridad para duplicación/contención: los vértices explícitos de las
+    # figuras seleccionadas, que ya incluyen conjunciones colectivas.
+    vertices_existentes = [
         _vertices_colectivos_globales_figura(figura, mapa)
         for figura in (seleccionadas or [])
         if figura.get("tipo") != "Stellium"
-    }
+    ]
 
     rescates = []
     trios_ya_creados = set()
@@ -5119,7 +5245,7 @@ def rescatar_cierres_colectivos_stellium(
 
         u, v = par_h
 
-        # La excepción solo existe por un vértice colectivo real.
+        # La excepción solo existe si interviene al menos un Stellium real.
         if u[0] != "Stellium" and v[0] != "Stellium":
             continue
 
@@ -5146,19 +5272,33 @@ def rescatar_cierres_colectivos_stellium(
 
             trio = frozenset((u, v, tercero))
 
-            # No duplicar una figura colectiva que ya existe.
-            if trio in vertices_existentes or trio in trios_ya_creados:
+            # 1) No duplicar otro cierre ya creado.
+            if trio in trios_ya_creados:
+                continue
+
+            # 2) No crear una subfigura colectiva que ya esté contenida en una
+            #    figura seleccionada mayor. Antes solo se comprobaba igualdad,
+            #    por lo que un triángulo interno podía reaparecer dentro de
+            #    Arena, Trapecio, etc.
+            if _trio_contenido_en_figura_seleccionada(
+                trio,
+                vertices_existentes,
+            ):
                 continue
 
             # Comprobar que el cierre depende realmente de la expansión por
-            # stellium: al menos una arista de apoyo debe usar un miembro del
-            # stellium distinto del miembro que aporta la arista huérfana.
+            # Stellium: al menos una arista de apoyo debe usar un miembro del
+            # Stellium distinto del miembro que aporta la arista huérfana.
             miembros_h = {huerfana.get("p1"), huerfana.get("p2")}
             depende_de_expansion = False
             for asp_soporte in (asp_ut, asp_vt):
                 for punto in (asp_soporte.get("p1"), asp_soporte.get("p2")):
                     token = _token_punto_global_stellium(punto, mapa)
-                    if token in (u, v) and token[0] == "Stellium" and punto not in miembros_h:
+                    if (
+                        token in (u, v)
+                        and token[0] == "Stellium"
+                        and punto not in miembros_h
+                    ):
                         depende_de_expansion = True
                         break
                 if depende_de_expansion:
@@ -5183,6 +5323,14 @@ def rescatar_cierres_colectivos_stellium(
         tokens = [u, v, tercero]
         vertices = []
         puntos_expandidos = set()
+
+        puntos_usados_geometricamente = {
+            p
+            for asp in (huerfana, asp_ut, asp_vt)
+            for p in (asp.get("p1"), asp.get("p2"))
+            if p
+        }
+
         for token in sorted(tokens, key=repr):
             tipo, puntos_token = token
             puntos_token = list(puntos_token)
@@ -5193,11 +5341,7 @@ def rescatar_cierres_colectivos_stellium(
                 "miembros_geometricos": ordenar_puntos([
                     p
                     for p in puntos_token
-                    if p in {
-                        huerfana.get("p1"), huerfana.get("p2"),
-                        asp_ut.get("p1"), asp_ut.get("p2"),
-                        asp_vt.get("p1"), asp_vt.get("p2"),
-                    }
+                    if p in puntos_usados_geometricamente
                 ]),
             })
 
@@ -5208,6 +5352,13 @@ def rescatar_cierres_colectivos_stellium(
             for p in (asp.get("p1"), asp.get("p2"))
             if p
         }))
+
+        claves_reutilizadas = [
+            clave_aspecto(asp)
+            for asp in (asp_ut, asp_vt)
+            if clave_aspecto(asp)
+        ]
+        clave_nueva = clave_aspecto(huerfana)
 
         figura = {
             "tipo": "Cierre colectivo de stellium",
@@ -5229,6 +5380,17 @@ def rescatar_cierres_colectivos_stellium(
             "estado_estructural": "rescate_colectivo",
             "jerarquia": "seleccionada",
             "puntuacion_jerarquia": 0,
+            # El intérprete debe saber que es un RESCATE y no una figura
+            # Huber principal.
+            "seleccion_huber_2026": "rescate",
+            "fase_seleccion_huber_2026": "rescate_colectivo_stellium",
+            "motivo_seleccion_huber_2026": (
+                "arista_huerfana_cierra_geometria_solo_con_vertice_stellium"
+            ),
+            "aspectos_nuevos_huber_2026": (
+                [clave_nueva] if clave_nueva else []
+            ),
+            "aspectos_reutilizados_huber_2026": claves_reutilizadas,
             "peso": puntuacion_figura(puntos_geometricos),
         }
 
@@ -5250,7 +5412,6 @@ def rescatar_cierres_colectivos_stellium(
 
         rescates.append(figura)
         trios_ya_creados.add(trio)
-        vertices_existentes.add(trio)
 
     return rescates
 

@@ -124,6 +124,7 @@ OPCIONES_VALIDAS = [
     "opCartaBase",
     "opMapaCompleto",
     *INDIVIDUALES,
+    "opArteEncarnarte",
 ]
 
 
@@ -132,6 +133,7 @@ TIPOS_PEDIDO_VALIDOS = [
     "informe_individual",
     "varios_informes",
     "mapa_completo",
+    "muestra_encarnarte",
 ]
 
 
@@ -171,6 +173,12 @@ GENERADORES = {
         "nombre": "Casas por Signo",
         "modulo": "casas_por_signo",
     },
+
+    "opArteEncarnarte": {
+        "nombre": "El Arte de Encarnarte",
+        "modulo": "interpretacion_arte_encarnarte",
+        "usa_tratamiento": True,
+    },
 }
 
 
@@ -182,6 +190,7 @@ ORDEN_EDITORIAL = [
     "opSociales",
     "opTranspersonales",
     "opCasas",
+    "opArteEncarnarte",
 ]
 
 
@@ -267,6 +276,9 @@ def obtener_tipo_pedido(opciones):
     La Carta Base, combinada con cualquier cuaderno,
     se considera una selección de varios informes.
     """
+
+    if opciones == ["opArteEncarnarte"]:
+        return "muestra_encarnarte"
 
     incluye_mapa_completo = (
         "opMapaCompleto" in opciones
@@ -420,6 +432,7 @@ def generar_documento_en_proceso(
     lat,
     lon,
     tz_name,
+    tratamiento=None,
 ):
     """
     Genera un informe en un proceso Python independiente.
@@ -452,6 +465,13 @@ def generar_documento_en_proceso(
         "modulo"
     ]
 
+    usa_tratamiento = bool(
+        configuracion.get(
+            "usa_tratamiento",
+            False,
+        )
+    )
+
     print(
         f"Generando en proceso aislado: {nombre_informe}",
         flush=True,
@@ -466,6 +486,7 @@ def generar_documento_en_proceso(
         "lat": lat,
         "lon": lon,
         "tz_name": tz_name,
+        "tratamiento": tratamiento,
     }
 
 
@@ -488,15 +509,27 @@ try:
         "generar_carta_api"
     )
 
-    resultado = generador(
-        datos.get("nombre"),
-        datos.get("fecha"),
-        datos.get("hora"),
-        datos.get("lugar"),
-        lat=datos.get("lat"),
-        lon=datos.get("lon"),
-        tz_name=datos.get("tz_name"),
-    )
+    if {usa_tratamiento!r}:
+        resultado = generador(
+            datos.get("nombre"),
+            datos.get("fecha"),
+            datos.get("hora"),
+            datos.get("lugar"),
+            lat=datos.get("lat"),
+            lon=datos.get("lon"),
+            tz_name=datos.get("tz_name"),
+            tratamiento=datos.get("tratamiento"),
+        )
+    else:
+        resultado = generador(
+            datos.get("nombre"),
+            datos.get("fecha"),
+            datos.get("hora"),
+            datos.get("lugar"),
+            lat=datos.get("lat"),
+            lon=datos.get("lon"),
+            tz_name=datos.get("tz_name"),
+        )
 
 except Exception as error:
     traceback.print_exc()
@@ -700,6 +733,7 @@ def ejecutar_trabajo_generacion(
     opciones,
     productos,
     tipo_pedido,
+    tratamiento=None,
 ):
     """
     Genera los documentos en segundo plano.
@@ -755,6 +789,7 @@ def ejecutar_trabajo_generacion(
                 lat=lat,
                 lon=lon,
                 tz_name=tz_name,
+                tratamiento=tratamiento,
             )
 
             rutas_generadas.append(
@@ -902,6 +937,11 @@ def iniciar_generacion():
         lat = datos.get("latitud")
         lon = datos.get("longitud")
         tz_name = datos.get("tz_name")
+        tratamiento = datos.get("tratamiento")
+        tipo_pedido_recibido = datos.get(
+            "tipoPedido",
+            "",
+        )
 
         opciones_recibidas = datos.get(
             "opciones",
@@ -1015,9 +1055,51 @@ def iniciar_generacion():
                     "con otros informes.",
             }), 400
 
+        if (
+            "opArteEncarnarte" in opciones
+            and len(opciones) > 1
+        ):
+            return jsonify({
+                "ok": False,
+                "error":
+                    "El Arte de Encarnarte es un producto "
+                    "independiente y no puede combinarse "
+                    "con otros informes.",
+            }), 400
+
+        if "opArteEncarnarte" in opciones:
+            tratamiento = str(
+                tratamiento or ""
+            ).strip().lower()
+
+            if tratamiento not in {
+                "femenino",
+                "masculino",
+                "neutro",
+            }:
+                return jsonify({
+                    "ok": False,
+                    "error":
+                        "Falta un tratamiento lingüístico válido "
+                        "para El Arte de Encarnarte.",
+                }), 400
+        else:
+            tratamiento = None
+
         tipo_pedido = obtener_tipo_pedido(
             opciones
         )
+
+        if (
+            tipo_pedido_recibido
+            and tipo_pedido_recibido != tipo_pedido
+        ):
+            print(
+                "Tipo recibido distinto del calculado:",
+                tipo_pedido_recibido,
+                tipo_pedido,
+                flush=True,
+            )
 
         if tipo_pedido == "desconocido":
             return jsonify({
@@ -1065,6 +1147,7 @@ def iniciar_generacion():
             opciones,
             productos,
             tipo_pedido,
+            tratamiento,
         )
 
         return jsonify({
@@ -1182,6 +1265,10 @@ def generar_carta():
             "tz_name"
         )
 
+        tratamiento = datos.get(
+            "tratamiento"
+        )
+
         opciones_recibidas = datos.get(
             "opciones",
             []
@@ -1277,6 +1364,37 @@ def generar_carta():
                     "con otros informes.",
             }), 400
 
+        if (
+            "opArteEncarnarte" in opciones
+            and len(opciones) > 1
+        ):
+            return jsonify({
+                "ok": False,
+                "error":
+                    "El Arte de Encarnarte es un producto "
+                    "independiente y no puede combinarse "
+                    "con otros informes.",
+            }), 400
+
+        if "opArteEncarnarte" in opciones:
+            tratamiento = str(
+                tratamiento or ""
+            ).strip().lower()
+
+            if tratamiento not in {
+                "femenino",
+                "masculino",
+                "neutro",
+            }:
+                return jsonify({
+                    "ok": False,
+                    "error":
+                        "Falta un tratamiento lingüístico válido "
+                        "para El Arte de Encarnarte.",
+                }), 400
+        else:
+            tratamiento = None
+
 
         # ───── TIPO DE PEDIDO ──────────────────────────
 
@@ -1370,6 +1488,7 @@ def generar_carta():
                 lat=lat,
                 lon=lon,
                 tz_name=tz_name,
+                tratamiento=tratamiento,
             )
 
             rutas_generadas.append(
